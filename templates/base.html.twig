@@ -13,7 +13,9 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light px-1">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-1"
+            {{ is_granted('ROLE_PREVIOUS_ADMIN') ? 'style="background-color: red !important"' }}
+        >
             <div class="container-fluid">
                 <a class="navbar-brand" href="">
                     <p class="pl-2 d-inline font-weight-bold" style="color: #444;">
@@ -27,12 +29,51 @@
                         <li class="nav-item">
                             <a class="nav-link" href="">Answers</a>
                         </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_admin') }}">Admin</a>
+                        </li>
+                        {% endif %}
                     </ul>
-                    <a class="nav-link text-black-50" href="{{ path('app_login') }}">Log In</a>
-                    <a href="#" class="btn btn-dark">Sign up</a>
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <div class="dropdown">
+                            <button
+                                class="dropdown-toggle btn"
+                                type="button"
+                                id="user-dropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                <img
+                                    src="{{ app.user.avatarUri }}"
+                                    alt="{{ app.user.getDisplayName }} Avatar">
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-dropdown">
+                                {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('app_home', {
+                                            '_switch_user': '_exit'
+                                        }) }}">Exit Impersonation</a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_logout') }}">Log Out</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a class="nav-link text-black-50" href="{{ path('app_login') }}">Log In</a>
+                        <a class="btn btn-dark" href="{{ path('app_register') }}">Sign up</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
+        {% for flash in app.flashes('success') %}
+            <div class="alert alert-success">{{ flash }}</div>
+        {% endfor %}
+        {% for flash in app.flashes('error') %}
+            <div class="alert alert-danger">{{ flash }}</div>
+        {% endfor %}
         {% block body %}{% endblock %}
         <footer class="mt-5 p-3 text-center">
             Made with <i style="color: red;" class="fa fa-heart"></i> by the guys and gals at <a style="color: #444; text-decoration: underline;" href="https://symfonycasts.com">SymfonyCasts</a>
