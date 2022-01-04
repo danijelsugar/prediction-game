@@ -68,13 +68,12 @@
                 </div>
             </div>
         </nav>
-        {% for flash in app.flashes('success') %}
-            <div class="alert alert-success">{{ flash }}</div>
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                    <div class="alert alert-{{ type }}">{{ message }}</div>
+            {% endfor %}
         {% endfor %}
-        {% for flash in app.flashes('error') %}
-            <div class="alert alert-danger">{{ flash }}</div>
-        {% endfor %}
-        {% block body %}{% endblock %}
+        {% block body %}{% endblock %} 
         <footer class="mt-5 p-3 text-center">
             Made with <i style="color: red;" class="fa fa-heart"></i> by the guys and gals at <a style="color: #444; text-decoration: underline;" href="https://symfonycasts.com">SymfonyCasts</a>
         </footer>
