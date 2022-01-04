@@ -3,7 +3,13 @@
 {% block title %}Resend verify email{% endblock %}
 
 {% block body %}
-    <h1>Resend verify email</h1>
+    <h1>Resend verification email</h1>
+    
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+                <div class="alert alert-{{ type }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
 
     <form method="POST">
         <button type="submit" class="btn">Resend email</button>
