@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ competitionStandings.competition.name }}{% endblock %}
+
+{% block nav %}
+    <nav>
+        <div>
+            <a href="">
+                <p>Prediction game</p>
+            </a>
+            <div>
+                <ul>
+                    <li>
+                        <a href="{{ path('app_home') }}">Home</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_table', {'id': competitionId}) }}">Table</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_results', {'id': competitionId}) }}">Results</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_schedule', {'id': competitionId}) }}">Schedule</a>
+                    </li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <li>
+                        <a href="{{ path('app_admin') }}">Admin</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <div>
+                        <ul>
+                            {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                                <li>
+                                    <a href="{{ path('app_home', {
+                                        '_switch_user': '_exit'
+                                    }) }}">Exit Impersonation</a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="{{ path('app_logout') }}">Log Out</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ path('app_login') }}">Log In</a>
+                    <a href="{{ path('app_register') }}">Sign up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block body %}
+    <h1>{{ competitionStandings.competition.name }}</h1>
+    <h3>Standings</h3>
+    <a href="{{ path('app_table', {id: competitionId}) }}">Total</a>
+    <a href="{{ path('app_table', {id: competitionId, standingType: 'HOME'}) }}">Home</a>
+    <a href="{{ path('app_table', {id: competitionId, standingType: 'AWAY'}) }}">Away</a>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>Played games</th>
+                <th>Won</th>
+                <th>Draw</th>
+                <th>Lost</th>
+                <th>Goals for</th>
+                <th>Goals against</th>
+                <th>Goal difference</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for standings in competitionStandings.standings %}
+                {% if standings.group is not null and standings.table is not empty %}
+                        <tr>
+                            <td colspan="10"> {{ standings.group }} </td>
+                        </tr>
+                {% endif %}
+                {% for table in standings.table %} 
+                    <tr>
+                        <td>{{ table.position }}</td>
+                        <td><img src="{{ table.team.crestUrl }}" alt="Logo" style="width: 25px"> {{ table.team.name }}</td>
+                        <td>{{ table.playedGames }}</td>
+                        <td>{{ table.won }}</td>
+                        <td>{{ table.draw }}</td>
+                        <td>{{ table.lost }}</td>
+                        <td>{{ table.goalsFor }}</td>
+                        <td>{{ table.goalsAgainst }}</td>
+                        <td>{{ table.goalDifference }}</td>
+                        <td>{{ table.points }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
