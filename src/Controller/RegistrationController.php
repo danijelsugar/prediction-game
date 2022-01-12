@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
+use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -26,8 +27,10 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher, 
         EntityManagerInterface $entityManager, 
         VerifyEmailHelperInterface $verifyEmailHelper,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        FootballDataService $footballDataService
     ): Response {
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -74,8 +77,16 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $competitions = $footballDataService->fetchData(
+            'competitions',
+            [
+                'plan' => 'TIER_ONE'
+            ]
+        );
+
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
+            'competitions' => $competitions
         ]);
     }
 
@@ -131,7 +142,8 @@ class RegistrationController extends AbstractController
         Request $request, 
         VerifyEmailHelperInterface $verifyEmailHelper, 
         UserRepository $userRepository,
-        MailerInterface $mailer
+        MailerInterface $mailer,
+        FootballDataService $footballDataService
     ): Response {
 
         if ($request->getMethod() === 'POST') {
@@ -162,7 +174,16 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('registration/resend_verify_email.html.twig');
+        $competitions = $footballDataService->fetchData(
+            'competitions',
+            [
+                'plan' => 'TIER_ONE'
+            ]
+        );
+
+        return $this->render('registration/resend_verify_email.html.twig', [
+            'competitions' => $competitions
+        ]);
 
     }
 }
