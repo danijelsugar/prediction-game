@@ -1,0 +1,33 @@
+<div>
+    League name
+    <ul>
+        <li>
+            <a href="{{ path('app_table', {'id': competitionId}) }}">Table</a>
+        </li>
+        <li>
+            <a href="{{ path('app_results', {'id': competitionId}) }}">Results</a>
+        </li>
+        <li>
+            <a href="{{ path('app_schedule', {'id': competitionId}) }}">Schedule</a>
+        </li>
+        {% if is_granted('ROLE_ADMIN') %}
+        <li>
+            <a href="{{ path('app_admin') }}">Admin</a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+<div>
+    Predictions
+    <ul>
+        <li>
+            <a href="{{ path('app_prediction', {'id': competitionId}) }}">Round predictions</a>
+        </li>
+        <li>
+            <a href="#">Season predictions</a> (consider)
+        </li>
+        <li>
+            <a href="#">Challenges</a>  (consider)
+        </li>
+    </ul>
+</div>

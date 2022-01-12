@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ competitionSchedule.competition.area.name }} - {{ competitionSchedule.competition.name }}{% endblock %}
+{% block title %}{{ competitionResults.competition.area.name }} - {{ competitionResults.competition.name }}{% endblock %}
 
 {% block nav %}
     <nav>
@@ -13,20 +13,7 @@
                     <li>
                         <a href="{{ path('app_home') }}">Home</a>
                     </li>
-                    <li>
-                        <a href="{{ path('app_table', {'id': competitionId}) }}">Table</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_results', {'id': competitionId}) }}">Results</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_schedule', {'id': competitionId}) }}">Schedule</a>
-                    </li>
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <li>
-                        <a href="{{ path('app_admin') }}">Admin</a>
-                    </li>
-                    {% endif %}
+                   {{ include('_nav.html.twig') }}
                 </ul>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <div>
@@ -53,15 +40,18 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ competitionSchedule.competition.area.name }} - {{ competitionSchedule.competition.name }}</h1>
-    {% set currentMatchday = false %}
-    {% for match in competitionSchedule.matches %}
+    <h1>{{ competitionResults.competition.area.name }} - {{ competitionResults.competition.name }}</h1>
+   {%  set currentMatchday = false %}
+    {% for match in competitionResults.matches %}
         {% if currentMatchday is not same as match.matchday %}
             {% set currentMatchday = match.matchday %}
             <p>{{ currentMatchday }}</p>
         {% endif %}
         <p>
-            {{ match.utcDate|date('d.m.Y') }} - {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
+            {{ match.utcDate|date('d.m.Y') }} -
+            {{ match.homeTeam.name }} - {{ match.awayTeam.name }} | 
+            {{ match.score.fullTime.homeTeam }}:{{ match.score.fullTime.awayTeam }} | 
+            ({{ match.score.halfTime.homeTeam }}:{{ match.score.halfTime.awayTeam }})
         </p>
         <p></p>
     {% endfor %}
