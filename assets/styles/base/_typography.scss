@@ -1,0 +1,49 @@
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-stack__headings);
+}
+
+h1 {
+    
+}
+
+h2 {
+    
+}
+
+h3 {
+    
+}
+
+h4 {
+   
+}
+
+h5 {
+    
+}
+
+h6 {
+    
+}
+
+p {
+
+}
+
+.small-copy {
+
+}
+
+a {
+    color: var(--color__link);
+    @include ui-default-transition(color);
+
+    &:hover {
+        color: var(--color__link-hover);
+    }
+}
+
+ul,
+ol {
+    @include list-reset;
+}

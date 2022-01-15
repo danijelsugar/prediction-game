@@ -24,5 +24,8 @@
         "last 2 versions",
         "Firefox ESR",
         "not dead"
-    ]
+    ],
+    "dependencies": {
+        "postcss-pxtorem": "^6.0.0"
+    }
 }

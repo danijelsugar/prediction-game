@@ -1,0 +1,306 @@
+/*------------------------------------------------------------*\
+                       GENERAL MIXINS
+\*------------------------------------------------------------*/
+
+/*
+ * Mixin to drop micro clearfix into a selector. Further reading:
+ * http://www.cssmojo.com/the-very-latest-clearfix-reloaded/
+ */
+
+@mixin clearfix {
+    &::after {
+        display: block;
+        clear: both;
+        content: "";
+    }
+}
+
+/*------------------------------------------------------------*\
+                        POSITION MIXINS
+\*------------------------------------------------------------*/
+
+/*
+ * Generic position mixin for better CSS markup
+ * Used by other mixins
+ */
+
+@mixin position ($position, $top, $right, $bottom, $left) {
+    position: $position;
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+}
+
+/*
+ * Shorthand mixin for absolute positioning
+ * Serves as an alias for `position(absolute, ...)`
+ * @param {Arglist} $args - Offsets
+ * @require {mixin} position
+ */
+
+@mixin absolute ($top, $right, $bottom, $left) {
+    @include position(absolute, $top, $right, $bottom, $left);
+}
+
+/*
+ * Shorthand mixin for fixed positioning
+ * Serves as an alias for `position(fixed, ...)`
+ * @param {Arglist} $args - Offsets
+ * @require {mixin} position
+ */
+
+@mixin fixed ($top, $right, $bottom, $left) {
+    @include position(fixed, $top, $right, $bottom, $left);
+}
+
+/*
+ * Layout Container
+ */
+
+@mixin container {
+    // min-width: var(--container__initial);
+    // max-width: var(--container--max-width);
+    margin-left: auto;
+    margin-right: auto;
+    // padding-left: var(--gutter);
+    // padding-right: var(--gutter);
+    width: 100%;
+}
+
+/*
+ * Default UI transition
+ */
+
+@mixin ui-default-transition ($proptype) {
+    transition: $proptype 460ms cubic-bezier(.7, 0, .3, 1);
+}
+
+/*------------------------------------------------------------*\
+                        DISPLAY MIXINS
+\*------------------------------------------------------------*/
+
+@mixin no-display {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+@mixin list-reset {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+@mixin section-title {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+@mixin truncate ($width) {
+    width: $width;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin accordion {
+    @include ui-default-transition(max-height);
+    max-height: 0;
+    overflow: hidden;
+
+    &.active {
+        max-height: 120rem;
+        position: relative;
+        margin-bottom: pxtorem(12, 14);
+
+        @media (--medium) {
+            margin-bottom: pxtorem(12, 15);
+        }
+
+        @media (--large) {
+            margin-bottom: pxtorem(12, 16);
+        }
+    }
+}
+
+@mixin interactive-sidebar ($background, $color) {
+    background: $background;
+    // padding-left: var(--gutter);
+    // padding-right: var(--gutter);
+
+    & select,
+    & .input-text {
+        width: 100%;
+    }
+
+    & button {
+        width: 100%;
+    }
+}
+
+/*
+ * Flex display
+ */
+
+@mixin flex ($direction, $vcenter, $hcenter, $wrap) {
+    display: flex;
+    flex-direction: $direction;
+    align-items: $vcenter;
+    justify-content: $hcenter;
+    flex-wrap: $wrap;
+}
+
+@mixin aspect-ratio-calc ($height, $width) {
+    &::before {
+        content: "";
+        width: 1px;
+        margin-left: -1px;
+        float: left;
+        height: 0;
+        padding-bottom: calc(($height / $width) * 100%);
+    }
+
+    &::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+@mixin style-select ($color, $color-hover, $line-height) {
+    appearance: none;
+    border-style: solid;
+    border-width: 0 0 1px;
+    border-color: $color;
+    border-radius: 0;
+    background: transparent;
+    font-size: 1.6rem;
+    color: $color;
+    position: relative;
+    padding-right: 2.4rem;
+    line-height: $line-height;
+    cursor: pointer;
+
+    &::after {
+        @include icon-font-display(var(--icon__chevron__up));
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    &:hover {
+        color: $color-hover;
+        border-color: $color-hover;
+    }
+}
+
+@mixin placeholder ($color) {
+    ::-webkit-input-placeholder {
+        color: $color;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */
+        color: $color;
+    }
+
+    ::-moz-placeholder { /* Firefox 19+ */
+        color: $color;
+    }
+
+    :-ms-input-placeholder {
+        color: $color;
+    }
+}
+
+@mixin section-no-gutters {
+    position: relative;
+    // margin-left: calc(-1 * var(--gutter));
+    // margin-right: calc(-1 * var(--gutter));
+}
+
+/* non accessible markup styles */
+
+@mixin button {
+    @include ui-default-transition(background);
+    border: none;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 700;
+    box-shadow: 0 pxtorem(5, 14) pxtorem(10, 14) 0 rgba(0, 0, 0, 0.10);
+    padding-left: pxtorem(12, 14);
+    padding-right: pxtorem(12, 14);
+    border-radius: pxtorem(2, 14);
+    text-align: center;
+
+    @media (--medium) {
+        padding-left: pxtorem(24, 15);
+        padding-right: pxtorem(24, 15);
+        box-shadow: 0 pxtorem(5, 15) pxtorem(10, 15) 0 rgba(0, 0, 0, 0.10);
+        border-radius: pxtorem(2, 15);
+    }
+
+    @media (--large) {
+        padding-left: pxtorem(24, 16);
+        padding-right: pxtorem(24, 16);
+        box-shadow: 0 pxtorem(5, 16) pxtorem(10, 16) 0 rgba(0, 0, 0, 0.10);
+        border-radius: pxtorem(2, 16);
+    }
+}
+
+@mixin button-primary {
+    text-transform: uppercase;
+    color: $color__white;
+    background: $theme__color__secondary;
+    border-color: $theme__color__secondary;
+
+    &:hover {
+        background: $theme__color__secondary__darken;
+    }
+}
+
+@mixin button-secondary {
+    color: $theme__color__secondary;
+    background: $color__white;
+}
+
+@mixin button-link {
+    display: inline-block;
+    font-weight: 600;
+    cursor: pointer;
+    color: $theme__color__secondary;
+    @include ui-default-transition(color);
+
+    &:hover {
+        text-decoration: underline;
+        color: $theme__color__secondary__darken;
+    }
+}
+
+@mixin button-subscribe {
+    &.subscribe {
+        border-color: $color__white;
+        width: 100%;
+
+        @media (--medium) {
+            width: auto;
+        }
+    }
+}
+
+@mixin table-caption-reset {
+    background: transparent;
+    font-weight: normal;
+    text-transform: none;
+    width: auto;
+    text-align: left;
+    color: $color__text;
+}
