@@ -1,0 +1,303 @@
+    /* =============================================
+     * COLOR SYSTEM
+     * ---------------------------------------------
+     * Color variables are defined in three levels:
+     * 1. Palette Level
+     * 2. Functional Level
+     * 3. Component Level
+     * ============================================= */
+
+
+    /*
+     * Palette Level i.e. Human Friendly Color Names
+     * ---------------------------------------------------
+     * These variables are used for specifying functional
+     * level variables and should never be used in styles.
+     * ---------------------------------------------------
+     * Basic colors can also be set in config.json. In that
+     * case all of the palette level color variables in
+     * _variables.pcss should be removed and gulp automation
+     * task should be used instead
+     * (gulp frontend:frofrontend:color:system .
+     * See read.me for more details about color system
+     * and css variables generation
+     * ---------------------------------------------------
+     */
+
+
+    /** Basic Color Palette **/
+
+    $grey: hsl(0, 0%, 22%); /* #393939; */
+    $orange: hsl(11, 60%, 61%); /* D87761 */
+    $blue: hsl(219, 64%, 42%); /* info #2757b1; */
+    $green: hsl(163, 100%, 33%); /* success #00a97a; */
+    $ocher: hsl(47, 66%, 51%); /* notice #d5b130; */
+    $red: hsl(0, 100%, 63%); /* error #ff4141; */
+
+
+    /** Color Families - Tints & Shades with +/- 15% difference in luminosity based on basic color **/
+
+    $grey-10: hsl(0, 0%, 77%);
+    $grey-30: hsl(0, 0%, 52%);
+    $grey-50: hsl(0, 0%, 37%);
+    $grey-70-base: hsl(0, 0%, 22%); /* primary */
+    $grey-90: hsl(0, 0%, 7%);
+
+    $orange-10: hsl(11, 60%, 91%);
+    $orange-30: hsl(11, 60%, 76%);
+    $orange-50-base: hsl(11, 60%, 61%); /* secondary */
+    $orange-70: hsl(11, 60%, 46%);
+    $orange-90: hsl(11, 60%, 31%);
+
+    $blue-10: hsl(219, 64%, 72%);
+    $blue-30: hsl(219, 64%, 57%);
+    $blue-50: hsl(219, 64%, 42%);
+    $blue-70: hsl(219, 64%, 27%);
+    $blue-90: hsl(219, 64%, 12%);
+
+    $green-10: hsl(163, 100%, 73%);
+    $green-30: hsl(163, 100%, 58%);
+    $green-50: hsl(163, 100%, 33%);
+    $green-70: hsl(163, 100%, 18%);
+    $green-90: hsl(163, 100%, 3%);
+
+    $ocher-10: hsl(47, 66%, 91%);
+    $ocher-30: hsl(47, 66%, 76%);
+    $ocher-50: hsl(47, 66%, 51%);
+    $ocher-70: hsl(47, 66%, 36%);
+    $ocher-90: hsl(47, 66%, 21%);
+
+    $red-10: hsl(0, 100%, 93%);
+    $red-30: hsl(0, 100%, 78%);
+    $red-50: hsl(0, 100%, 63%);
+    $red-70: hsl(0, 100%, 48%);
+    $red-90: hsl(0, 100%, 33%);
+
+
+    /** Greyscale Color Palette  **/
+
+    $white: #fff;
+    $black: #000;
+    $grey-10: hsl(0, 0%, 7%);
+    $grey-30: hsl(0, 0%, 22%); /* primary */
+    $grey-50: hsl(0, 0%, 37%);
+    $grey-70: hsl(0, 0%, 52%);
+    $grey-90: hsl(0, 0%, 77%);
+
+
+    /*
+     * Functional Level - Color Tokens
+     * --------------------------------------------------------
+     * On this level color tokens are specified. For different
+     * theme the same token can be mapped to different variable.
+     * --------------------------------------------------------
+     */
+
+
+    /** Basic Colors **/
+
+    $color__primary-10: $grey-10;
+    $color__primary-30: $grey-30;
+    $color__primary-50: $grey-50;
+    $color__primary-70: $grey-70-base;
+    $color__primary-90: $grey-90;
+
+    $color__secondary-10: $orange-10;
+    $color__secondary-30: $orange-30;
+    $color__secondary-50: $orange-50-base;
+    $color__secondary-70: $orange-70;
+    $color__secondary-90: $orange-90;
+
+
+    /** Status Colors **/
+
+    $color__notice-10: $blue-10;
+    $color__notice-30: $blue-30;
+    $color__notice-50: $blue-50;
+    $color__notice-70: $blue-70;
+    $color__notice-90: $blue-90;
+
+    $color__success-10: $green-10;
+    $color__success-30: $green-30;
+    $color__success-50: $green-50;
+    $color__success-70: $green-70;
+    $color__success-90: $green-90;
+
+    $color__warning-10: $ocher-10;
+    $color__warning-30: $ocher-30;
+    $color__warning-50: $ocher-50;
+    $color__warning-70: $ocher-70;
+    $color__warning-90: $ocher-90;
+
+    $color__error-10: $red-10;
+    $color__error-30: $red-30;
+    $color__error-50: $red-50;
+    $color__error-70: $red-70;
+    $color__error-90: $red-90;
+
+
+    /** Greyscale **/
+
+    $color__white: $white;
+    $color__black: $black;
+    $color__grey-10: $grey-10;
+    $color__grey-30: $grey-30;
+    $color__grey-50: $grey-50;
+    $color__grey-70: $grey-70;
+    $color__grey-90: $grey-90;
+
+
+    /*
+     * Component Level
+     * ----------------------------------------------------------
+     * This level defines color roles in actual project.
+     * Color variables are actually used for styling UI elements.
+     * ----------------------------------------------------------
+     */
+
+
+    $theme__color__primary: $color__primary-70; /* #393939; */
+    $theme__color__secondary: $color__secondary-50; /* #D87761; */
+
+    /** Needs refactoring **/
+    $theme__color__white: $color__white;
+    $theme__color__primary__light: $color__primary-50;
+    $theme__color__primary__lighter: #ccc;
+    $theme__color__primary__xlight: #f4f4f4;
+    $theme__color__secondary__darken: $color__secondary-30;
+
+
+    /** Text Colors **/
+
+    $color__text: $color__primary-30;
+    $color__text-muted: $color__primary-50;
+    $color__text-accent: $color__primary-10;
+
+
+    /** Backgrounds & Separators Colors **/
+
+    $color__page-background: $color__white;
+    $color__component-background: $color__secondary-30;
+    $color__separator: $color__grey-70; /* for content separation, eg. top and bottom borders & hr elements */
+
+
+    /** Button Colors **/
+
+    /* Primary Button */
+    $color__button-primary: $color__white;
+    $color__button-primary-border: transparent;
+    $color__button-primary-bg: $color__secondary-50;
+    $color__button-primary-bg-hover: $color__primary-30;
+
+    /* Secondary Button */
+    $color__button-secondary: $color__black;
+    $color__button-secondary-hover: $color__white;
+    $color__button-secondary-border: transparent;
+    $color__button-secondary-bg: $color__secondary-50;
+    $color__button-secondary-bg-hover: $color__secondary-70;
+
+    /* Ghost Button */
+    $color__button-ghost: $color__black;
+    $color__button-ghost-border: $color__secondary-70;
+    $color__button-ghost-bg: $color__white;
+    $color__button-ghost-border-hover: $color__secondary-50;
+    $color__button-ghost-bg-hover: $color__secondary-50;
+
+
+    /** Notifications Colors **/
+
+    $color__notification-info-txt: $color__warning-50;
+    $color__notification-info-border: $color__warning-50;
+    $color__notification-info-bg: $color__warning-50;
+
+    $color__notification-success-txt: $color__success-50;
+    $color__notification-success-border: $color__success-50;
+    $color__notification-success-bg: $color__success-50;
+
+    $color__notification-notice-txt: $color__notice-50;
+    $color__notification-notice-border: $color__notice-50;
+    $color__notification-notice-bg: $color__notice-50;
+
+    $color__notification-error-txt: $color__error-50;
+    $color__notification-error-border: $color__error-50;
+    $color__notification-error-bg: $color__error-50;
+
+    /* For All Notifications except info */
+    $color__notification: $color__white; /* Text color */
+
+
+    /** Links Colors  **/
+
+    $color__link: $color__secondary-50;
+    $color__link-visited: inherit;
+    $color__link-hover: $color__secondary-30;
+    $color__link-active: $color__secondary-30;
+
+
+    /** Forms **/
+
+    /* Input Field */
+    $color__field-text: $color__text;
+    $color__field-bg: $color__white;
+    $color__field-bg-focus: $color__white;
+    $color__field-bg-disabled: $color__grey-70;
+    $color__field-border: $color__grey-30;
+    $color__field-border-focus: $color__grey-10;
+    $color__field-border-error: $color__error-70;
+    $color__field-bg-error: $color__error-10;
+    $color__field-label: $color__text;
+    $color__field-placeholder: $color__grey-50;
+    $color__field-required: $color__error-70;
+
+    /* Radio & Checkbox */
+    $color__field-checked-bg: $color__success-50;
+
+
+    /* ======================================== *
+     * TYPOGRAPHY                               *
+     * ======================================== */
+
+    $font-stack__base: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    $font-stack__headings: 'Raleway', sans-serif; /* Zoran defines font stack with fallback */
+    $font-weight__normal: 400;
+    $font-weight__medium: 500;
+    $font-weight__bold: 700;
+
+    /* ======================================== *
+     * LAYOUT                                   *
+     * ======================================== */
+
+    /** Containers **/
+
+    $container__initial: 360px;
+    $container__s: 640px;
+    $container__m: 960px;
+    $container__l: 1240px;
+    $container__xxl: 1920px;
+
+    /** Container Max Width  **/
+    $container--max-width: 1448px;
+
+    /** Spacing System  **/
+
+    $space-factor: 16; /* Set it in config */
+    $gutter: calc($space-factor  * 1px);
+    $negative-gutter: calc($space-factor  * -1px);
+
+/** Tablet Up **/
+
+@media (--medium) {
+    :root {
+        --gutter: calc(var(--space-factor) * 1.5 * 1px);
+        --negative-gutter: calc(var(--space-factor) * 1.5 * -1px);
+    }
+}
+
+/** Desktop Up **/
+
+@media (--large) {
+    :root {
+        --gutter: calc(var(--space-factor) * 2 * 1px);
+        --negative-gutter: calc(var(--space-factor) * 2 * -1px);
+    }
+}

@@ -1,0 +1,7 @@
+.action {
+    &.skip {
+        &:not(:focus) {
+            @include no-display;
+        }
+    }
+}
