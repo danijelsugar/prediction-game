@@ -6,7 +6,6 @@ use App\Entity\User;
 use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
-use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -27,8 +26,7 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher, 
         EntityManagerInterface $entityManager, 
         VerifyEmailHelperInterface $verifyEmailHelper,
-        MailerInterface $mailer,
-        FootballDataService $footballDataService
+        MailerInterface $mailer
     ): Response {
 
         $user = new User();
@@ -61,32 +59,18 @@ class RegistrationController extends AbstractController
             );
 
             $email = (new Email())
-                ->from('exploder.pro@gmail.com')
+                ->from($this->getParameter('app.email.from'))
                 ->to($user->getEmail())
                 ->subject('Verify your mail address')
                 ->html('<p>To verify your mail address click <a href=' . $signatureComponents->getSignedUrl() . '>here</a><p>');
 
             $mailer->send($email);
 
-            /*$userAuthenticator->authenticateUser(
-                $user,
-                $loginFormAuthenticator,
-                $request,
-            );*/
-
             return $this->redirectToRoute('app_login');
         }
 
-        $competitions = $footballDataService->fetchData(
-            'competitions',
-            [
-                'plan' => 'TIER_ONE'
-            ]
-        );
-
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
-            'competitions' => $competitions
+            'registrationForm' => $form->createView()
         ]);
     }
 
@@ -142,8 +126,7 @@ class RegistrationController extends AbstractController
         Request $request, 
         VerifyEmailHelperInterface $verifyEmailHelper, 
         UserRepository $userRepository,
-        MailerInterface $mailer,
-        FootballDataService $footballDataService
+        MailerInterface $mailer
     ): Response {
 
         if ($request->getMethod() === 'POST') {
@@ -162,7 +145,7 @@ class RegistrationController extends AbstractController
             );
 
             $email = (new Email())
-                ->from('exploder.pro@gmail.com')
+                ->from($this->getParameter('app.email.from'))
                 ->to($user->getEmail())
                 ->subject('Verify your mail address')
                 ->html('<p>To verify your mail address click <a href=' . $signatureComponents->getSignedUrl() . '>here.</a><p>');
@@ -174,16 +157,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $competitions = $footballDataService->fetchData(
-            'competitions',
-            [
-                'plan' => 'TIER_ONE'
-            ]
-        );
-
-        return $this->render('registration/resend_verify_email.html.twig', [
-            'competitions' => $competitions
-        ]);
+        return $this->render('registration/resend_verify_email.html.twig');
 
     }
 }

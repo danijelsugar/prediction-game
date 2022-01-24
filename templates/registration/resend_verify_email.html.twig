@@ -3,6 +3,9 @@
 {% block title %}Resend verify email{% endblock %}
 
 {% block body %}
+
+    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
+
     <h1>Resend verification email</h1>
     
     {% for type, messages in app.flashes %}

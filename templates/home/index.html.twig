@@ -4,4 +4,11 @@
 
 {% block body %}
 
+    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
+
+    <a href="{{ path('app_home') }}">Home</a>
+    <h1>Response generated at {{ date() | date('H:i:s') }}</h1>
+    <script>
+        document.write('Page displayed at ' + (new Date()).toLocaleTimeString());
+    </script>
 {% endblock %}

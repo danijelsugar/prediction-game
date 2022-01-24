@@ -1,0 +1,52 @@
+<h1>{{ roundMatches.competition.name }}</h1>
+<p>Round {{ round|replace({'_': " "})|lower }}</p>
+
+{% if rounds.prev %}
+    <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.prev}) }}">Previous round</a> 
+{% endif %}
+
+{% if rounds.next %}
+    <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.next}) }}">Next round</a>
+{% endif %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Start</th>
+            <th>Home team</th>
+            <th>Away team</th>
+            <th>Result</th>
+            <th>Predictions</th>
+            <th>Points</th>
+            <th>Statistics</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if roundMatches.matches is not empty %}
+            {% for match in roundMatches.matches %}
+                <tr>
+                    <td>{{ match.utcDate | date('d.m.Y H:i') }} </td>
+                    <td>{{ match.homeTeam.name }}</td>
+                    <td>{{ match.awayTeam.name }}</td>
+                    <td>
+                        {% if match.score.winner is not same as null %}
+                            {{ match.score.fullTime.homeTeam }}:{{ match.score.fullTime.awayTeam }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if match.score.winner is same as null %}
+                            <input type="text">
+                        {% endif %}
+                        
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7">No results</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>

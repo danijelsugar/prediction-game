@@ -1,0 +1,5 @@
+<ul>
+    {% for competition in competitions.competitions %}
+        <li><a href="{{ path('app_competition_teams', {'id': competition.id}) }}">{{ competition.name }}</a></li>
+    {% endfor %}
+</ul>
