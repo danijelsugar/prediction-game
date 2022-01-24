@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ competitionSchedule.competition.area.name }} - {{ competitionSchedule.competition.name }}{% endblock %}
+{% block title %}Schedule{% endblock %}
 
 {% block nav %}
     <nav>
@@ -40,16 +40,9 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ competitionSchedule.competition.area.name }} - {{ competitionSchedule.competition.name }}</h1>
-    {% set currentMatchday = false %}
-    {% for match in competitionSchedule.matches %}
-        {% if currentMatchday is not same as match.matchday %}
-            {% set currentMatchday = match.matchday %}
-            <p>{{ currentMatchday }}</p>
-        {% endif %}
-        <p>
-            {{ match.utcDate|date('d.m.Y') }} - {{ match.homeTeam.name }} - {{ match.awayTeam.name }}
-        </p>
-        <p></p>
-    {% endfor %}
+
+    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
+
+    {{ render_esi(controller('App\\Controller\\CompetitionController::scheduleCache', {'id': competitionId})) }}
+
 {% endblock %}

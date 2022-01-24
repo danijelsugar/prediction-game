@@ -34,6 +34,7 @@
                         <a href="{{ path('app_register') }}">Sign up</a>
                     {% endif %}
                 </ul>
+                
             </div>
         </div>
     </nav>
@@ -43,6 +44,6 @@
 
     {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
 
-    {{ render_esi(controller('App\\Controller\\PredictionController::predictionsCache', {'id': competitionId})) }}
-
+    {{ render_esi(controller('App\\Controller\\PredictionController::predictionsRoundCache', {'id': competitionId, 'round': round})) }}
+    
 {% endblock %}

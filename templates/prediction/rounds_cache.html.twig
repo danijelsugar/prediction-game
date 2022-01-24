@@ -1,0 +1,14 @@
+<h1>Round prediction</h1>
+<p>{{ competitionName }}</p>
+{% for round, date in rounds %}
+    <p>
+        <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': round}) }}">
+            {% if round matches '/^\\d+$/' %}
+                {{ 'Round #' ~ round}}
+            {% else %}
+                {{ round }}
+            {% endif %}
+            
+        </a> {{ date }}
+    </p>
+{% endfor %}

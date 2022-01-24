@@ -1,0 +1,34 @@
+<h1>{{ competitionTeams.competition.name }}</h1>
+<h3>Teams</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Short name</th>
+            <th>Tla</th>
+            <th></th>
+            <th>Address</th>
+            <th>Website</th>
+            <th>Email</th>
+            <th>Founded</th>
+            <th>Club colors</th>
+            <th>Venue</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team in competitionTeams.teams %}
+            <tr>
+                <td>{{ team.name }}</td>
+                <td>{{ team.shortName }}</td>
+                <td>{{ team.tla }}</td>
+                <td></td>
+                <td>{{ team.address }}</td>
+                <td><a href="{{ team.website }}">{{ team.website }}</a></td>
+                <td><a href="mailto: {{ team.email }}">{{ team.email }}</a></td>
+                <td>{{ team.founded }}</td>
+                <td>{{ team.clubColors }}</td>
+                <td>{{ team.venue }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

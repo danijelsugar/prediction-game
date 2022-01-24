@@ -1,0 +1,15 @@
+<h1>{{ competitionResults.competition.area.name }} - {{ competitionResults.competition.name }}</h1>
+{%  set currentMatchday = false %}
+{% for match in competitionResults.matches %}
+    {% if currentMatchday is not same as match.matchday %}
+        {% set currentMatchday = match.matchday %}
+        <p>{{ currentMatchday }}</p>
+    {% endif %}
+    <p>
+        {{ match.utcDate|date('d.m.Y') }} -
+        {{ match.homeTeam.name }} - {{ match.awayTeam.name }} | 
+        {{ match.score.fullTime.homeTeam }}:{{ match.score.fullTime.awayTeam }} | 
+        ({{ match.score.halfTime.homeTeam }}:{{ match.score.halfTime.awayTeam }})
+    </p>
+    <p></p>
+{% endfor %}
