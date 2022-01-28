@@ -1,15 +1,36 @@
-<h1>{{ competitionResults.competition.area.name }} - {{ competitionResults.competition.name }}</h1>
-{%  set currentMatchday = false %}
-{% for match in competitionResults.matches %}
-    {% if currentMatchday is not same as match.matchday %}
-        {% set currentMatchday = match.matchday %}
-        <p>{{ currentMatchday }}</p>
-    {% endif %}
-    <p>
-        {{ match.utcDate|date('d.m.Y') }} -
-        {{ match.homeTeam.name }} - {{ match.awayTeam.name }} | 
-        {{ match.score.fullTime.homeTeam }}:{{ match.score.fullTime.awayTeam }} | 
-        ({{ match.score.halfTime.homeTeam }}:{{ match.score.halfTime.awayTeam }})
-    </p>
-    <p></p>
-{% endfor %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ competitionName ~ ' ' ~ season }}</h3>
+        <p class="card-text">Results</p>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Teams</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%  set currentMatchday = false %}
+                    {% for match in competitionResults.matches %}
+                        {% if currentMatchday is not same as match.matchday %}
+                            {% set currentMatchday = match.matchday %}
+                            <tr>
+                                <td class="round" colspan="3">Round {{ currentMatchday }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
+                            <td>{{ match.homeTeam.name ~ ' - ' ~ match.awayTeam.name}}</td>
+                            <td>
+                                {{ match.score.fullTime.homeTeam ~ ':' ~ match.score.fullTime.awayTeam}}
+                                ({{ match.score.halfTime.homeTeam ~ ':' ~  match.score.halfTime.awayTeam}})
+                            </td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

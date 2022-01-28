@@ -2,20 +2,59 @@
 
 {% block title %}Register{% endblock %}
 
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+{% endblock %}
+
 {% block body %}
-
-    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
-
-    <h1>Register</h1>
-
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
-
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+    <div class="content-center cl-white">
+        <div class="row justify-content-center">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <div class="account-form">
+                    <div class="title">
+                        <h3>Create your account</h3>
+                    </div>
+                    <div class="login-via">
+                        <a class="facebook-bg" href="#">
+                            <i class="fa fa-facebook"></i> 
+                            Login with Facebook
+                        </a>
+                        <a class="google-bg" href="#">
+                            <i class="fa fa-google"></i> 
+                            Login with Google
+                        </a>
+                    </div>
+                    {{ form_start(registrationForm) }}
+                        <div class="row">
+                            <div class="col-xl-12">
+                                {{ form_row(registrationForm.username) }}
+                            </div>
+                            <div class="col-xl-12">
+                                {{ form_row(registrationForm.email) }}
+                            </div>
+                            <div class="col-xl-12">
+                                {{ form_row(registrationForm.plainPassword, {
+                                    label: 'Password'
+                                }) }}
+                            </div>
+                            <div class="col-xl-12">
+                                {{ form_row(registrationForm.agreeTerms) }}
+                            </div>
+                            <div class="col-xl-12">
+                                <p>By signing up to betsb you confirm that you agree with the <a href="">member terms and conditions</a></p>
+                            </div>
+                            <div class="col-xl-12">
+                                <button type="submit" class="btn btn-fill w-100">Create my account</button>
+                            </div>
+                            <div class="col-xl-12">
+                                <p><a href="{{ path('app_login') }}">Do you already have an account?</a></p>
+                            </div>
+                        </div>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+   
 {% endblock %}

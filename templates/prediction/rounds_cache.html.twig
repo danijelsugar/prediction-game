@@ -1,14 +1,22 @@
-<h1>Round prediction</h1>
-<p>{{ competitionName }}</p>
-{% for round, date in rounds %}
-    <p>
-        <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': round}) }}">
-            {% if round matches '/^\\d+$/' %}
-                {{ 'Round #' ~ round}}
-            {% else %}
-                {{ round }}
-            {% endif %}
-            
-        </a> {{ date }}
-    </p>
-{% endfor %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ competitionName }}</h3>
+        <p class="card-text">Prediction rounds.</p>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            {% for round, date in rounds %}
+                <li class="list-group-item">
+                    <a class="card-link" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round}) }}">
+                        {% if round matches '/^\\d+$/' %}
+                            {{ 'Round #' ~ round}}
+                        {% else %}
+                            {{ round }}
+                        {% endif %}
+                        {{ date }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

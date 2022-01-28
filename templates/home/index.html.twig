@@ -2,13 +2,18 @@
 
 {% block title %}Prediction game{% endblock %}
 
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+{% endblock %}
+
 {% block body %}
-
-    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
-
-    <a href="{{ path('app_home') }}">Home</a>
-    <h1>Response generated at {{ date() | date('H:i:s') }}</h1>
-    <script>
-        document.write('Page displayed at ' + (new Date()).toLocaleTimeString());
-    </script>
+    <div class="content-center cl-white">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-4 col-md-6 col-sm-12">
+                Tbd
+            </div>
+        </div>
+    </div>
+    
 {% endblock %}

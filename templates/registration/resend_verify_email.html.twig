@@ -2,19 +2,24 @@
 
 {% block title %}Resend verify email{% endblock %}
 
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+{% endblock %}
+
 {% block body %}
-
-    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
-
-    <h1>Resend verification email</h1>
-    
-    {% for type, messages in app.flashes %}
-        {% for message in messages %}
-                <div class="alert alert-{{ type }}">{{ message }}</div>
-        {% endfor %}
-    {% endfor %}
-
-    <form method="POST">
-        <button type="submit" class="btn">Resend email</button>
-    </form>
+    <div class="content-center cl-white">
+        <div class="row justify-content-center">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <div class="account-form">
+                    <div class="title">
+                        <h3>Resend verification email</h3>
+                    </div>
+                    <form method="POST">
+                        <button type="submit" class="btn btn-fill w-100">Resend email</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

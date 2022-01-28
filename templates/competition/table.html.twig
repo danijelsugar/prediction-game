@@ -2,46 +2,11 @@
 
 {% block title %}Table{% endblock %}
 
-{% block nav %}
-    <nav>
-        <div>
-            <a href="">
-                <p>Prediction game</p>
-            </a>
-            <div>
-                <ul>
-                    <li>
-                        <a href="{{ path('app_home') }}">Home</a>
-                    </li>
-                   {{ include('_nav.html.twig') }}
-                </ul>
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <div>
-                        <ul>
-                            {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
-                                <li>
-                                    <a href="{{ path('app_home', {
-                                        '_switch_user': '_exit'
-                                    }) }}">Exit Impersonation</a>
-                                </li>
-                            {% endif %}
-                            <li>
-                                <a href="{{ path('app_logout') }}">Log Out</a>
-                            </li>
-                        </ul>
-                    </div>
-                {% else %}
-                    <a href="{{ path('app_login') }}">Log In</a>
-                    <a href="{{ path('app_register') }}">Sign up</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+{% block menu %}
+   {{ include('_nav_menu.html.twig') }}
 {% endblock %}
 
 {% block body %}
-
-    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
 
     {{ render_esi(controller('App\\Controller\\CompetitionController::standingsCache', {'id': competitionId})) }}
 

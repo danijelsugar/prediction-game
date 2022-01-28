@@ -2,11 +2,72 @@
 
 {% block title %}Log In!{% endblock %}
 
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+{% endblock %}
+
 {% block body %}
+    <div class="content-center cl-white">
+        <div class="row justify-content-center">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <div class="account-form">
+                    <div class="title">
+                        <h3>Login to you account</h3>
+                    </div>
+                    <div class="login-via">
+                        <a class="facebook-bg" href="#">
+                            <i class="fa fa-facebook"></i> 
+                            Login with Facebook
+                        </a>
+                        <a class="google-bg" href="#">
+                            <i class="fa fa-google"></i> 
+                            Login with Google
+                        </a>
+                    </div>
+                    <form method="post">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <p>Or with your username and password</p>
+                            </div>
+                            {% if error %}
+                            <div class="col-xl-12">
+                                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            </div>
+                            {% endif %}
+                            <div class="col-xl-12">
+                                <input type="text" name="username" id="inputUsername" placeholder="Username">
+                            </div>
+                            <div class="col-xl-12">
+                                <input type="password" name="password" placeholder="Password">
+                            </div>
+                            <input type="hidden" name="_csrf_token"
+                                value="{{ csrf_token('authenticate') }}"
+                            >
+                            <div class="col-xl-12">
+                                <button type="submit" class="btn btn-fill w-100">Login account</button>
+                            </div>
+                            <div class="col-xl-12">
+                                <p>
+                                    <a href="">Forgot password</a>
+                                    |
+                                    <a href="">Retrieve username</a>
+                                </p>
+                            </div>
+                            <div class="col-xl-12">
+                                <p>Don't you have an account?</p>
+                            </div>
+                            <div class="col-xl-12 centered">
+                                <a class="btn btn-wht w-100" href="{{ path('app_register') }}">Create a new account</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
-
-    <div class="container">
+    {# <div class="container">
         <div class="row">
             <div class="login-form bg-light mt-4 p-4">
                 <form method="post" class="row g-3">
@@ -38,5 +99,5 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> #}
 {% endblock %}

@@ -1,0 +1,35 @@
+<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_home') }}">Home</a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            League name
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ path('app_table', {'id': competitionId}) }}">Table</a></li>
+            <li><a class="dropdown-item" href="{{ path('app_results', {'id': competitionId}) }}">Results</a></li>
+            <li><a class="dropdown-item" href="{{ path('app_schedule', {'id': competitionId}) }}">Schedule</a></li>
+        </ul>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Predictions
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li class="dropdown dropend">
+                <a 
+                class="dropdown-item dropdown-toggle2" 
+                href="{{ path('app_prediction', {'id': competitionId}) }}"
+                id="multilevelDropdownMenu1"
+                aria-haspopup="true" 
+                aria-expanded="false">
+                    Round predictions
+                </a>
+                {{ render_esi(controller('App\\Controller\\PredictionController::predictionNavCache', {'id': competitionId})) }}
+            </li>
+            <li><a class="dropdown-item" href="#">Season prediction</a></li>
+            <li><a class="dropdown-item" href="#">Challenges</a></li>
+        </ul>
+    </li>
+</ul>

@@ -1,34 +1,38 @@
-<h1>{{ competitionTeams.competition.name }}</h1>
-<h3>Teams</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Short name</th>
-            <th>Tla</th>
-            <th></th>
-            <th>Address</th>
-            <th>Website</th>
-            <th>Email</th>
-            <th>Founded</th>
-            <th>Club colors</th>
-            <th>Venue</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for team in competitionTeams.teams %}
-            <tr>
-                <td>{{ team.name }}</td>
-                <td>{{ team.shortName }}</td>
-                <td>{{ team.tla }}</td>
-                <td></td>
-                <td>{{ team.address }}</td>
-                <td><a href="{{ team.website }}">{{ team.website }}</a></td>
-                <td><a href="mailto: {{ team.email }}">{{ team.email }}</a></td>
-                <td>{{ team.founded }}</td>
-                <td>{{ team.clubColors }}</td>
-                <td>{{ team.venue }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ competitionName  ~ ' ' ~ season }}</h3>
+        <p class="card-text">Teams</p>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Short name</th>
+                    <th>Tla</th>
+                    <th>Founded</th>
+                    <th>Club colors</th>
+                    <th>Venue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in competitionTeams.teams %}
+                    <tr>
+                        <td>
+                            {% if team.crestUrl is not same as null and team.crestUrl is not empty %}
+                                <img src="{{ team.crestUrl }}" alt="{{ team.name }} logo" style="width: 25px">
+                            {% endif %}
+                        </td>
+                        <td>{{ team.name }}</td>
+                        <td>{{ team.shortName }}</td>
+                        <td>{{ team.tla }}</td>
+                        <td>{{ team.founded }}</td>
+                        <td>{{ team.clubColors }}</td>
+                        <td>{{ team.venue }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
