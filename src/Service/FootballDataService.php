@@ -75,4 +75,21 @@ class FootballDataService implements FootballDataInterface
 
         return $matchdayFirsLastDates;
     }
+
+    public function getSeason($season): string
+    {
+        $seasonStartDate = $season->startDate;
+        $startDate = (new \DateTime($seasonStartDate))->format('Y');
+
+        $seasonEndDate = $season->endDate;
+        $endDate = (new \DateTime($seasonEndDate))->format('Y');
+        dump($startDate, $endDate);
+
+        if ($startDate !== $endDate) {
+            return $startDate . '/' . $endDate;
+        }
+        
+        return $startDate;
+        
+    }
 }
