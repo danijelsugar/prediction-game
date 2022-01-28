@@ -80,8 +80,12 @@ class CompetitionController extends AbstractController
             'competitions/' . $id . '/teams',
         );
 
+        $season = $footballData->getSeason($competitionTeams->season);
+
         $response = $this->render('competition/teams_cache.html.twig', [
-            'competitionTeams' => $competitionTeams
+            'competitionTeams' => $competitionTeams,
+            'competitionName' => $competitionTeams->competition->area->name . ' - ' . $competitionTeams->competition->name,
+            'season' => $season
         ]);
 
         $response->setPublic();
@@ -112,9 +116,12 @@ class CompetitionController extends AbstractController
             );
         }
 
+        $season = $footballData->getSeason($competitionStandings->season);
+
         $response = $this->render('competition/table_cache.html.twig', [
-            'competitionId' => $id,
-            'competitionStandings' => $competitionStandings
+            'competitionStandings' => $competitionStandings,
+            'competitionName' => $competitionStandings->competition->area->name . ' - ' . $competitionStandings->competition->name,
+            'season' => $season
         ]);
 
         $response->setPublic();
@@ -137,8 +144,12 @@ class CompetitionController extends AbstractController
             ]
         );
 
+        $season = $footballData->getSeason($competitionResults->matches[0]->season);
+
         $response = $this->render('competition/result_cache.html.twig', [
-            'competitionResults' => $competitionResults
+            'competitionResults' => $competitionResults,
+            'competitionName' => $competitionResults->competition->area->name . ' - ' . $competitionResults->competition->name,
+            'season' => $season
         ]);
 
         $response->setPublic();
@@ -160,8 +171,12 @@ class CompetitionController extends AbstractController
             ]
         );
 
+        $season = $footballData->getSeason($competitionSchedule->matches[0]->season);
+
         $response = $this->render('competition/schedule_cache.html.twig', [
-            'competitionSchedule' => $competitionSchedule
+            'competitionSchedule' => $competitionSchedule,
+            'competitionName' => $competitionSchedule->competition->area->name . ' - ' . $competitionSchedule->competition->name,
+            'season' => $season
         ]);
 
         $response->setPublic();

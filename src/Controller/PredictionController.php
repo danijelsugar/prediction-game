@@ -47,9 +47,13 @@ class PredictionController extends AbstractController
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
 
+        //dd($rounds);
+
+        $season = $footballData->getSeason($roundsMatches->matches[0]->season);
+
         $response = $this->render('prediction/rounds_cache.html.twig', [
             'competitionId' => $id,
-            'competitionName' => $roundsMatches->competition->area->name . ' - ' . $roundsMatches->competition->name,
+            'competitionName' => $roundsMatches->competition->area->name . ' - ' . $roundsMatches->competition->name . ' ' . $season,
             'rounds' => $rounds
         ]);
 
@@ -113,8 +117,33 @@ class PredictionController extends AbstractController
 
         $response = $this->render('prediction/prediction_round_cache.html.twig', [
             'competitionId' => $id,
+            'competitionName' => $roundMatches->competition->area->name . ' - ' . $roundMatches->competition->name,
             'round' => $round,
             'roundMatches' => $roundMatches,
+            'rounds' => $rounds
+        ]);
+
+        $response->setPublic();
+        $response->setMaxAge(120);
+
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+
+        return $response;
+    }
+
+    public function predictionNavCache(
+        $id,
+        FootballDataInterface $footballData
+    ) : Response {
+
+        $roundsMatches = $footballData->fetchData(
+            'competitions/' . $id . '/matches'
+        );
+
+        $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
+
+        $response = $this->render('prediction/rounds_nav_cache.html.twig', [
+            'competitionId' => $id,
             'rounds' => $rounds
         ]);
 
