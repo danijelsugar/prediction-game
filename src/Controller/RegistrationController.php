@@ -3,18 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use Symfony\Component\Mime\Email;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -22,13 +22,12 @@ class RegistrationController extends AbstractController
      * @Route("/register", name="app_register")
      */
     public function register(
-        Request $request, 
-        UserPasswordHasherInterface $userPasswordHasher, 
-        EntityManagerInterface $entityManager, 
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
         VerifyEmailHelperInterface $verifyEmailHelper,
         MailerInterface $mailer
     ): Response {
-
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -54,7 +53,7 @@ class RegistrationController extends AbstractController
             );
 
             $this->addFlash(
-                'success', 
+                'success',
                 'In order to login you need to verify your mail address. Verification mail has been sent to your email, check your inbox.'
             );
 
@@ -62,7 +61,7 @@ class RegistrationController extends AbstractController
                 ->from($this->getParameter('app.email.from'))
                 ->to($user->getEmail())
                 ->subject('Verify your mail address')
-                ->html('<p>To verify your mail address click <a href=' . $signatureComponents->getSignedUrl() . '>here</a><p>');
+                ->html('<p>To verify your mail address click <a href='.$signatureComponents->getSignedUrl().'>here</a><p>');
 
             $mailer->send($email);
 
@@ -70,7 +69,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView()
+            'registrationForm' => $form->createView(),
         ]);
     }
 
@@ -78,16 +77,15 @@ class RegistrationController extends AbstractController
      * @Route("/verify", name="app_verify_email")
      */
     public function verifyUserEmail(
-        Request $request, 
+        Request $request,
         VerifyEmailHelperInterface $verifyEmailHelper,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager
     ): Response {
-
         if (!$request->query->get('id')) {
             return $this->redirectToRoute('app_home');
         }
-        
+
         $user = $userRepository->find($request->query->get('id'));
         if (!$user) {
             throw $this->createNotFoundException();
@@ -100,12 +98,12 @@ class RegistrationController extends AbstractController
                 $user->getEmail(),
             );
         } catch (VerifyEmailExceptionInterface $e) {
-            $this->addFlash('danger', $e->getReason() . ' Click on resend email button to request verification link.');
+            $this->addFlash('danger', $e->getReason().' Click on resend email button to request verification link.');
 
             return $this->redirectToRoute(
                 'app_verify_resend_email',
                 [
-                    'username' => $user->getUsername()
+                    'username' => $user->getUsername(),
                 ],
             );
         }
@@ -114,29 +112,26 @@ class RegistrationController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Account Verified! You can now log in.');
-        
-        return $this->redirectToRoute('app_login');
 
+        return $this->redirectToRoute('app_login');
     }
 
     /**
      * @Route("verify/resend", name="app_verify_resend_email")
      */
     public function resendVerifyEmail(
-        Request $request, 
-        VerifyEmailHelperInterface $verifyEmailHelper, 
+        Request $request,
+        VerifyEmailHelperInterface $verifyEmailHelper,
         UserRepository $userRepository,
         MailerInterface $mailer
     ): Response {
-
-        if ($request->getMethod() === 'POST') {
-            
+        if ('POST' === $request->getMethod()) {
             $user = $userRepository->findOneBy(['username' => $request->query->get('username')]);
 
             if (!$user) {
                 throw $this->createNotFoundException();
             }
-            
+
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 'app_verify_email',
                 $user->getId(),
@@ -148,7 +143,7 @@ class RegistrationController extends AbstractController
                 ->from($this->getParameter('app.email.from'))
                 ->to($user->getEmail())
                 ->subject('Verify your mail address')
-                ->html('<p>To verify your mail address click <a href=' . $signatureComponents->getSignedUrl() . '>here.</a><p>');
+                ->html('<p>To verify your mail address click <a href='.$signatureComponents->getSignedUrl().'>here.</a><p>');
 
             $mailer->send($email);
 
@@ -158,6 +153,5 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/resend_verify_email.html.twig');
-
     }
 }

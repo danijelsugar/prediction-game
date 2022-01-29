@@ -3,17 +3,17 @@
 namespace App\Controller;
 
 use App\Service\FootballDataInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CompetitionController extends AbstractController
 {
     /**
      * @Route("competitions/{id}/teams", name="app_competition_teams", requirements={"id"="\d{4}"})
      */
-    public function competitionTeams(int $id): Response 
+    public function competitionTeams(int $id): Response
     {
         return $this->render('competition/teams.html.twig', [
             'competitionId' => $id,
@@ -23,7 +23,7 @@ class CompetitionController extends AbstractController
     /**
      * @Route("competitions/{id}/table", name="app_table", requirements={"id"="\d{4}"})
      */
-    public function standings(int $id): Response 
+    public function standings(int $id): Response
     {
         return $this->render('competition/table.html.twig', [
             'competitionId' => $id,
@@ -31,22 +31,22 @@ class CompetitionController extends AbstractController
     }
 
     /**
-     * @Route("competition/{id}/results", name="app_results", requirements={"id"="\d{4}"}) 
+     * @Route("competition/{id}/results", name="app_results", requirements={"id"="\d{4}"})
      */
-    public function results(int $id): Response 
+    public function results(int $id): Response
     {
         return $this->render('competition/result.html.twig', [
-            'competitionId' => $id
+            'competitionId' => $id,
         ]);
     }
 
-     /**
-      * @Route("competitions/{id}/schedule", name="app_schedule", requirements={"id"="\d{4}"})
-      */
-    public function schedule(int $id ): Response 
+    /**
+     * @Route("competitions/{id}/schedule", name="app_schedule", requirements={"id"="\d{4}"})
+     */
+    public function schedule(int $id): Response
     {
         return $this->render('competition/schedule.html.twig', [
-            'competitionId' => $id
+            'competitionId' => $id,
         ]);
     }
 
@@ -55,14 +55,14 @@ class CompetitionController extends AbstractController
         $competitions = $footballDataService->fetchData(
             'competitions',
             [
-                'plan' => 'TIER_ONE'
+                'plan' => 'TIER_ONE',
             ]
         );
-        
+
         $response = $this->render('competition/competitions.html.twig', [
-            'competitions' => $competitions
+            'competitions' => $competitions,
         ]);
-        
+
         $response->setPublic();
         $response->setMaxAge(120);
 
@@ -72,20 +72,19 @@ class CompetitionController extends AbstractController
     }
 
     public function competitionTeamsCache(
-        $id, 
+        $id,
         FootballDataInterface $footballData
-    ) : Response {
-
+    ): Response {
         $competitionTeams = $footballData->fetchData(
-            'competitions/' . $id . '/teams',
+            'competitions/'.$id.'/teams',
         );
 
         $season = $footballData->getSeason($competitionTeams->season);
 
         $response = $this->render('competition/teams_cache.html.twig', [
             'competitionTeams' => $competitionTeams,
-            'competitionName' => $competitionTeams->competition->area->name . ' - ' . $competitionTeams->competition->name,
-            'season' => $season
+            'competitionName' => $competitionTeams->competition->area->name.' - '.$competitionTeams->competition->name,
+            'season' => $season,
         ]);
 
         $response->setPublic();
@@ -97,22 +96,21 @@ class CompetitionController extends AbstractController
     }
 
     public function standingsCache(
-        $id, 
-        Request $request, 
+        $id,
+        Request $request,
         FootballDataInterface $footballData
-    ) : Response {
-
+    ): Response {
         $standingType = $request->query->get('standingType');
         if ($standingType) {
             $competitionStandings = $footballData->fetchData(
-                'competitions/' . $id . '/standings',
+                'competitions/'.$id.'/standings',
                 [
-                    'standingType' => $standingType
+                    'standingType' => $standingType,
                 ]
             );
         } else {
             $competitionStandings = $footballData->fetchData(
-                'competitions/' . $id . '/standings'
+                'competitions/'.$id.'/standings'
             );
         }
 
@@ -120,8 +118,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/table_cache.html.twig', [
             'competitionStandings' => $competitionStandings,
-            'competitionName' => $competitionStandings->competition->area->name . ' - ' . $competitionStandings->competition->name,
-            'season' => $season
+            'competitionName' => $competitionStandings->competition->area->name.' - '.$competitionStandings->competition->name,
+            'season' => $season,
         ]);
 
         $response->setPublic();
@@ -136,11 +134,10 @@ class CompetitionController extends AbstractController
         $id,
         FootballDataInterface $footballData
     ): Response {
-
         $competitionResults = $footballData->fetchData(
-            'competitions/' . $id . '/matches',
+            'competitions/'.$id.'/matches',
             [
-                'status' => 'FINISHED'
+                'status' => 'FINISHED',
             ]
         );
 
@@ -148,8 +145,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/result_cache.html.twig', [
             'competitionResults' => $competitionResults,
-            'competitionName' => $competitionResults->competition->area->name . ' - ' . $competitionResults->competition->name,
-            'season' => $season
+            'competitionName' => $competitionResults->competition->area->name.' - '.$competitionResults->competition->name,
+            'season' => $season,
         ]);
 
         $response->setPublic();
@@ -165,9 +162,9 @@ class CompetitionController extends AbstractController
         FootballDataInterface $footballData
     ): Response {
         $competitionSchedule = $footballData->fetchData(
-            'competitions/' . $id . '/matches',
+            'competitions/'.$id.'/matches',
             [
-                'status' => 'SCHEDULED'
+                'status' => 'SCHEDULED',
             ]
         );
 
@@ -175,8 +172,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/schedule_cache.html.twig', [
             'competitionSchedule' => $competitionSchedule,
-            'competitionName' => $competitionSchedule->competition->area->name . ' - ' . $competitionSchedule->competition->name,
-            'season' => $season
+            'competitionName' => $competitionSchedule->competition->area->name.' - '.$competitionSchedule->competition->name,
+            'season' => $season,
         ]);
 
         $response->setPublic();

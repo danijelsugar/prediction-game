@@ -22,10 +22,10 @@ class FootballDataService implements FootballDataInterface
     {
         $response = $this->client->request(
             'GET',
-            self::URL . $uri . '?' . http_build_query($filters), [
+            self::URL.$uri.'?'.http_build_query($filters), [
                 'headers' => [
-                    'X-Auth-Token' => $this->footballApiToken
-                ]
+                    'X-Auth-Token' => $this->footballApiToken,
+                ],
             ]
         );
 
@@ -44,22 +44,21 @@ class FootballDataService implements FootballDataInterface
                 'matchday' => $match->matchday,
                 'stage' => $match->stage,
                 'group' => $match->group,
-                'date' => $match->utcDate
+                'date' => $match->utcDate,
             ];
         }
 
         $dates = [];
         foreach ($matchdayDates as $date) {
-            if (!is_null($date['matchday']) && is_null($date['group']) && $date['stage'] !== 'REGULAR_SEASON') {
+            if (!is_null($date['matchday']) && is_null($date['group']) && 'REGULAR_SEASON' !== $date['stage']) {
                 $dates[$date['stage']][] = $date['date'];
             } elseif (!is_null($date['matchday'])) {
                 $dates[$date['matchday']][] = $date['date'];
             } else {
                 $dates[$date['stage']][] = $date['date'];
             }
-            
         }
-        
+
         $matchdayFirsLastDates = [];
         foreach ($dates as $matchday => $date) {
             $firstTimestamp = min(array_map('strtotime', $date));
@@ -70,7 +69,7 @@ class FootballDataService implements FootballDataInterface
             $lastTimestamp = max(array_map('strtotime', $date));
             $lastDate = new \DateTime();
             $lastDate->setTimestamp($lastTimestamp);
-            $matchdayFirsLastDates[$matchday] .= ' - ' . $lastDate->format('d.m.Y');
+            $matchdayFirsLastDates[$matchday] .= ' - '.$lastDate->format('d.m.Y');
         }
 
         return $matchdayFirsLastDates;
@@ -86,10 +85,9 @@ class FootballDataService implements FootballDataInterface
         dump($startDate, $endDate);
 
         if ($startDate !== $endDate) {
-            return $startDate . '/' . $endDate;
+            return $startDate.'/'.$endDate;
         }
-        
+
         return $startDate;
-        
     }
 }
