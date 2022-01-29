@@ -3,13 +3,13 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Security\AccountNotVerifiedAuthenticationException;
-use Symfony\Component\Security\Http\Event\LoginFailureEvent;
-use Symfony\Component\Security\Http\Event\CheckPassportEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
+use Symfony\Component\Security\Http\Event\CheckPassportEvent;
+use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 
 class CheckVerifiedUserSubscriber implements EventSubscriberInterface
 {
@@ -34,7 +34,7 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
         if (!$user instanceof User) {
             throw new \UnexpectedValueException(sprintf('Unexpected user type'));
         }
-        
+
         if (!$user->getIsVerified()) {
             throw new AccountNotVerifiedAuthenticationException();
         }
@@ -47,12 +47,12 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
         }
 
         $username = $event->getRequest()->request->get('username');
-        
+
         $response = new RedirectResponse(
             $this->router->generate(
                 'app_verify_resend_email',
                 [
-                    'username' => $username
+                    'username' => $username,
                 ],
             )
         );
@@ -63,7 +63,7 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
     {
         return [
             CheckPassportEvent::class => ['onCheckPassport', -10],
-            LoginFailureEvent::class => 'onLoginFailure'
+            LoginFailureEvent::class => 'onLoginFailure',
         ];
     }
 }

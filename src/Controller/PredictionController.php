@@ -12,27 +12,26 @@ class PredictionController extends AbstractController
     /**
      * @Route("/competitions/{id}/predictions", name="app_prediction", requirements={"id"="\d{4}"})
      */
-    public function predictions(int $id): Response 
+    public function predictions(int $id): Response
     {
         return $this->render('prediction/index.html.twig', [
-            'competitionId' => $id
+            'competitionId' => $id,
         ]);
     }
 
     /**
      * @Route(
-     * "competitions/{id}/predictions/round/{round}", 
-     * name="app_prediction_round", 
+     * "competitions/{id}/predictions/round/{round}",
+     * name="app_prediction_round",
      * requirements={"id"="\d{4}"})
      */
     public function predictionsRound(
-        int $id, 
+        int $id,
         $round
     ): Response {
-
         return $this->render('prediction/prediction_round.html.twig', [
             'competitionId' => $id,
-            'round' => $round
+            'round' => $round,
         ]);
     }
 
@@ -40,9 +39,8 @@ class PredictionController extends AbstractController
         $id,
         FootballDataInterface $footballData
     ): Response {
-
         $roundsMatches = $footballData->fetchData(
-            'competitions/' . $id . '/matches'
+            'competitions/'.$id.'/matches'
         );
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
@@ -53,8 +51,8 @@ class PredictionController extends AbstractController
 
         $response = $this->render('prediction/rounds_cache.html.twig', [
             'competitionId' => $id,
-            'competitionName' => $roundsMatches->competition->area->name . ' - ' . $roundsMatches->competition->name . ' ' . $season,
-            'rounds' => $rounds
+            'competitionName' => $roundsMatches->competition->area->name.' - '.$roundsMatches->competition->name.' '.$season,
+            'rounds' => $rounds,
         ]);
 
         $response->setPublic();
@@ -70,19 +68,18 @@ class PredictionController extends AbstractController
         $round,
         FootballDataInterface $footballData
     ): Response {
-
         if (is_numeric($round)) {
             $roundMatches = $footballData->fetchData(
-                'competitions/' . $id . '/matches',
+                'competitions/'.$id.'/matches',
                 [
-                    'matchday' => $round
+                    'matchday' => $round,
                 ]
             );
         } elseif (is_string($round)) {
             $roundMatches = $footballData->fetchData(
-                'competitions/' . $id . '/matches',
+                'competitions/'.$id.'/matches',
                 [
-                    'stage' => $round
+                    'stage' => $round,
                 ]
             );
         } else {
@@ -90,26 +87,26 @@ class PredictionController extends AbstractController
         }
 
         $roundsMatches = $footballData->fetchData(
-            'competitions/' . $id . '/matches'
+            'competitions/'.$id.'/matches'
         );
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
-        
+
         $rounds = array_keys($rounds);
 
         $currentRoundKey = array_search($round, $rounds);
 
-        if ($currentRoundKey === false) {
+        if (false === $currentRoundKey) {
             throw $this->createNotFoundException('Page not found');
         }
-        
+
         if (!array_key_exists($currentRoundKey, $rounds)) {
             throw $this->createNotFoundException('Page not found');
         }
-        
+
         $prevRound = $currentRoundKey - 1;
         $prevRound = \key_exists($prevRound, $rounds) ? $rounds[$prevRound] : null;
-        
+
         $nextRound = $currentRoundKey + 1;
         $nextRound = \key_exists($nextRound, $rounds) ? $rounds[$nextRound] : null;
 
@@ -117,10 +114,10 @@ class PredictionController extends AbstractController
 
         $response = $this->render('prediction/prediction_round_cache.html.twig', [
             'competitionId' => $id,
-            'competitionName' => $roundMatches->competition->area->name . ' - ' . $roundMatches->competition->name,
+            'competitionName' => $roundMatches->competition->area->name.' - '.$roundMatches->competition->name,
             'round' => $round,
             'roundMatches' => $roundMatches,
-            'rounds' => $rounds
+            'rounds' => $rounds,
         ]);
 
         $response->setPublic();
@@ -134,17 +131,16 @@ class PredictionController extends AbstractController
     public function predictionNavCache(
         $id,
         FootballDataInterface $footballData
-    ) : Response {
-
+    ): Response {
         $roundsMatches = $footballData->fetchData(
-            'competitions/' . $id . '/matches'
+            'competitions/'.$id.'/matches'
         );
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
 
         $response = $this->render('prediction/rounds_nav_cache.html.twig', [
             'competitionId' => $id,
-            'rounds' => $rounds
+            'rounds' => $rounds,
         ]);
 
         $response->setPublic();
