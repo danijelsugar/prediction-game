@@ -194,3 +194,24 @@ a {
 .card-body .table .round {
     background-color: #f2f2f2;
 }
+
+.circle {
+    width: 1em;
+    height: 1em;
+    border-radius: 1em;
+    border: 1px solid black;
+    overflow: hidden;
+    background-color: red;
+    display: inline-block;
+}
+
+.circle-scheduled {
+    background-color: #7CFC00;
+}
+
+.status-half{
+    position: relative;
+    width: 50%;
+    height: 100%;
+    background-color: #7CFC00;
+}
