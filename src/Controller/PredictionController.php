@@ -45,18 +45,27 @@ class PredictionController extends AbstractController
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
 
-        //dd($rounds);
+        $matchdayDates = $footballData->getMatchdayDates($rounds);
+
+        $firstAndLastMatchdayDate = $footballData->getFirstAndLastMatchdayDate($matchdayDates);
+
+        $roundStatus = $footballData->getRoundStatus($rounds);
+
+        $roundInfo = [];
+        foreach ($firstAndLastMatchdayDate as $key => $value) {
+            $roundInfo[$key] = ['date' => $value, 'status' => $roundStatus[$key]];
+        }
 
         $season = $footballData->getSeason($roundsMatches->matches[0]->season);
 
         $response = $this->render('prediction/rounds_cache.html.twig', [
             'competitionId' => $id,
             'competitionName' => $roundsMatches->competition->area->name.' - '.$roundsMatches->competition->name.' '.$season,
-            'rounds' => $rounds,
+            'roundInfo' => $roundInfo,
         ]);
 
         $response->setPublic();
-        $response->setMaxAge(120);
+        $response->setMaxAge(1);
 
         $response->headers->addCacheControlDirective('must-revalidate', true);
 
@@ -112,9 +121,11 @@ class PredictionController extends AbstractController
 
         $rounds = ['prev' => $prevRound, 'next' => $nextRound];
 
+        $season = $footballData->getSeason($roundsMatches->matches[0]->season);
+
         $response = $this->render('prediction/prediction_round_cache.html.twig', [
             'competitionId' => $id,
-            'competitionName' => $roundMatches->competition->area->name.' - '.$roundMatches->competition->name,
+            'competitionName' => $roundMatches->competition->area->name.' - '.$roundMatches->competition->name.' '.$season,
             'round' => $round,
             'roundMatches' => $roundMatches,
             'rounds' => $rounds,
@@ -138,9 +149,20 @@ class PredictionController extends AbstractController
 
         $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
 
+        $matchdayDates = $footballData->getMatchdayDates($rounds);
+
+        $firstAndLastMatchdayDate = $footballData->getFirstAndLastMatchdayDate($matchdayDates);
+
+        $roundStatus = $footballData->getRoundStatus($rounds);
+
+        $roundInfo = [];
+        foreach ($firstAndLastMatchdayDate as $key => $value) {
+            $roundInfo[$key] = ['date' => $value, 'status' => $roundStatus[$key]];
+        }
+
         $response = $this->render('prediction/rounds_nav_cache.html.twig', [
             'competitionId' => $id,
-            'rounds' => $rounds,
+            'roundInfo' => $roundInfo,
         ]);
 
         $response->setPublic();
