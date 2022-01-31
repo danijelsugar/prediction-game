@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\FootballDataInterface;
+use App\Service\FootballDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,7 +37,7 @@ class PredictionController extends AbstractController
 
     public function predictionsCache(
         $id,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $roundsMatches = $footballData->fetchData(
             'competitions/'.$id.'/matches'
@@ -66,7 +66,7 @@ class PredictionController extends AbstractController
     public function predictionsRoundCache(
         $id,
         $round,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         if (is_numeric($round)) {
             $roundMatches = $footballData->fetchData(
@@ -130,7 +130,7 @@ class PredictionController extends AbstractController
 
     public function predictionNavCache(
         $id,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $roundsMatches = $footballData->fetchData(
             'competitions/'.$id.'/matches'

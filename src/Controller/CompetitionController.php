@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\FootballDataInterface;
+use App\Service\FootballDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,9 +50,9 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    public function competitionsCache(FootballDataInterface $footballDataService): Response
+    public function competitionsCache(FootballDataService $footballData): Response
     {
-        $competitions = $footballDataService->fetchData(
+        $competitions = $footballData->fetchData(
             'competitions',
             [
                 'plan' => 'TIER_ONE',
@@ -73,7 +73,7 @@ class CompetitionController extends AbstractController
 
     public function competitionTeamsCache(
         $id,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $competitionTeams = $footballData->fetchData(
             'competitions/'.$id.'/teams',
@@ -98,7 +98,7 @@ class CompetitionController extends AbstractController
     public function standingsCache(
         $id,
         Request $request,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $standingType = $request->query->get('standingType');
         if ($standingType) {
@@ -132,7 +132,7 @@ class CompetitionController extends AbstractController
 
     public function resultsCache(
         $id,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $competitionResults = $footballData->fetchData(
             'competitions/'.$id.'/matches',
@@ -159,7 +159,7 @@ class CompetitionController extends AbstractController
 
     public function scheduleCache(
         $id,
-        FootballDataInterface $footballData
+        FootballDataService $footballData
     ): Response {
         $competitionSchedule = $footballData->fetchData(
             'competitions/'.$id.'/matches',

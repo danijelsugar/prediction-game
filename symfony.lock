@@ -130,8 +130,20 @@
     "phpdocumentor/type-resolver": {
         "version": "1.5.1"
     },
+    "phpstan/extension-installer": {
+        "version": "1.1.0"
+    },
     "phpstan/phpdoc-parser": {
         "version": "1.2.0"
+    },
+    "phpstan/phpstan": {
+        "version": "1.4.3"
+    },
+    "phpstan/phpstan-doctrine": {
+        "version": "1.2.8"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "1.1.2"
     },
     "psr/cache": {
         "version": "1.0.1"

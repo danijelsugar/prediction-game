@@ -47,7 +47,7 @@ class RegistrationController extends AbstractController
             // do anything else you need here, like send an email
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 'app_verify_email',
-                $user->getId(),
+                (string) $user->getId(),
                 $user->getEmail(),
                 ['id' => $user->getId()]
             );
@@ -94,7 +94,7 @@ class RegistrationController extends AbstractController
         try {
             $verifyEmailHelper->validateEmailConfirmation(
                 $request->getUri(),
-                $user->getId(),
+                (string) $user->getId(),
                 $user->getEmail(),
             );
         } catch (VerifyEmailExceptionInterface $e) {
@@ -134,7 +134,7 @@ class RegistrationController extends AbstractController
 
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 'app_verify_email',
-                $user->getId(),
+                (string) $user->getId(),
                 $user->getEmail(),
                 ['id' => $user->getId()]
             );
