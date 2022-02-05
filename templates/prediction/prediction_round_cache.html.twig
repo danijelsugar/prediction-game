@@ -5,11 +5,22 @@
     </div>
     <div class="card-body">
         {% if rounds.prev %}
-            <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.prev}) }}">Previous round</a> 
+            <a class="btn btn-secondary" href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.prev}) }}">
+                {% if rounds.prev matches '/^\\d+$/' %}
+                    Round #{{ rounds.prev }}
+                {% else %}
+                    {{ rounds.prev }}
+                {% endif %}
+            </a> 
         {% endif %}
-
         {% if rounds.next %}
-            <a href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.next}) }}">Next round</a>
+            <a class="btn btn-secondary float-end" href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.next}) }}">
+                {% if rounds.next matches '/^\\d+$/' %}
+                    Round #{{ rounds.next }}
+                {% else %}
+                    {{ rounds.next|replace({'_': " "}) }}
+                {% endif %}
+            </a>
         {% endif %}
         <table class="table">
             <thead>
@@ -24,25 +35,40 @@
                 </tr>
             </thead>
             <tbody>
-                {% if roundMatches.matches is not empty %}
-                    {% for match in roundMatches.matches %}
-                        <tr>
-                            <td>{{ match.utcDate | date('d.m.Y H:i') }} </td>
-                            <td>{{ match.homeTeam.name }}</td>
-                            <td>{{ match.awayTeam.name }}</td>
+                {% if matches is not empty %}
+                    {% for match in matches %}
+                        <tr class="match">
+                            <td class="startTime">{{ match.utcDate | date('d.m.Y H:i') }} </td>
+                            <td>{{ match.homeTeamName }}</td>
+                            <td>{{ match.awayTeamName }}</td>
                             <td>
                                 {% if match.score.winner is not same as null %}
                                     {{ match.score.fullTime.homeTeam }}:{{ match.score.fullTime.awayTeam }}
+                                {% else %}
+                                    <a href="" title="Recent results"><i class="far fa-chart-bar"></i></a>
                                 {% endif %}
                             </td>
                             <td>
-                                {% if match.score.winner is same as null %}
-                                    <input type="text">
-                                {% endif %}
-                                
+                                {% if match.finished is not same as true or match.score.winner is same as null %}
+                                    <div class="input-group">
+                                        <input 
+                                            type="text" 
+                                            class="form-control me-1 prediction-input homeTeamScore" 
+                                            value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
+                                        <input 
+                                            type="text" 
+                                            class="form-control prediction-input awayTeamScore"
+                                            value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
+                                        <input type="hidden" class="matchId" value="{{ match.id }}">
+                                        <input type="hidden" class="competitionId" value="{{ competitionId }}">
+                                    </div>
+                                {% else %}
+                                    {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}
+                                    {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
+                                {% endif %}   
                             </td>
-                            <td></td>
-                            <td></td>
+                            <td>{{ match.userPrediction ? match.userPrediction.points : '' }}</td>
+                            <td><a href="" title="Statistics"><i class="fas fa-search"></i></a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -51,6 +77,11 @@
                     </tr>
                 {% endif %}
             </tbody>
+            <tfoot>
+                <tr>
+                    <td><button id="savePrediction">Save</button></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

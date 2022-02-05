@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -52,6 +54,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $email;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Prediction::class, mappedBy="user")
+     */
+    private $predictions;
+
+    public function __construct()
+    {
+        $this->predictions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -185,6 +197,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Prediction[]
+     */
+    public function getPredictions(): Collection
+    {
+        return $this->predictions;
+    }
+
+    public function addPrediction(Prediction $prediction): self
+    {
+        if (!$this->predictions->contains($prediction)) {
+            $this->predictions[] = $prediction;
+            $prediction->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePrediction(Prediction $prediction): self
+    {
+        if ($this->predictions->removeElement($prediction)) {
+            // set the owning side to null (unless already changed)
+            if ($prediction->getUser() === $this) {
+                $prediction->setUser(null);
+            }
+        }
 
         return $this;
     }
