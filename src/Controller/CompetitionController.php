@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Repository\CompetitionRepository;
 use App\Service\FootballDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CompetitionController extends AbstractController
@@ -50,25 +52,13 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    public function competitionsCache(FootballDataService $footballData): Response
+    public function competitions(CompetitionRepository $competitionRepository): Response
     {
-        $competitions = $footballData->fetchData(
-            'competitions',
-            [
-                'plan' => 'TIER_ONE',
-            ]
-        );
+        $competitions = $competitionRepository->findBy([], ['name' => 'ASC']);
 
-        $response = $this->render('competition/competitions.html.twig', [
+        return $this->render('competition/competitions.html.twig', [
             'competitions' => $competitions,
         ]);
-
-        $response->setPublic();
-        $response->setMaxAge(120);
-
-        $response->headers->addCacheControlDirective('must-revalidate', true);
-
-        return $response;
     }
 
     public function competitionTeamsCache(
@@ -88,9 +78,10 @@ class CompetitionController extends AbstractController
         ]);
 
         $response->setPublic();
-        $response->setMaxAge(120);
+        $response->setMaxAge(600);
 
         $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
 
         return $response;
     }
@@ -123,9 +114,10 @@ class CompetitionController extends AbstractController
         ]);
 
         $response->setPublic();
-        $response->setMaxAge(120);
+        $response->setMaxAge(600);
 
         $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
 
         return $response;
     }
@@ -150,9 +142,10 @@ class CompetitionController extends AbstractController
         ]);
 
         $response->setPublic();
-        $response->setMaxAge(120);
+        $response->setMaxAge(600);
 
         $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
 
         return $response;
     }
@@ -177,9 +170,10 @@ class CompetitionController extends AbstractController
         ]);
 
         $response->setPublic();
-        $response->setMaxAge(120);
+        $response->setMaxAge(600);
 
         $response->headers->addCacheControlDirective('must-revalidate', true);
+        $response->headers->set(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER, 'true');
 
         return $response;
     }
