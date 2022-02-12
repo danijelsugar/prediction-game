@@ -65,7 +65,7 @@
                 <aside class="col-xl-2 col-lg-2 col-md-3 col-sm-6 flex-grow-sm-1 flex-shrink-1 flex-grow-0 sticky-top pb-sm-0 pb-3 sidebar">
                     <div class="p-1 h-100 sticky-top">
                         <h3 class="sidebar-title">Competitions</h3>
-                        {{ render_esi(controller('App\\Controller\\CompetitionController::competitionsCache')) }}
+                        {{ render(controller('App\\Controller\\CompetitionController::competitions')) }}
                     </div>
                 </aside>
                 <main class="col-xl-8 col-lg-8 col-md-6 col-sm-6 overflow-auto h-100 main-content">
