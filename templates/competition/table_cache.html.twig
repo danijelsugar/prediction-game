@@ -2,6 +2,9 @@
     <div class="card-header">
         <h3 class="card-title">{{ competitionName  ~ ' ' ~ season }}</h3>
         <p class="card-text">Table</p>
+        <a class="btn btn-secondary" href="{{ path('app_table', {'id': competitionId}) }}">Total</a>
+        <a class="btn btn-secondary" href="{{ path('app_table', {'id': competitionId, 'standingType': 'HOME'}) }}">Home</a>
+        <a class="btn btn-secondary" href="{{ path('app_table', {'id': competitionId, 'standingType': 'AWAY'}) }}">Away</a>
     </div>
     <div class="card-body">
         <table class="table table-striped">
@@ -23,7 +26,7 @@
                 {% for standings in competitionStandings.standings %}
                     {% if standings.group is not null and standings.table is not empty %}
                         <tr>
-                            <td colspan="10">{{ standings.group }}</td>
+                            <td colspan="10">{{ standings.group|title|replace({'_': ' '}) }}</td>
                         </tr>
                     {% endif %}
                     {% for table in standings.table %} 
