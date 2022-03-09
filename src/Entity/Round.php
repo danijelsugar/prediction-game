@@ -17,18 +17,18 @@ class Round
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="rounds")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $competition;
+    private ?Competition $competition;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="datetime")
@@ -38,12 +38,12 @@ class Round
     /**
      * @ORM\Column(type="datetime")
      */
-    private $dateTo;
+    private \DateTimeInterface $dateTo;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $status;
+    private string $status;
 
     /**
      * @ORM\OneToMany(targetEntity=RoundMatch::class, mappedBy="round")

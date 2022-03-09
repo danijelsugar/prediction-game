@@ -15,73 +15,73 @@ class RoundMatch
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Round::class, inversedBy="roundMatches")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $round;
+    private ?Round $round;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $matchId;
+    private int $matchId;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $stage;
+    private string $stage;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $groupName;
+    private ?string $groupName;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $date;
+    private \DateTimeInterface $date;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $homeTeamName;
+    private string $homeTeamName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $awayTeamName;
+    private string $awayTeamName;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $fullTimeHomeTeamScore;
+    private ?int $fullTimeHomeTeamScore;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $fullTimeAwayTeamScore;
+    private ?int $fullTimeAwayTeamScore;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $extraTimeHomeTeamScore;
+    private ?int $extraTimeHomeTeamScore;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $extraTimeAwayTeamScore;
+    private ?int $extraTimeAwayTeamScore;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $winner;
+    private ?string $winner;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $lastUpdated;
+    private string $lastUpdated;
 
     public function getId(): ?int
     {

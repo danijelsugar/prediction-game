@@ -17,27 +17,27 @@ class Competition
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="integer", unique=true)
      */
-    private $competition;
+    private int $competition;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $area;
+    private string $area;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $lastUpdated;
+    private string $lastUpdated;
 
     /**
      * @ORM\OneToMany(targetEntity=Round::class, mappedBy="competition")

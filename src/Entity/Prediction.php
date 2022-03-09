@@ -15,58 +15,58 @@ class Prediction
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="predictions")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user;
+    private ?User $user;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $matchId;
+    private int $matchId;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $competition;
+    private int $competition;
 
     /**
      * @ORM\Column(type="datetime", nullable="true")
      */
-    private $matchStartTime;
+    private \DateTimeInterface $matchStartTime;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private $homeTeamScore;
+    private int $homeTeamScore;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private $awayTeamScore;
+    private int $awayTeamScore;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $homeTeamPrediction;
+    private int $homeTeamPrediction;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $awayTeamPrediction;
+    private int $awayTeamPrediction;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private $finished = false;
+    private bool $finished = false;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $points;
+    private ?int $points;
 
     public function getId(): ?int
     {
