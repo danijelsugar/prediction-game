@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Prediction;
+use App\Entity\User;
 use App\Repository\CompetitionRepository;
 use App\Repository\PredictionRepository;
 use App\Repository\RoundMatchRepository;
@@ -127,7 +128,7 @@ class PredictionController extends AbstractController
     }
 
     public function predictionNavCache(
-        $id,
+        int $id,
         RoundRepository $roundRepository
     ): Response {
         $rounds = $roundRepository->findCompetitionRounds($id);
@@ -148,6 +149,7 @@ class PredictionController extends AbstractController
     ): Response {
         $data = $request->request->get('data');
         $data = json_decode($data);
+        /** @var User|null */
         $user = $this->getUser();
 
         foreach ($data as $d) {
