@@ -62,7 +62,7 @@ class CompetitionController extends AbstractController
     }
 
     public function competitionTeamsCache(
-        $id,
+        int $id,
         FootballDataService $footballData
     ): Response {
         $competitionTeams = $footballData->fetchData(
@@ -87,7 +87,7 @@ class CompetitionController extends AbstractController
     }
 
     public function standingsCache(
-        $id,
+        int $id,
         Request $request,
         FootballDataService $footballData
     ): Response {
@@ -104,10 +104,11 @@ class CompetitionController extends AbstractController
                 'competitions/'.$id.'/standings'
             );
         }
-
+        //dd($competitionStandings, $standingType, $request);
         $season = $footballData->getSeason($competitionStandings->season);
 
         $response = $this->render('competition/table_cache.html.twig', [
+            'competitionId' => $id,
             'competitionStandings' => $competitionStandings,
             'competitionName' => $competitionStandings->competition->area->name.' - '.$competitionStandings->competition->name,
             'season' => $season,
@@ -123,7 +124,7 @@ class CompetitionController extends AbstractController
     }
 
     public function resultsCache(
-        $id,
+        int $id,
         FootballDataService $footballData
     ): Response {
         $competitionResults = $footballData->fetchData(
@@ -133,10 +134,41 @@ class CompetitionController extends AbstractController
             ]
         );
 
+        $roundMatches = [];
+        foreach ($competitionResults->matches as $match) {
+            if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                $roundMatches[$match->stage][] = [
+                    'utcDate' => $match->utcDate,
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'group' => $match->group,
+                    'homeTeamName' => $match->homeTeam->name,
+                    'awayTeamName' => $match->awayTeam->name,
+                    'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
+                    'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
+                    'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
+                    'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                ];
+            } else {
+                $roundMatches['Round '.$match->matchday][] = [
+                    'utcDate' => $match->utcDate,
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'group' => $match->group,
+                    'homeTeamName' => $match->homeTeam->name,
+                    'awayTeamName' => $match->awayTeam->name,
+                    'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
+                    'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
+                    'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
+                    'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                ];
+            }
+        }
+
         $season = $footballData->getSeason($competitionResults->matches[0]->season);
 
         $response = $this->render('competition/result_cache.html.twig', [
-            'competitionResults' => $competitionResults,
+            'roundMatches' => $roundMatches,
             'competitionName' => $competitionResults->competition->area->name.' - '.$competitionResults->competition->name,
             'season' => $season,
         ]);
@@ -151,7 +183,7 @@ class CompetitionController extends AbstractController
     }
 
     public function scheduleCache(
-        $id,
+        int $id,
         FootballDataService $footballData
     ): Response {
         $competitionSchedule = $footballData->fetchData(
@@ -161,10 +193,41 @@ class CompetitionController extends AbstractController
             ]
         );
 
+        $roundMatches = [];
+        foreach ($competitionSchedule->matches as $match) {
+            if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                $roundMatches[$match->stage][] = [
+                    'utcDate' => $match->utcDate,
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'group' => $match->group,
+                    'homeTeamName' => $match->homeTeam->name,
+                    'awayTeamName' => $match->awayTeam->name,
+                    'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
+                    'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
+                    'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
+                    'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                ];
+            } else {
+                $roundMatches['Round '.$match->matchday][] = [
+                    'utcDate' => $match->utcDate,
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'group' => $match->group,
+                    'homeTeamName' => $match->homeTeam->name,
+                    'awayTeamName' => $match->awayTeam->name,
+                    'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
+                    'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
+                    'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
+                    'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                ];
+            }
+        }
+        dd($competitionSchedule);
         $season = $footballData->getSeason($competitionSchedule->matches[0]->season);
 
         $response = $this->render('competition/schedule_cache.html.twig', [
-            'competitionSchedule' => $competitionSchedule,
+            'roundMatches' => $roundMatches,
             'competitionName' => $competitionSchedule->competition->area->name.' - '.$competitionSchedule->competition->name,
             'season' => $season,
         ]);
