@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Round;
 use App\Repository\CompetitionRepository;
+use App\Repository\RoundRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,21 +20,25 @@ class CompetitionRoundCommand extends Command
 
     private FootballDataService $footballData;
 
+    private RoundRepository $roundRepository;
+
     protected static $defaultName = 'app:get:competition:round';
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CompetitionRepository $competitionRepository,
-        FootballDataService $footballData
+        FootballDataService $footballData,
+        RoundRepository $roundRepository
     ) {
         $this->entityManager = $entityManager;
         $this->competitionRepository = $competitionRepository;
         $this->footballData = $footballData;
+        $this->roundRepository = $roundRepository;
 
         parent::__construct();
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Get all rounds for each competition');
     }
@@ -45,13 +50,13 @@ class CompetitionRoundCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         if ($competitionsCount <= 0) {
-            $io->success(sprintf('No competitions found.'));
+            $io->success('No competitions found.');
 
             return Command::SUCCESS;
         }
 
         $timesToRepeat = ceil($competitionsCount / 6);
-        //dd($timesToRepeat);
+
         $offset = 0;
         for ($i = 0; $i < $timesToRepeat; ++$i) {
             $competitions = $this->competitionRepository->findBy(
@@ -60,8 +65,6 @@ class CompetitionRoundCommand extends Command
                 6,
                 $offset
             );
-
-            //dump($competitions);
 
             foreach ($competitions as $competition) {
                 $roundsMatches = $this->footballData->fetchData(
@@ -77,19 +80,30 @@ class CompetitionRoundCommand extends Command
                 $roundStatus = $this->footballData->getRoundStatus($rounds);
 
                 foreach ($firstAndLastDate as $key => $value) {
-                    $round = new Round();
-                    $round
-                        ->setCompetition($competition)
-                        ->setName($key)
-                        ->setDateFrom($value['dateFrom'])
-                        ->setDateTo($value['dateTo'])
-                        ->setStatus($roundStatus[$key]);
-                    $this->entityManager->persist($round);
+                    $round = $this->roundRepository->findOneBy(
+                        [
+                            'competition' => $competition,
+                            'name' => $key,
+                        ]
+                    );
+
+                    if (!$round) {
+                        $round = new Round();
+                        $round
+                            ->setCompetition($competition)
+                            ->setName($key)
+                            ->setDateFrom($value['dateFrom'])
+                            ->setDateTo($value['dateTo'])
+                            ->setStatus($roundStatus[$key]);
+                        $this->entityManager->persist($round);
+                    } else {
+                        $round->setDateFrom($value['dateFrom'])
+                            ->setDateTo($value['dateTo'])
+                            ->setStatus($roundStatus[$key]);
+                    }
                 }
 
                 $this->entityManager->flush();
-
-                //dd($roundStatus, $firstAndLastDate);
             }
 
             $offset += 6;
@@ -97,7 +111,7 @@ class CompetitionRoundCommand extends Command
             sleep(60);
         }
 
-        $io->success(sprintf('Finished inserting competition rounds.'));
+        $io->success('Finished inserting competition rounds.');
 
         return Command::SUCCESS;
     }

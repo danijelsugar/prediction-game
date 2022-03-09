@@ -37,7 +37,7 @@ class CheckPredictionCommand extends Command
         parent::__construct();
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Checks the outcome of predictions and calculates the points earned.');
     }

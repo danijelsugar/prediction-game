@@ -33,7 +33,7 @@ class CompetitionCommand extends Command
         parent::__construct();
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Get all competitions and inserts them if they dont exist');
     }
