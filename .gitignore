@@ -13,3 +13,5 @@
 /.php-cs-fixer.php
 /.php_cs.cache
 ###< friendsofphp/php-cs-fixer ###
+
+/logs/
