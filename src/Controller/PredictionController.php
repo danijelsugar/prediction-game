@@ -147,37 +147,41 @@ class PredictionController extends AbstractController
         EntityManagerInterface $entityManager,
         PredictionRepository $predictionRepository
     ): Response {
-        $data = $request->request->get('data');
-        $data = json_decode($data);
+        $predictionData = $request->request->get('data');
+        $predictionData = json_decode($predictionData);
         /** @var User|null */
         $user = $this->getUser();
 
-        foreach ($data as $d) {
+        if (!$predictionData || !$user) {
+            return $this->json(['status' => 400, 'message' => 'No predictions entered.'], 200);
+        }
+
+        foreach ($predictionData as $data) {
             $previousPrediction = $predictionRepository->findOneBy([
                 'user' => $user,
-                'matchId' => $d->match,
+                'matchId' => $data->match,
             ]);
 
             if (!$previousPrediction) {
-                $matchStartTime = new \DateTime($d->startTime);
+                $matchStartTime = new \DateTime($data->startTime);
 
                 $prediction = new Prediction();
                 $prediction
                     ->setUser($user)
-                    ->setMatchId($d->match)
-                    ->setCompetition($d->competition)
+                    ->setMatchId($data->match)
+                    ->setCompetition($data->competition)
                     ->setMatchStartTime($matchStartTime)
-                    ->setHomeTeamPrediction($d->homeTeam)
-                    ->setAwayTeamPrediction($d->awayTeam);
+                    ->setHomeTeamPrediction($data->homeTeam)
+                    ->setAwayTeamPrediction($data->awayTeam);
                 $entityManager->persist($prediction);
             } else {
-                $previousPrediction->setHomeTeamPrediction($d->homeTeam);
-                $previousPrediction->setAwayTeamPrediction($d->awayTeam);
+                $previousPrediction->setHomeTeamPrediction($data->homeTeam);
+                $previousPrediction->setAwayTeamPrediction($data->awayTeam);
                 $entityManager->persist($previousPrediction);
             }
         }
         $entityManager->flush();
 
-        return $this->json(['result' => 'success']);
+        return $this->json(['status' => 200, 'message' => 'Predictions entered successfully'], 200);
     }
 }
