@@ -6,10 +6,12 @@ use App\Repository\PredictionRepository;
 use App\Service\FootballDataService;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CheckPredictionCommand extends Command
 {
@@ -21,18 +23,22 @@ class CheckPredictionCommand extends Command
 
     private PointService $pointService;
 
+    private LoggerInterface $logger;
+
     protected static $defaultName = 'app:check:prediction';
 
     public function __construct(
         PredictionRepository $predictionRepository,
         FootballDataService $footballData,
         EntityManagerInterface $entityManager,
-        PointService $pointService
+        PointService $pointService,
+        LoggerInterface $logger
     ) {
         $this->predictionRepository = $predictionRepository;
         $this->footballData = $footballData;
         $this->entityManager = $entityManager;
         $this->pointService = $pointService;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -61,107 +67,32 @@ class CheckPredictionCommand extends Command
             $startDates[] = $prediction->getMatchStartTime();
         }
 
-        //$minDate = !empty($startDates) ? min($startDates)->format('Y-m-d') : '';
+        $dateFrom = !empty($startDates) ? min($startDates)->format('Y-m-d') : '';
 
-        $matchess = $this->footballData->fetchData(
-            'matches',
-            [
-                'competitions' => implode(',', $competitions),
-            ]
-        );
+        $dateTo = (new \DateTime())->format('Y-m-d');
 
-        $matches = [
-            [
-                'id' => 327126,
-                'competition' => 2021,
-                'homeTeamScore' => 2,
-                'awayTeamScore' => 0,
-            ],
-            [
-                'id' => 327128,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 2,
-            ],
-            [
-                'id' => 327130,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 1,
-            ],
-            [
-                'id' => 327117,
-                'competition' => 2021,
-                'homeTeamScore' => 2,
-                'awayTeamScore' => 0,
-            ],
-            [
-                'id' => 327113,
-                'competition' => 2021,
-                'homeTeamScore' => 3,
-                'awayTeamScore' => 1,
-            ],
-            [
-                'id' => 327119,
-                'competition' => 2021,
-                'homeTeamScore' => 0,
-                'awayTeamScore' => 1,
-            ],
-            [
-                'id' => 327120,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 2,
-            ],
-            [
-                'id' => 327122,
-                'competition' => 2021,
-                'homeTeamScore' => 0,
-                'awayTeamScore' => 0,
-            ],
-            [
-                'id' => 327115,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 0,
-            ],
-            [
-                'id' => 327114,
-                'competition' => 2021,
-                'homeTeamScore' => 2,
-                'awayTeamScore' => 4,
-            ],
-            [
-                'id' => 327116,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 0,
-            ],
-            [
-                'id' => 327121,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 2,
-            ],
-            [
-                'id' => 327118,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 1,
-            ],
-            [
-                'id' => 327131,
-                'competition' => 2021,
-                'homeTeamScore' => 1,
-                'awayTeamScore' => 1,
-            ],
-        ];
+        try {
+            $matches = $this->footballData->fetchData(
+                'matches',
+                [
+                    'competitions' => implode(',', $competitions),
+                    'dateFrom' => $dateFrom,
+                    'dateTo' => $dateTo,
+                    'status' => 'FINISHED',
+                ]
+            );
+        } catch (ClientException $e) {
+            $io->info($e->getMessage());
+            $this->logger->info($this->getDefaultName().': '.$e->getMessage());
 
-        foreach ($matches as $match) {
+            return Command::FAILURE;
+        }
+
+        foreach ($matches->matches as $match) {
             $prediction = $this->predictionRepository->findOneBy(
                 [
-                    'matchId' => $match['id'],
-                    'competition' => $match['competition'],
+                    'matchId' => $match->id,
+                    'competition' => $match->competition->id,
                 ]
             );
 

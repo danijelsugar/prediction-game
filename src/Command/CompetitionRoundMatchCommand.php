@@ -7,11 +7,13 @@ use App\Repository\RoundMatchRepository;
 use App\Repository\RoundRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionRoundMatchCommand extends Command
 {
@@ -23,18 +25,22 @@ class CompetitionRoundMatchCommand extends Command
 
     private RoundMatchRepository $roundMatchRepository;
 
+    private LoggerInterface $logger;
+
     protected static $defaultName = 'app:get:competition:round:match';
 
     public function __construct(
         RoundRepository $roundRepository,
         FootballDataService $footballData,
         EntityManagerInterface $entityManager,
-        RoundMatchRepository $roundMatchRepository
+        RoundMatchRepository $roundMatchRepository,
+        LoggerInterface $logger
     ) {
         $this->roundRepository = $roundRepository;
         $this->footballData = $footballData;
         $this->entityManager = $entityManager;
         $this->roundMatchRepository = $roundMatchRepository;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -69,19 +75,29 @@ class CompetitionRoundMatchCommand extends Command
 
             foreach ($rounds as $round) {
                 if (is_numeric($round->getName())) {
-                    $roundMatches = $this->footballData->fetchData(
-                        'competitions/'.$round->getCompetition()->getCompetition().'/matches',
-                        [
-                            'matchday' => $round->getName(),
-                        ]
-                    );
+                    try {
+                        $roundMatches = $this->footballData->fetchData(
+                            'competitionss/'.$round->getCompetition()->getCompetition().'/matches',
+                            [
+                                'matchday' => $round->getName(),
+                            ]
+                        );
+                    } catch (ClientException $e) {
+                        $this->logger->info(sprintf('Cannot get matches for round %s of %s', $round->getName(), $round->getCompetition()->getName()));
+                        continue;
+                    }
                 } elseif (is_string($round->getName())) {
-                    $roundMatches = $this->footballData->fetchData(
-                        'competitions/'.$round->getCompetition()->getCompetition().'/matches',
-                        [
-                            'stage' => $round->getName(),
-                        ]
-                    );
+                    try {
+                        $roundMatches = $this->footballData->fetchData(
+                            'competitionss/'.$round->getCompetition()->getCompetition().'/matches',
+                            [
+                                'stage' => $round->getName(),
+                            ]
+                        );
+                    } catch (ClientException $e) {
+                        $this->logger->info(sprintf('Cannot get matches for round %s of %s', $round->getName(), $round->getCompetition()->getName()));
+                        continue;
+                    }
                 } else {
                     throw new LogicException();
                 }

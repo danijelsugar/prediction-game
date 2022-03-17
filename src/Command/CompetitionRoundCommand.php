@@ -7,10 +7,12 @@ use App\Repository\CompetitionRepository;
 use App\Repository\RoundRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionRoundCommand extends Command
 {
@@ -22,18 +24,22 @@ class CompetitionRoundCommand extends Command
 
     private RoundRepository $roundRepository;
 
+    private LoggerInterface $logger;
+
     protected static $defaultName = 'app:get:competition:round';
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CompetitionRepository $competitionRepository,
         FootballDataService $footballData,
-        RoundRepository $roundRepository
+        RoundRepository $roundRepository,
+        LoggerInterface $logger
     ) {
         $this->entityManager = $entityManager;
         $this->competitionRepository = $competitionRepository;
         $this->footballData = $footballData;
         $this->roundRepository = $roundRepository;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -67,9 +73,14 @@ class CompetitionRoundCommand extends Command
             );
 
             foreach ($competitions as $competition) {
-                $roundsMatches = $this->footballData->fetchData(
-                    'competitions/'.$competition->getCompetition().'/matches'
-                );
+                try {
+                    $roundsMatches = $this->footballData->fetchData(
+                        'competitions/'.$competition->getCompetition().'/matches'
+                    );
+                } catch (ClientException $e) {
+                    $this->logger->info(sprintf('Cannot get rounds for competition: %s', $competition->getName()));
+                    continue;
+                }
 
                 $rounds = $this->footballData->getPredictionRoundsInfo($roundsMatches->matches);
 
@@ -97,9 +108,11 @@ class CompetitionRoundCommand extends Command
                             ->setStatus($roundStatus[$key]);
                         $this->entityManager->persist($round);
                     } else {
-                        $round->setDateFrom($value['dateFrom'])
-                            ->setDateTo($value['dateTo'])
-                            ->setStatus($roundStatus[$key]);
+                        if ($value['dateFrom']->format('Y-m-d H:i:s') !== $round->getDateFrom()->format('Y-m-d H:i:s') || $value['dateTo']->format('Y-m-d H:i:s') !== $round->getDateTo()->format('Y-m-d H:i:s') || $roundStatus[$key] !== $round->getStatus()) {
+                            $round->setDateFrom($value['dateFrom'])
+                                ->setDateTo($value['dateTo'])
+                                ->setStatus($roundStatus[$key]);
+                        }
                     }
                 }
 
@@ -111,7 +124,7 @@ class CompetitionRoundCommand extends Command
             sleep(60);
         }
 
-        $io->success('Finished inserting competition rounds.');
+        $io->success('Finished inserting/updateing competition rounds.');
 
         return Command::SUCCESS;
     }

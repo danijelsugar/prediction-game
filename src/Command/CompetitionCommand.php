@@ -6,10 +6,12 @@ use App\Entity\Competition;
 use App\Repository\CompetitionRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionCommand extends Command
 {
@@ -19,16 +21,20 @@ class CompetitionCommand extends Command
 
     private CompetitionRepository $competitionRepository;
 
+    private LoggerInterface $logger;
+
     protected static $defaultName = 'app:get:competition';
 
     public function __construct(
         EntityManagerInterface $entityManager,
         FootballDataService $footballData,
-        CompetitionRepository $competitionRepository
+        CompetitionRepository $competitionRepository,
+        LoggerInterface $logger
     ) {
         $this->entityManager = $entityManager;
         $this->footballData = $footballData;
         $this->competitionRepository = $competitionRepository;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -42,13 +48,21 @@ class CompetitionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $apiCompetitions = $this->footballData->fetchData(
-            'competitions',
-            [
-                'plan' => 'TIER_ONE',
-            ]
-        );
+        try {
+            $apiCompetitions = $this->footballData->fetchData(
+                'competitions',
+                [
+                    'plan' => 'TIER_ONE',
+                ]
+            );
+        } catch (ClientException $e) {
+            $io->info($e->getMessage());
+            $this->logger->info($this->getDefaultName().': '.$e->getMessage());
 
+            return Command::FAILURE;
+        }
+
+        $inserted = 0;
         foreach ($apiCompetitions->competitions as $apiCompetition) {
             $competition = $this->competitionRepository->findOneBy(
                 [
@@ -63,6 +77,12 @@ class CompetitionCommand extends Command
                     ->setName($apiCompetition->name)
                     ->setArea($apiCompetition->area->name)
                     ->setLastUpdated($apiCompetition->lastUpdated);
+                if (null !== $apiCompetition->emblemUrl) {
+                    $competition->setEmblemUrl($apiCompetition->emblemUrl);
+                } else {
+                    $competition->setEmblemUrl($apiCompetition->area->ensignUrl);
+                }
+                ++$inserted;
                 $this->entityManager->persist($competition);
             } else {
                 if ($apiCompetition->lastUpdated !== $competition->getLastUpdated()) {
@@ -70,13 +90,19 @@ class CompetitionCommand extends Command
                         ->setName($apiCompetition->name)
                         ->setArea($apiCompetition->area->name)
                         ->setLastUpdated($apiCompetition->lastUpdated);
+                    if (null !== $apiCompetition->emblemUrl) {
+                        $competition->setEmblemUrl($apiCompetition->emblemUrl);
+                    } else {
+                        $competition->setEmblemUrl($apiCompetition->area->ensignUrl);
+                    }
+                    ++$inserted;
                 }
             }
         }
 
         $this->entityManager->flush();
 
-        $io->success(sprintf('Finished inserting competitions.'));
+        $io->success(sprintf('Finished inserting/updateing %s competitions.', $inserted));
 
         return Command::SUCCESS;
     }
