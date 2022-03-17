@@ -18,12 +18,11 @@ class FootballDataService implements FootballDataInterface
         $this->footballApiToken = $footballApiToken;
     }
 
-    public function fetchData(string $uri, array $filters = []): object
+    public function fetchData(string $uri, array $filters = [])
     {
-        //dd(self::URL.$uri.'?'.http_build_query($filters));
         $response = $this->client->request(
             'GET',
-            self::URL.$uri.'?'.http_build_query($filters), [
+            rtrim(self::URL.$uri.'?'.http_build_query($filters), '?'), [
                 'headers' => [
                     'X-Auth-Token' => $this->footballApiToken,
                 ],
