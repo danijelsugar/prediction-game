@@ -36,17 +36,17 @@ class Prediction
     /**
      * @ORM\Column(type="datetime", nullable="true")
      */
-    private \DateTimeInterface $matchStartTime;
+    private ?\DateTimeInterface $matchStartTime;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private int $homeTeamScore;
+    private ?int $homeTeamScore;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private int $awayTeamScore;
+    private ?int $awayTeamScore;
 
     /**
      * @ORM\Column(type="integer")
