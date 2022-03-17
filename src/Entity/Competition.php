@@ -35,6 +35,11 @@ class Competition
     private string $area;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private ?string $emblemUrl;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private string $lastUpdated;
@@ -86,6 +91,18 @@ class Competition
     public function setArea(string $area): self
     {
         $this->area = $area;
+
+        return $this;
+    }
+
+    public function getEmblemUrl(): ?string
+    {
+        return $this->emblemUrl;
+    }
+
+    public function setEmblemUrl(?string $emblemUrl): self
+    {
+        $this->emblemUrl = $emblemUrl;
 
         return $this;
     }
