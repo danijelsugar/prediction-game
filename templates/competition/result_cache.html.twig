@@ -6,26 +6,32 @@
     <div class="card-body">
         <table class="table table-borderless">
             <tbody>
-                {% for round, matches in roundMatches %}
+                {% if roundMatches is empty %}
                     <tr>
-                        <td class="round" colspan="4">{{ round|title|replace({'_': ' '}) }}</td>
+                        <td>Currently no results for this competition.</td>
                     </tr>
-                    {% for match in matches %}
+                {% else %}
+                    {% for round, matches in roundMatches %}
                         <tr>
-                            {% if match.stage is same as 'GROUP_STAGE' %}
-                                <td>{{ match.group|title|replace({'_': ' '}) }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                            <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
-                            <td>{{ match.homeTeamName ~ ' - ' ~ match.awayTeamName }}</td>
-                            <td>
-                                {{ match.homeTeamFullTimeScore ~ ':' ~ match.awayTeamFullTimeScore }}
-                                ({{ match.homeTeamHalfTimeScore ~ ':' ~ match.awayTeamFullTimeScore }})
-                            </td>
+                            <td class="round" colspan="4">{{ round|title|replace({'_': ' '}) }}</td>
                         </tr>
+                        {% for match in matches %}
+                            <tr>
+                                {% if match.stage is same as 'GROUP_STAGE' %}
+                                    <td>{{ match.group|title|replace({'_': ' '}) }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
+                                <td>{{ match.homeTeamName ~ ' - ' ~ match.awayTeamName }}</td>
+                                <td>
+                                    {{ match.homeTeamFullTimeScore ~ ':' ~ match.awayTeamFullTimeScore }}
+                                    ({{ match.homeTeamHalfTimeScore ~ ':' ~ match.awayTeamFullTimeScore }})
+                                </td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>

@@ -12,39 +12,32 @@
                 </tr>
             </thead>
             <tbody>
-                {# {% set currentMatchday = false %}
-                {% for match in competitionSchedule.matches %}
-                    {% if currentMatchday is not same as match.matchday %}
-                        {% set currentMatchday = match.matchday %}
-                        <tr>
-                            <td class="round" colspan="2">Round {{ currentMatchday }}</td>
-                        </tr>
-                    {% endif %}
+                {% if roundMatches is empty %}
                     <tr>
-                        <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
-                        <td>{{ match.homeTeam.name ~ ' - ' ~  match.awayTeam.name}}</td>
+                        <td>Currently no scheduled matches.</td>
                     </tr>
-                {% endfor %} #}
-                {% for round, matches in roundMatches %}
-                    <tr>
-                        <td class="round" colspan="4">{{ round|title|replace({'_': ' '}) }}</td>
-                    </tr>
-                    {% for match in matches %}
+                {% else %}
+                    {% for round, matches in roundMatches %}
                         <tr>
-                            {% if match.stage is same as 'GROUP_STAGE' %}
-                                <td>{{ match.group|title|replace({'_': ' '}) }}</td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                            <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
-                            <td>{{ match.homeTeamName ~ ' - ' ~ match.awayTeamName }}</td>
-                            <td>
-                                {{ match.homeTeamFullTimeScore ~ ':' ~ match.awayTeamFullTimeScore }}
-                                ({{ match.homeTeamHalfTimeScore ~ ':' ~ match.awayTeamFullTimeScore }})
-                            </td>
+                            <td class="round" colspan="4">{{ round|title|replace({'_': ' '}) }}</td>
                         </tr>
+                        {% for match in matches %}
+                            <tr>
+                                {% if match.stage is same as 'GROUP_STAGE' %}
+                                    <td>{{ match.group|title|replace({'_': ' '}) }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
+                                <td>{{ match.homeTeamName ~ ' - ' ~ match.awayTeamName }}</td>
+                                <td>
+                                    {{ match.homeTeamFullTimeScore ~ ':' ~ match.awayTeamFullTimeScore }}
+                                    ({{ match.homeTeamHalfTimeScore ~ ':' ~ match.awayTeamFullTimeScore }})
+                                </td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>

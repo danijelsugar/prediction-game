@@ -16,8 +16,8 @@
             <ul class="list-group list-group-flush">
                 {% for round in rounds %}
                     <li class="list-group-item">
-                        <a class="card-link prediction-rounds" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round.name}) }}">
-                            <span>
+                        <a class="card-link row" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round.name}) }}">
+                            <span class="col-4 text-start">
                                 <span class="circle circle-{{ round.status|lower }}"><span class="status-{{ round.status|lower }}"></span></span>
                                 {% if round.name matches '/^\\d+$/' %}
                                     {{ 'Round #' ~ round.name}}
@@ -25,8 +25,8 @@
                                     {{ round.name|replace({'_': " "})|lower|capitalize }}
                                 {% endif %}
                             </span>
-                            <span>{{ round.dateFrom|date('d.m') ~ ' - ' ~ round.dateTo|date('d.m') }}</span>
-                            <span>{{ round.matches }}</span>
+                            <span class="col-4 text-center">{{ round.dateFrom|date('d.m') ~ ' - ' ~ round.dateTo|date('d.m') }}</span>
+                            <span class="col-4 text-end">{{ round.matches }}</span>
                         </a>
                     </li>
                 {% endfor %}

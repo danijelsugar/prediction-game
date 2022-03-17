@@ -23,31 +23,37 @@
                 </tr>
             </thead>
             <tbody>
-                {% for standings in competitionStandings.standings %}
-                    {% if standings.group is not null and standings.table is not empty %}
-                        <tr>
-                            <td colspan="10">{{ standings.group|title|replace({'_': ' '}) }}</td>
-                        </tr>
-                    {% endif %}
-                    {% for table in standings.table %} 
-                        <tr>
-                            <td>{{ table.position }}</td>
-                            <td>
-                                {% if table.team.crestUrl is not same as null and table.team.crestUrl is not empty %}
-                                <img src="{{ table.team.crestUrl }}" alt="{{ table.team.name }} logo" style="width: 25px">
-                                {% endif %}
-                            </td>
-                            <td>{{ table.team.name }}</td>
-                            <td>{{ table.points }}</td>
-                            <td>{{ table.playedGames }}</td>
-                            <td>{{ table.won }}</td>
-                            <td>{{ table.draw }}</td>
-                            <td>{{ table.lost }}</td>
-                            <td>{{ table.goalsFor ~ ':' ~ table.goalsAgainst }}</td>
-                            <td>{{ table.goalDifference }}</td>
-                        </tr>
+                {% if competitionStandings is empty %}
+                    <tr>
+                        <td colspan="10">Currently no standings available.</td>
+                    </tr>
+                {% else %}
+                    {% for standings in competitionStandings.standings %}
+                        {% if standings.group is not null and standings.table is not empty %}
+                            <tr>
+                                <td colspan="10">{{ standings.group|title|replace({'_': ' '}) }}</td>
+                            </tr>
+                        {% endif %}
+                        {% for table in standings.table %} 
+                            <tr>
+                                <td>{{ table.position }}</td>
+                                <td>
+                                    {% if table.team.crestUrl is not same as null and table.team.crestUrl is not empty %}
+                                    <img src="{{ table.team.crestUrl }}" alt="{{ table.team.name }} logo" style="width: 25px">
+                                    {% endif %}
+                                </td>
+                                <td>{{ table.team.name }}</td>
+                                <td>{{ table.points }}</td>
+                                <td>{{ table.playedGames }}</td>
+                                <td>{{ table.won }}</td>
+                                <td>{{ table.draw }}</td>
+                                <td>{{ table.lost }}</td>
+                                <td>{{ table.goalsFor ~ ':' ~ table.goalsAgainst }}</td>
+                                <td>{{ table.goalDifference }}</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>

@@ -58,21 +58,19 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if match.finished is not same as true or match.winner is same as null %}
-                                        {% if is_granted('ROLE_USER') %}
-                                            <div class="input-group">
-                                                <input 
-                                                    type="text" 
-                                                    class="form-control me-1 prediction-input homeTeamScore" 
-                                                    value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
-                                                <input 
-                                                    type="text" 
-                                                    class="form-control prediction-input awayTeamScore"
-                                                    value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
-                                                <input type="hidden" class="matchId" value="{{ match.id }}">
-                                                <input type="hidden" class="competitionId" value="{{ competitionId }}">
-                                            </div>
-                                        {% endif %}
+                                    {% if match.finished is not same as true and is_granted('ROLE_USER') %}
+                                        <div class="input-group">
+                                            <input 
+                                                type="text" 
+                                                class="form-control me-1 prediction-input homeTeamScore" 
+                                                value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
+                                            <input 
+                                                type="text" 
+                                                class="form-control prediction-input awayTeamScore"
+                                                value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
+                                            <input type="hidden" class="matchId" value="{{ match.id }}">
+                                            <input type="hidden" class="competitionId" value="{{ competitionId }}">
+                                        </div>
                                     {% else %}
                                         {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
                                         {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
@@ -90,13 +88,79 @@
                 </tbody>
                 <tfoot>
                     <tr>
+                        <td class="text-center" colspan="4">
+                            <span class="btn btn-danger">6 Points</span>
+                            <span class="btn btn-warning">4 Points</span>
+                            <span class="btn btn-success">3 Points</span>
+                            <span class="btn btn-secondary">1 Point</span>
+                            <span class="btn btn-dark">0 Points</span>
+                        </td>
                         {% if is_granted('ROLE_USER') %}
                             <td><button id="savePrediction">Save</button></td>
                         {% endif %}
+                        <td id="prediction-response">
+                            <span id="response-s">
+                                <i class="fas fa-check-circle fa-2x text-success visuallyhidden"></i>
+                            </span>
+                            <span id="response-w">
+                                <i class="fas fa-times-circle fa-2x text-danger visuallyhidden"></i>
+                            </span>
+                        </td>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        $('#savePrediction').on('click', function (e) {
+            let data = [];
+            let match = $('.matchId');
+            match.each(function() {
+                let homeTeamScore = $(this).closest('tr.match').find('.homeTeamScore').val();
+                let awayTeamScore = $(this).closest('tr.match').find('.awayTeamScore').val();
+                let startTime = $(this).closest('tr.match').find('td.startTime').text();
+                let competition = $(this).closest('tr.match').find('.competitionId').val();
+                let matchId = $(this).val();
+
+                if ('' !== homeTeamScore && '' !== awayTeamScore) {
+                    //console.log(homeTeamScore, awayTeamScore, matchId);
+                    data.push({'match': matchId, 'competition': competition, 'startTime': startTime, 'homeTeam': homeTeamScore, 'awayTeam': awayTeamScore});
+                }
+            })
+
+            $.ajax({
+                url:'https://prediction-game.local.com/predictions/save',
+                type: 'POST',
+                dataType: "json",
+                data: {data: JSON.stringify(data)},
+                success: function (response) {
+                    if (response.status === 200) {
+                        if ($('#prediction-response #response-s i').hasClass('visuallyhidden')) {
+                            $('#prediction-response #response-s i').removeClass('visuallyhidden');
+                        }
+
+                        setTimeout(function () {
+                            if (!$('#prediction-response #response-s i').hasClass('visuallyhidden')) {
+                                $('#prediction-response #response-s i').addClass('visuallyhidden');
+                            }
+                        }, 5000)
+                    } else {
+                        if ($('#prediction-response #response-w i').hasClass('visuallyhidden')) {
+                            $('#prediction-response #response-w i').removeClass('visuallyhidden');
+                        }
+
+                        setTimeout(function () {
+                            if (!$('#prediction-response #response-w i').hasClass('visuallyhidden')) {
+                                $('#prediction-response #response-w i').addClass('visuallyhidden');
+                            }
+                        }, 5000)
+                    }
+                }
+            });
+        })
+    </script>
     
 {% endblock %}
