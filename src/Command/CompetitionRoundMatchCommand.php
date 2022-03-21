@@ -77,7 +77,7 @@ class CompetitionRoundMatchCommand extends Command
                 if (is_numeric($round->getName())) {
                     try {
                         $roundMatches = $this->footballData->fetchData(
-                            'competitionss/'.$round->getCompetition()->getCompetition().'/matches',
+                            'competitions/'.$round->getCompetition()->getCompetition().'/matches',
                             [
                                 'matchday' => $round->getName(),
                             ]
@@ -89,7 +89,7 @@ class CompetitionRoundMatchCommand extends Command
                 } elseif (is_string($round->getName())) {
                     try {
                         $roundMatches = $this->footballData->fetchData(
-                            'competitionss/'.$round->getCompetition()->getCompetition().'/matches',
+                            'competitions/'.$round->getCompetition()->getCompetition().'/matches',
                             [
                                 'stage' => $round->getName(),
                             ]
