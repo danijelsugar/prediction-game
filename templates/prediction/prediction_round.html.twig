@@ -53,8 +53,6 @@
                                 <td>
                                     {% if match.winner is not same as null %}
                                         {{ match.fullTimeHomeTeamScore }}:{{ match.fullTimeAwayTeamScore }}
-                                    {% else %}
-                                        <a href="" title="Recent results"><i class="far fa-chart-bar"></i></a>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -98,17 +96,21 @@
                         {% if is_granted('ROLE_USER') %}
                             <td><button id="savePrediction">Save</button></td>
                         {% endif %}
-                        <td id="prediction-response">
-                            <span id="response-s">
-                                <i class="fas fa-check-circle fa-2x text-success visuallyhidden"></i>
-                            </span>
-                            <span id="response-w">
-                                <i class="fas fa-times-circle fa-2x text-danger visuallyhidden"></i>
-                            </span>
-                        </td>
                     </tr>
                 </tfoot>
             </table>
+        </div>
+    </div>
+    <div class="prediction-notification">
+        <div class="alert alert-success mb-0 alert-dismissible fade show visuallyhidden" role="alert">
+            <button type="button" class="btn-close close-notification"></button>
+            <i class="fas fa-check-circle"></i>
+            <span class="prediction-notification-message"></span>
+        </div>
+        <div class="alert alert-danger mb-0 alert-dismissible fade show visuallyhidden" role="alert">
+            <button type="button" class="btn-close close-notification"></button>
+            <i class="fas fa-times-circle"></i>
+            <span class="prediction-notification-message"></span>
         </div>
     </div>
 {% endblock %}
@@ -126,7 +128,6 @@
                 let matchId = $(this).val();
 
                 if ('' !== homeTeamScore && '' !== awayTeamScore) {
-                    //console.log(homeTeamScore, awayTeamScore, matchId);
                     data.push({'match': matchId, 'competition': competition, 'startTime': startTime, 'homeTeam': homeTeamScore, 'awayTeam': awayTeamScore});
                 }
             })
@@ -138,28 +139,41 @@
                 data: {data: JSON.stringify(data)},
                 success: function (response) {
                     if (response.status === 200) {
-                        if ($('#prediction-response #response-s i').hasClass('visuallyhidden')) {
-                            $('#prediction-response #response-s i').removeClass('visuallyhidden');
+                         $('.prediction-notification div.alert-success .prediction-notification-message').text('')
+                        $('.prediction-notification div.alert-success .prediction-notification-message').append(document.createTextNode(response.message));
+
+                        if ($('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
+                            $('.prediction-notification div.alert-success').removeClass('visuallyhidden');
                         }
 
                         setTimeout(function () {
-                            if (!$('#prediction-response #response-s i').hasClass('visuallyhidden')) {
-                                $('#prediction-response #response-s i').addClass('visuallyhidden');
+                            if (!$('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
+                                $('.prediction-notification div.alert-success').addClass('visuallyhidden');
                             }
-                        }, 5000)
+                        }, 3000)
                     } else {
-                        if ($('#prediction-response #response-w i').hasClass('visuallyhidden')) {
-                            $('#prediction-response #response-w i').removeClass('visuallyhidden');
+                        $('.prediction-notification div.alert-danger .prediction-notification-message').text('');
+                        $('.prediction-notification div.alert-danger .prediction-notification-message').append(document.createTextNode(response.message));
+
+                        if ($('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
+                            $('.prediction-notification div.alert-danger').removeClass('visuallyhidden');
                         }
 
                         setTimeout(function () {
-                            if (!$('#prediction-response #response-w i').hasClass('visuallyhidden')) {
-                                $('#prediction-response #response-w i').addClass('visuallyhidden');
+                            if (!$('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
+                                $('.prediction-notification div.alert-danger').addClass('visuallyhidden');
                             }
-                        }, 5000)
+                        }, 3000)
                     }
                 }
             });
+        });
+
+        $('.close-notification').on('click', function () {
+            const alert = this.closest('.alert');
+            if (!$(alert).hasClass('visuallyhidden')) {
+                $(this.closest('.alert')).addClass('visuallyhidden')
+            }
         })
     </script>
     

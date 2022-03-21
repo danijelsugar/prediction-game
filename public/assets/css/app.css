@@ -8,6 +8,7 @@ body {
     font-family: "Open Sans", sans-serif;
     background: #252F5A;
     border: 0;
+    position: relative;
 }
 
 h3 {
@@ -228,4 +229,15 @@ a {
     clip: rect(0 0 0 0); 
     height: 1px; width: 1px; 
     margin: -1px; padding: 0; border: 0; 
+}
+
+.prediction-notification {
+    position: absolute;
+    width: 250px;
+    bottom: 17px;
+    right: 24px;
+}
+
+.card-header button {
+    height: 0;
 }
