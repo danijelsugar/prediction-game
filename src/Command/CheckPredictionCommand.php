@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Repository\PredictionRepository;
+use App\Repository\RoundMatchRepository;
 use App\Service\FootballDataService;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +26,8 @@ class CheckPredictionCommand extends Command
 
     private LoggerInterface $logger;
 
+    private RoundMatchRepository $roundMatchRepository;
+
     protected static $defaultName = 'app:check:prediction';
 
     public function __construct(
@@ -32,13 +35,15 @@ class CheckPredictionCommand extends Command
         FootballDataService $footballData,
         EntityManagerInterface $entityManager,
         PointService $pointService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RoundMatchRepository $roundMatchRepository
     ) {
         $this->predictionRepository = $predictionRepository;
         $this->footballData = $footballData;
         $this->entityManager = $entityManager;
         $this->pointService = $pointService;
         $this->logger = $logger;
+        $this->roundMatchRepository = $roundMatchRepository;
 
         parent::__construct();
     }
@@ -67,43 +72,72 @@ class CheckPredictionCommand extends Command
             $startDates[] = $prediction->getMatchStartTime();
         }
 
-        $dateFrom = !empty($startDates) ? min($startDates)->format('Y-m-d') : '';
+        $dateFrom = !empty($startDates) ? min($startDates) : new \DateTime();
 
-        $dateTo = (new \DateTime())->format('Y-m-d');
+        $dateTo = clone $dateFrom;
+        $dateTo->modify('+10 days');
 
         try {
-            $matches = $this->footballData->fetchData(
+            $competitionsMatches = $this->footballData->fetchData(
                 'matches',
                 [
                     'competitions' => implode(',', $competitions),
-                    'dateFrom' => $dateFrom,
-                    'dateTo' => $dateTo,
+                    'dateFrom' => $dateFrom->format('Y-m-d'),
+                    'dateTo' => $dateTo->format('Y-m-d'),
                     'status' => 'FINISHED',
                 ]
             );
         } catch (ClientException $e) {
-            $io->info($e->getMessage());
-            $this->logger->info($this->getDefaultName().': '.$e->getMessage());
+            $io->info($e->getResponse()->getContent(false));
+            $this->logger->info($this->getDefaultName().': '.$e->getResponse()->getContent(false));
 
             return Command::FAILURE;
         }
 
-        foreach ($matches->matches as $match) {
-            $prediction = $this->predictionRepository->findOneBy(
+        foreach ($competitionsMatches->matches as $match) {
+            $predictions = $this->predictionRepository->findBy(
                 [
                     'matchId' => $match->id,
                     'competition' => $match->competition->id,
+                    'finished' => false,
+                    'points' => null,
                 ]
             );
 
-            if ($prediction) {
-                $points = $this->pointService->calculatePoints($match, $prediction);
+            if ($predictions) {
+                foreach ($predictions as $prediction) {
+                    $points = $this->pointService->calculatePoints($match, $prediction);
 
-                $prediction
-                    ->setHomeTeamScore($match['homeTeamScore'])
-                    ->setAwayTeamScore($match['awayTeamScore'])
-                    ->setFinished(true)
-                    ->setPoints($points);
+                    $userPoints = $prediction->getUser()->getPoints() + $points;
+                    $prediction->getUser()->setPoints($userPoints);
+
+                    $prediction
+                        ->setHomeTeamScore($match->score->fullTime->homeTeam)
+                        ->setAwayTeamScore($match->score->fullTime->awayTeam)
+                        ->setFinished(true)
+                        ->setPoints($points);
+                }
+            }
+
+            $predictionMatch = $this->roundMatchRepository->findOneBy(
+                [
+                    'matchId' => $match->id,
+                ]
+            );
+
+            if ($predictionMatch) {
+                $predictionMatch
+                    ->setStage($match->stage)
+                    ->setGroupName($match->group)
+                    ->setDate(new \DateTime($match->utcDate))
+                    ->setHomeTeamName($match->homeTeam->name)
+                    ->setAwayTeamName($match->awayTeam->name)
+                    ->setFullTimeHomeTeamScore($match->score->fullTime->homeTeam)
+                    ->setFullTimeAwayTeamScore($match->score->fullTime->awayTeam)
+                    ->setExtraTimeHomeTeamScore($match->score->extraTime->homeTeam)
+                    ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
+                    ->setWinner($match->score->winner)
+                    ->setLastUpdated($match->lastUpdated);
             }
         }
         $this->entityManager->flush();
