@@ -69,7 +69,7 @@ class PredictionController extends AbstractController
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($roundMatch['date']->format('Y-m-d'));
+            $matchDateTime = new \DateTime($roundMatch['date']->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
@@ -145,26 +145,61 @@ class PredictionController extends AbstractController
     public function savePrediction(
         Request $request,
         EntityManagerInterface $entityManager,
-        PredictionRepository $predictionRepository
+        PredictionRepository $predictionRepository,
+        RoundMatchRepository $roundMatchRepository,
+        CompetitionRepository $competitionRepository
     ): Response {
         $predictionData = $request->request->get('data');
         $predictionData = json_decode($predictionData);
+
         /** @var User|null */
         $user = $this->getUser();
 
-        if (!$predictionData || !$user) {
-            return $this->json(['status' => 400, 'message' => 'No predictions entered.'], 200);
+        if (!$user) {
+            return $this->json('Something went wrong, sign up and try again.', 400);
         }
 
+        if (!$predictionData) {
+            return $this->json('No predictions entered!', 400);
+        }
+
+        $predictionsEntered = count($predictionData);
+
+        $validPredictions = 0;
         foreach ($predictionData as $data) {
+            $matchStartTime = new \DateTime($data->startTime);
+            $currentDateTime = new \DateTime();
+
+            if ($currentDateTime >= $matchStartTime) {
+                continue;
+            }
+
+            if (!is_numeric($data->homeTeam) || !is_numeric($data->awayTeam) || !is_numeric($data->match) || !is_numeric($data->competition)) {
+                continue;
+            }
+
+            $match = $roundMatchRepository->findOneBy(
+                [
+                    'matchId' => $data->match,
+                ]
+            );
+
+            $competition = $competitionRepository->findOneBy(
+                [
+                    'competition' => $data->competition,
+                ]
+            );
+
+            if (!$match || !$competition) {
+                continue;
+            }
+
             $previousPrediction = $predictionRepository->findOneBy([
                 'user' => $user,
                 'matchId' => $data->match,
             ]);
 
             if (!$previousPrediction) {
-                $matchStartTime = new \DateTime($data->startTime);
-
                 $prediction = new Prediction();
                 $prediction
                     ->setUser($user)
@@ -179,9 +214,21 @@ class PredictionController extends AbstractController
                 $previousPrediction->setAwayTeamPrediction($data->awayTeam);
                 $entityManager->persist($previousPrediction);
             }
+
+            ++$validPredictions;
         }
         $entityManager->flush();
 
-        return $this->json(['status' => 200, 'message' => 'Predictions entered successfully'], 200);
+        if ($predictionsEntered > $validPredictions) {
+            return $this->json(
+                sprintf(
+                    '%s of %s predictions saved successfully. Predictions can be entered before the start of the match, only numbers allowed as score prediction.',
+                    $validPredictions,
+                    $predictionsEntered
+                ), 200
+            );
+        }
+
+        return $this->json('Predictions saved successfully.', 200);
     }
 }
