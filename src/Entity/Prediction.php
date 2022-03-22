@@ -36,7 +36,7 @@ class Prediction
     /**
      * @ORM\Column(type="datetime", nullable="true")
      */
-    private ?\DateTimeInterface $matchStartTime;
+    private ?\DateTime $matchStartTime;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
@@ -181,12 +181,12 @@ class Prediction
         return $this;
     }
 
-    public function getMatchStartTime(): ?\DateTimeInterface
+    public function getMatchStartTime(): ?\DateTime
     {
         return $this->matchStartTime;
     }
 
-    public function setMatchStartTime(\DateTimeInterface $matchStartTime): self
+    public function setMatchStartTime(\DateTime $matchStartTime): self
     {
         $this->matchStartTime = $matchStartTime;
 
