@@ -60,6 +60,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $predictions;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $points = 0;
+
     public function __construct()
     {
         $this->predictions = new ArrayCollection();
@@ -227,6 +232,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $prediction->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): self
+    {
+        $this->points = $points;
 
         return $this;
     }
