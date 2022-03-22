@@ -74,8 +74,24 @@
                                         {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
                                     {% endif %}   
                                 </td>
-                                <td>{{ match.userPrediction ? match.userPrediction.points : '' }}</td>
-                                <td><a href="" title="Statistics"><i class="fas fa-search"></i></a></td>
+                                <td>
+                                    {% if match.userPrediction %}
+                                        {% if match.userPrediction.points is same as 6 %}
+                                            <p class="btn btn-danger">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 4 %}
+                                            <p class="btn btn-warning">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 3 %}
+                                            <p class="btn btn-success">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 1 %}
+                                            <p class="btn btn-secondary">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 0 %}
+                                            <p class="btn btn-dark">{{ match.userPrediction.points }}</p>
+                                        {% else %}
+
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td><a href="{{ match.id }}" title="Statistics"><i class="fas fa-search"></i></a></td>
                             </tr>
                         {% endfor %}
                     {% else %}
@@ -117,30 +133,31 @@
 {% block script %}
     {{ parent() }}
     <script>
-        $('#savePrediction').on('click', function (e) {
-            let data = [];
-            let match = $('.matchId');
-            match.each(function() {
-                let homeTeamScore = $(this).closest('tr.match').find('.homeTeamScore').val();
-                let awayTeamScore = $(this).closest('tr.match').find('.awayTeamScore').val();
-                let startTime = $(this).closest('tr.match').find('td.startTime').text();
-                let competition = $(this).closest('tr.match').find('.competitionId').val();
-                let matchId = $(this).val();
+        $(document).ready(function() {
+            $('#savePrediction').on('click', function (e) {
+                let data = [];
+                let match = $('.matchId');
+                match.each(function() {
+                    let homeTeamScore = $(this).closest('tr.match').find('.homeTeamScore').val();
+                    let awayTeamScore = $(this).closest('tr.match').find('.awayTeamScore').val();
+                    let startTime = $(this).closest('tr.match').find('td.startTime').text();
+                    let competition = $(this).closest('tr.match').find('.competitionId').val();
+                    let matchId = $(this).val();
 
-                if ('' !== homeTeamScore && '' !== awayTeamScore) {
-                    data.push({'match': matchId, 'competition': competition, 'startTime': startTime, 'homeTeam': homeTeamScore, 'awayTeam': awayTeamScore});
-                }
-            })
-
-            $.ajax({
-                url:'https://prediction-game.local.com/predictions/save',
-                type: 'POST',
-                dataType: "json",
-                data: {data: JSON.stringify(data)},
-                success: function (response) {
-                    if (response.status === 200) {
-                         $('.prediction-notification div.alert-success .prediction-notification-message').text('')
-                        $('.prediction-notification div.alert-success .prediction-notification-message').append(document.createTextNode(response.message));
+                    if ('' !== homeTeamScore && '' !== awayTeamScore) {
+                        data.push({'match': matchId, 'competition': competition, 'startTime': startTime, 'homeTeam': homeTeamScore, 'awayTeam': awayTeamScore});
+                    }
+                })
+                
+                $.ajax({
+                    url:'https://prediction-game.local.com/predictions/save',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {data: JSON.stringify(data)},
+                    async: true,
+                    success: function (response) {
+                        $('.prediction-notification div.alert-success .prediction-notification-message').text('')
+                        $('.prediction-notification div.alert-success .prediction-notification-message').append(document.createTextNode(response));
 
                         if ($('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
                             $('.prediction-notification div.alert-success').removeClass('visuallyhidden');
@@ -150,10 +167,11 @@
                             if (!$('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
                                 $('.prediction-notification div.alert-success').addClass('visuallyhidden');
                             }
-                        }, 3000)
-                    } else {
+                        }, 5000)
+                    },
+                    error: function (xhr, status, error) {
                         $('.prediction-notification div.alert-danger .prediction-notification-message').text('');
-                        $('.prediction-notification div.alert-danger .prediction-notification-message').append(document.createTextNode(response.message));
+                        $('.prediction-notification div.alert-danger .prediction-notification-message').append(document.createTextNode(xhr.responseJSON));
 
                         if ($('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
                             $('.prediction-notification div.alert-danger').removeClass('visuallyhidden');
@@ -163,17 +181,17 @@
                             if (!$('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
                                 $('.prediction-notification div.alert-danger').addClass('visuallyhidden');
                             }
-                        }, 3000)
+                        }, 5000)
                     }
-                }
+                });
             });
-        });
 
-        $('.close-notification').on('click', function () {
-            const alert = this.closest('.alert');
-            if (!$(alert).hasClass('visuallyhidden')) {
-                $(this.closest('.alert')).addClass('visuallyhidden')
-            }
+            $('.close-notification').on('click', function () {
+                const alert = this.closest('.alert');
+                if (!$(alert).hasClass('visuallyhidden')) {
+                    $(this.closest('.alert')).addClass('visuallyhidden')
+                }
+            })
         })
     </script>
     
