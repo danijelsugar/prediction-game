@@ -31,6 +31,7 @@ class RoundMatchRepository extends ServiceEntityRepository
             ->andWhere('r.name = :round')
             ->setParameter('competition', $competition)
             ->setParameter('round', $round)
+            ->orderBy('rm.date', 'ASC')
             ->getQuery()
             ->getResult();
     }
