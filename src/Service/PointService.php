@@ -6,54 +6,64 @@ use App\Entity\Prediction;
 
 class PointService
 {
-    public function calculatePoints(array $match, Prediction $prediction): int
+    public function calculatePoints($match, Prediction $prediction): int
     {
-        if ($this->correctOutcomeAndScore($match, $prediction)) {
+        if ($this->correctScore($match, $prediction)) {
             return 6;
         } elseif ($this->correctOutcome($match, $prediction) && ($this->oneTeamScore($match, $prediction) || $this->checkGoalDiff($match, $prediction))) {
             return 4;
         } elseif ($this->correctOutcome($match, $prediction) && !$this->oneTeamScore($match, $prediction)) {
             return 3;
-        }
-        if (!$this->correctOutcome($match, $prediction) && $this->oneTeamScore($match, $prediction)) {
+        } elseif (!$this->correctOutcome($match, $prediction) && $this->oneTeamScore($match, $prediction)) {
             return 1;
         } else {
             return 0;
         }
     }
 
-    private function correctOutcomeAndScore(array $match, Prediction $prediction)
+    private function correctScore($match, Prediction $prediction)
     {
-        if ($match['homeTeamScore'] === $prediction->getHomeTeamPrediction() && $match['awayTeamScore'] === $prediction->getAwayTeamPrediction()) {
+        if (
+            $match->score->fullTime->homeTeam === $prediction->getHomeTeamPrediction() &&
+            $match->score->fullTime->awayTeam === $prediction->getAwayTeamPrediction()
+        ) {
             return true;
         }
 
         return false;
     }
 
-    private function correctOutcome(array $match, Prediction $prediction)
+    private function correctOutcome($match, Prediction $prediction)
     {
-        if ($match['homeTeamScore'] > $match['awayTeamScore'] && $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction() ||
-            $match['homeTeamScore'] < $match['awayTeamScore'] && $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction() ||
-            $match['homeTeamScore'] === $match['awayTeamScore'] && $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()) {
+        if (
+            $match->score->fullTime->homeTeam > $match->score->fullTime->awayTeam &&
+            $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction() ||
+            $match->score->fullTime->homeTeam < $match->score->fullTime->awayTeam &&
+            $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction() ||
+            $match->score->fullTime->homeTeam === $match->score->fullTime->awayTeam &&
+            $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()
+        ) {
             return true;
         }
 
         return false;
     }
 
-    private function oneTeamScore(array $match, Prediction $prediction)
+    private function oneTeamScore($match, Prediction $prediction)
     {
-        if ($match['homeTeamScore'] === $prediction->getHomeTeamPrediction() || $match['awayTeamScore'] === $prediction->getAwayTeamPrediction()) {
+        if (
+            $match->score->fullTime->homeTeam === $prediction->getHomeTeamPrediction() ||
+            $match->score->fullTime->awayTeam === $prediction->getAwayTeamPrediction()
+        ) {
             return true;
         }
 
         return false;
     }
 
-    private function checkGoalDiff(array $match, Prediction $prediction)
+    private function checkGoalDiff($match, Prediction $prediction)
     {
-        $matchDiff = $match['homeTeamScore'] - $match['awayTeamScore'];
+        $matchDiff = $match->score->fullTime->homeTeam - $match->score->fullTime->awayTeam;
         $predictionDiff = $prediction->getHomeTeamPrediction() - $prediction->getAwayTeamPrediction();
         if ($matchDiff === $predictionDiff) {
             return true;
