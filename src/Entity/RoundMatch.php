@@ -46,12 +46,12 @@ class RoundMatch
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private string $homeTeamName;
+    private ?string $homeTeamName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private string $awayTeamName;
+    private ?string $awayTeamName;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
