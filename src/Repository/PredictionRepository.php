@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Competition;
 use App\Entity\Prediction;
+use App\Entity\RoundMatch;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +20,37 @@ class PredictionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Prediction::class);
+    }
+
+    public function findPrediction(User $user, RoundMatch $match): ?Prediction
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
+            ->where('p.user = :user')
+            ->andWhere('rm.matchId = :matchId')
+            ->setParameter('user', $user->getId())
+            ->setParameter('matchId', $match->getMatchId())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @return Prediction[] Returns an array of Prediction objects
+     */
+    public function findPredictions(RoundMatch $match, int $competition, bool $finished = false)
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
+            ->innerJoin(Competition::class, 'c', 'WITH', 'p.competition=c.id')
+            ->where('rm.matchId = :matchId')
+            ->andWhere('c.competition = :competition')
+            ->andWhere('p.finished = :finished')
+            ->andWhere('p.points IS NULL')
+            ->setParameter('matchId', $match->getMatchId())
+            ->setParameter('competition', $competition)
+            ->setParameter('finished', $finished)
+            ->getQuery()
+            ->getResult();
     }
 
     // /**
