@@ -21,10 +21,12 @@ class RoundMatchRepository extends ServiceEntityRepository
         parent::__construct($registry, RoundMatch::class);
     }
 
+    /**
+     * @return RoundMatch[] Returns an array of RoundMatch objects
+     */
     public function findRoundMatches(int $competition, $round)
     {
         return $this->createQueryBuilder('rm')
-            ->select('rm.id, r.name AS round, c.competition, rm.matchId, rm.date, rm.homeTeamName, rm.awayTeamName, rm.fullTimeHomeTeamScore, rm.fullTimeAwayTeamScore, rm.extraTimeHomeTeamScore, rm.extraTimeAwayTeamScore, rm.winner')
             ->innerJoin(Round::class, 'r', 'WITH', 'rm.round=r.id')
             ->innerJoin(Competition::class, 'c', 'WITH', 'r.competition=c.id')
             ->where('c.competition = :competition')
