@@ -54,7 +54,6 @@ class PredictionController extends AbstractController
         CompetitionRepository $competitionRepository
     ): Response {
         $roundMatches = $roundMatchRepository->findRoundMatches($id, $round);
-        dd($roundMatches);
 
         $competition = $competitionRepository->findOneBy(
             [
