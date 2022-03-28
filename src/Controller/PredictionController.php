@@ -19,8 +19,11 @@ class PredictionController extends AbstractController
     /**
      * @Route("/competitions/{id}/predictions", name="app_prediction", requirements={"id"="\d{4}"})
      */
-    public function predictions(int $id, RoundRepository $roundRepository, CompetitionRepository $competitionRepository): Response
-    {
+    public function predictions(
+        int $id,
+        RoundRepository $roundRepository,
+        CompetitionRepository $competitionRepository
+    ): Response {
         $rounds = $roundRepository->findCompetitionRounds($id);
 
         $competition = $competitionRepository->findOneBy(
@@ -51,6 +54,7 @@ class PredictionController extends AbstractController
         CompetitionRepository $competitionRepository
     ): Response {
         $roundMatches = $roundMatchRepository->findRoundMatches($id, $round);
+        dd($roundMatches);
 
         $competition = $competitionRepository->findOneBy(
             [
@@ -58,18 +62,20 @@ class PredictionController extends AbstractController
             ]
         );
 
+        /** @var User|null */
+        $user = $this->getUser();
+
         $matches = [];
         foreach ($roundMatches as $roundMatch) {
-            $userPrediction = $predictionRepository->findOneBy(
-                [
-                    'user' => $this->getUser(),
-                    'matchId' => $roundMatch['matchId'],
-                ]
-            );
+            $userPrediction = null;
+
+            if ($user) {
+                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch);
+            }
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($roundMatch['date']->format('Y-m-d H:i'));
+            $matchDateTime = new \DateTime($roundMatch->getDate()->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
@@ -77,18 +83,17 @@ class PredictionController extends AbstractController
             }
 
             $matches[] = [
-                'id' => $roundMatch['matchId'],
-                'round' => $roundMatch['round'],
-                'competition' => $roundMatch['competition'],
-                'date' => $roundMatch['date'],
-                'homeTeamName' => $roundMatch['homeTeamName'],
-                'awayTeamName' => $roundMatch['awayTeamName'],
-                'fullTimeHomeTeamScore' => $roundMatch['fullTimeHomeTeamScore'],
-                'fullTimeAwayTeamScore' => $roundMatch['fullTimeAwayTeamScore'],
-                'extraTimeHomeTeamScore' => $roundMatch['extraTimeHomeTeamScore'],
-                'extraTimeAwayTeamScore' => $roundMatch['extraTimeAwayTeamScore'],
+                'id' => $roundMatch->getMatchId(),
+                'round' => $roundMatch->getRound(),
+                'date' => $roundMatch->getDate(),
+                'homeTeamName' => $roundMatch->getHomeTeamName(),
+                'awayTeamName' => $roundMatch->getAwayTeamName(),
+                'fullTimeHomeTeamScore' => $roundMatch->getFullTimeHomeTeamScore(),
+                'fullTimeAwayTeamScore' => $roundMatch->getFullTimeAwayTeamScore(),
+                'extraTimeHomeTeamScore' => $roundMatch->getExtraTimeHomeTeamScore(),
+                'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
                 'finished' => $finished,
-                'winner' => $roundMatch['winner'],
+                'winner' => $roundMatch->getWinner(),
                 'userPrediction' => $userPrediction,
             ];
         }
@@ -194,17 +199,14 @@ class PredictionController extends AbstractController
                 continue;
             }
 
-            $previousPrediction = $predictionRepository->findOneBy([
-                'user' => $user,
-                'matchId' => $data->match,
-            ]);
+            $previousPrediction = $predictionRepository->findPrediction($user, $match);
 
             if (!$previousPrediction) {
                 $prediction = new Prediction();
                 $prediction
                     ->setUser($user)
-                    ->setMatchId($data->match)
-                    ->setCompetition($data->competition)
+                    ->setMatch($match)
+                    ->setCompetition($competition)
                     ->setMatchStartTime($matchStartTime)
                     ->setHomeTeamPrediction($data->homeTeam)
                     ->setAwayTeamPrediction($data->awayTeam);

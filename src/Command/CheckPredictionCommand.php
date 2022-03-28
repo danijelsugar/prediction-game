@@ -66,8 +66,8 @@ class CheckPredictionCommand extends Command
         $startDates = [];
 
         foreach ($predictions as $prediction) {
-            if (!in_array($prediction->getCompetition(), $competitions)) {
-                $competitions[] = $prediction->getCompetition();
+            if (!in_array($prediction->getCompetition()->getCompetition(), $competitions)) {
+                $competitions[] = $prediction->getCompetition()->getCompetition();
             }
             $startDates[] = $prediction->getMatchStartTime();
         }
@@ -95,30 +95,6 @@ class CheckPredictionCommand extends Command
         }
 
         foreach ($competitionsMatches->matches as $match) {
-            $predictions = $this->predictionRepository->findBy(
-                [
-                    'matchId' => $match->id,
-                    'competition' => $match->competition->id,
-                    'finished' => false,
-                    'points' => null,
-                ]
-            );
-
-            if ($predictions) {
-                foreach ($predictions as $prediction) {
-                    $points = $this->pointService->calculatePoints($match, $prediction);
-
-                    $userPoints = $prediction->getUser()->getPoints() + $points;
-                    $prediction->getUser()->setPoints($userPoints);
-
-                    $prediction
-                        ->setHomeTeamScore($match->score->fullTime->homeTeam)
-                        ->setAwayTeamScore($match->score->fullTime->awayTeam)
-                        ->setFinished(true)
-                        ->setPoints($points);
-                }
-            }
-
             $predictionMatch = $this->roundMatchRepository->findOneBy(
                 [
                     'matchId' => $match->id,
@@ -138,6 +114,23 @@ class CheckPredictionCommand extends Command
                     ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
                     ->setWinner($match->score->winner)
                     ->setLastUpdated($match->lastUpdated);
+            }
+
+            $predictions = $this->predictionRepository->findPredictions($predictionMatch, $match->competition->id);
+
+            if ($predictions) {
+                foreach ($predictions as $prediction) {
+                    $points = $this->pointService->calculatePoints($match, $prediction);
+
+                    $userPoints = $prediction->getUser()->getPoints() + $points;
+                    $prediction->getUser()->setPoints($userPoints);
+
+                    $prediction
+                        ->setHomeTeamScore($match->score->fullTime->homeTeam)
+                        ->setAwayTeamScore($match->score->fullTime->awayTeam)
+                        ->setFinished(true)
+                        ->setPoints($points);
+                }
             }
         }
         $this->entityManager->flush();

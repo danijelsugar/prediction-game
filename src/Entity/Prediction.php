@@ -24,14 +24,15 @@ class Prediction
     private ?User $user;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity=RoundMatch::class)
+     * @ORM\JoinColumn(nullable=false)
      */
-    private int $matchId;
+    private ?RoundMatch $match;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity=Competition::class)
      */
-    private int $competition;
+    private Competition $competition;
 
     /**
      * @ORM\Column(type="datetime", nullable="true")
@@ -85,14 +86,26 @@ class Prediction
         return $this;
     }
 
-    public function getMatchId(): ?int
+    public function getMatch(): ?RoundMatch
     {
-        return $this->matchId;
+        return $this->match;
     }
 
-    public function setMatchId(int $matchId): self
+    public function setMatch(?RoundMatch $match): self
     {
-        $this->matchId = $matchId;
+        $this->match = $match;
+
+        return $this;
+    }
+
+    public function getCompetition(): Competition
+    {
+        return $this->competition;
+    }
+
+    public function setCompetition(Competition $competition): self
+    {
+        $this->competition = $competition;
 
         return $this;
     }
@@ -153,18 +166,6 @@ class Prediction
     public function setAwayTeamPrediction(int $awayTeamPrediction): self
     {
         $this->awayTeamPrediction = $awayTeamPrediction;
-
-        return $this;
-    }
-
-    public function getCompetition(): ?int
-    {
-        return $this->competition;
-    }
-
-    public function setCompetition(int $competition): self
-    {
-        $this->competition = $competition;
 
         return $this;
     }
