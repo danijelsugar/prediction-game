@@ -2,8 +2,15 @@
 
 namespace App\Controller;
 
-use App\Service\FootballDataService;
+use App\Entity\Prediction;
+use App\Entity\User;
+use App\Repository\CompetitionRepository;
+use App\Repository\PredictionRepository;
+use App\Repository\RoundMatchRepository;
+use App\Repository\RoundRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -12,10 +19,23 @@ class PredictionController extends AbstractController
     /**
      * @Route("/competitions/{id}/predictions", name="app_prediction", requirements={"id"="\d{4}"})
      */
-    public function predictions(int $id): Response
-    {
+    public function predictions(
+        int $id,
+        RoundRepository $roundRepository,
+        CompetitionRepository $competitionRepository
+    ): Response {
+        $rounds = $roundRepository->findCompetitionRounds($id);
+
+        $competition = $competitionRepository->findOneBy(
+            [
+                'competition' => $id,
+            ]
+        );
+
         return $this->render('prediction/index.html.twig', [
             'competitionId' => $id,
+            'rounds' => $rounds,
+            'competitionName' => $competition->getArea().' - '.$competition->getName(),
         ]);
     }
 
@@ -27,81 +47,62 @@ class PredictionController extends AbstractController
      */
     public function predictionsRound(
         int $id,
-        $round
-    ): Response {
-        return $this->render('prediction/prediction_round.html.twig', [
-            'competitionId' => $id,
-            'round' => $round,
-        ]);
-    }
-
-    public function predictionsCache(
-        $id,
-        FootballDataService $footballData
-    ): Response {
-        $roundsMatches = $footballData->fetchData(
-            'competitions/'.$id.'/matches'
-        );
-
-        $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
-
-        $matchdayDates = $footballData->getMatchdayDates($rounds);
-
-        $firstAndLastMatchdayDate = $footballData->getFirstAndLastMatchdayDate($matchdayDates);
-
-        $roundStatus = $footballData->getRoundStatus($rounds);
-
-        $roundInfo = [];
-        foreach ($firstAndLastMatchdayDate as $key => $value) {
-            $roundInfo[$key] = ['date' => $value, 'status' => $roundStatus[$key]];
-        }
-
-        $season = $footballData->getSeason($roundsMatches->matches[0]->season);
-
-        $response = $this->render('prediction/rounds_cache.html.twig', [
-            'competitionId' => $id,
-            'competitionName' => $roundsMatches->competition->area->name.' - '.$roundsMatches->competition->name.' '.$season,
-            'roundInfo' => $roundInfo,
-        ]);
-
-        $response->setPublic();
-        $response->setMaxAge(1);
-
-        $response->headers->addCacheControlDirective('must-revalidate', true);
-
-        return $response;
-    }
-
-    public function predictionsRoundCache(
-        $id,
         $round,
-        FootballDataService $footballData
+        PredictionRepository $predictionRepository,
+        RoundMatchRepository $roundMatchRepository,
+        RoundRepository $roundRepository,
+        CompetitionRepository $competitionRepository
     ): Response {
-        if (is_numeric($round)) {
-            $roundMatches = $footballData->fetchData(
-                'competitions/'.$id.'/matches',
-                [
-                    'matchday' => $round,
-                ]
-            );
-        } elseif (is_string($round)) {
-            $roundMatches = $footballData->fetchData(
-                'competitions/'.$id.'/matches',
-                [
-                    'stage' => $round,
-                ]
-            );
-        } else {
-            throw $this->createNotFoundException('Page not found');
-        }
+        $roundMatches = $roundMatchRepository->findRoundMatches($id, $round);
 
-        $roundsMatches = $footballData->fetchData(
-            'competitions/'.$id.'/matches'
+        $competition = $competitionRepository->findOneBy(
+            [
+                'competition' => $id,
+            ]
         );
 
-        $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
+        /** @var User|null */
+        $user = $this->getUser();
 
-        $rounds = array_keys($rounds);
+        $matches = [];
+        foreach ($roundMatches as $roundMatch) {
+            $userPrediction = null;
+
+            if ($user) {
+                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch);
+            }
+
+            $finished = false;
+
+            $matchDateTime = new \DateTime($roundMatch->getDate()->format('Y-m-d H:i'));
+            $currentDateTime = new \DateTime();
+
+            if ($currentDateTime > $matchDateTime) {
+                $finished = true;
+            }
+
+            $matches[] = [
+                'id' => $roundMatch->getMatchId(),
+                'round' => $roundMatch->getRound(),
+                'date' => $roundMatch->getDate(),
+                'homeTeamName' => $roundMatch->getHomeTeamName(),
+                'awayTeamName' => $roundMatch->getAwayTeamName(),
+                'fullTimeHomeTeamScore' => $roundMatch->getFullTimeHomeTeamScore(),
+                'fullTimeAwayTeamScore' => $roundMatch->getFullTimeAwayTeamScore(),
+                'extraTimeHomeTeamScore' => $roundMatch->getExtraTimeHomeTeamScore(),
+                'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
+                'finished' => $finished,
+                'winner' => $roundMatch->getWinner(),
+                'userPrediction' => $userPrediction,
+            ];
+        }
+
+        $competitionRounds = $roundRepository->findCompetitionRounds($id);
+
+        $rounds = [];
+        foreach ($competitionRounds as $competitionRound) {
+            $rounds[] = $competitionRound['name'];
+        }
 
         $currentRoundKey = array_search($round, $rounds);
 
@@ -121,55 +122,114 @@ class PredictionController extends AbstractController
 
         $rounds = ['prev' => $prevRound, 'next' => $nextRound];
 
-        $season = $footballData->getSeason($roundsMatches->matches[0]->season);
-
-        $response = $this->render('prediction/prediction_round_cache.html.twig', [
+        return $this->render('prediction/prediction_round.html.twig', [
             'competitionId' => $id,
-            'competitionName' => $roundMatches->competition->area->name.' - '.$roundMatches->competition->name.' '.$season,
             'round' => $round,
-            'roundMatches' => $roundMatches,
+            'competitionName' => $competition->getArea().' - '.$competition->getName(),
+            'matches' => $matches,
             'rounds' => $rounds,
         ]);
-
-        $response->setPublic();
-        $response->setMaxAge(120);
-
-        $response->headers->addCacheControlDirective('must-revalidate', true);
-
-        return $response;
     }
 
     public function predictionNavCache(
-        $id,
-        FootballDataService $footballData
+        int $id,
+        RoundRepository $roundRepository
     ): Response {
-        $roundsMatches = $footballData->fetchData(
-            'competitions/'.$id.'/matches'
-        );
+        $rounds = $roundRepository->findCompetitionRounds($id);
 
-        $rounds = $footballData->getPredictionRoundsInfo($roundsMatches->matches);
+        return $this->render('prediction/rounds_nav.html.twig', [
+            'competitionId' => $id,
+            'rounds' => $rounds,
+        ]);
+    }
 
-        $matchdayDates = $footballData->getMatchdayDates($rounds);
+    /**
+     * @Route("/predictions/save", name="app_predictions_save", methods={"POST"})
+     */
+    public function savePrediction(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        PredictionRepository $predictionRepository,
+        RoundMatchRepository $roundMatchRepository,
+        CompetitionRepository $competitionRepository
+    ): Response {
+        $predictionData = $request->request->get('data');
+        $predictionData = json_decode($predictionData);
 
-        $firstAndLastMatchdayDate = $footballData->getFirstAndLastMatchdayDate($matchdayDates);
+        /** @var User|null */
+        $user = $this->getUser();
 
-        $roundStatus = $footballData->getRoundStatus($rounds);
-
-        $roundInfo = [];
-        foreach ($firstAndLastMatchdayDate as $key => $value) {
-            $roundInfo[$key] = ['date' => $value, 'status' => $roundStatus[$key]];
+        if (!$user) {
+            return $this->json('Something went wrong, sign up and try again.', 400);
         }
 
-        $response = $this->render('prediction/rounds_nav_cache.html.twig', [
-            'competitionId' => $id,
-            'roundInfo' => $roundInfo,
-        ]);
+        if (!$predictionData) {
+            return $this->json('No predictions entered!', 400);
+        }
 
-        $response->setPublic();
-        $response->setMaxAge(120);
+        $predictionsEntered = count($predictionData);
 
-        $response->headers->addCacheControlDirective('must-revalidate', true);
+        $validPredictions = 0;
+        foreach ($predictionData as $data) {
+            $matchStartTime = new \DateTime($data->startTime);
+            $currentDateTime = new \DateTime();
 
-        return $response;
+            if ($currentDateTime >= $matchStartTime) {
+                continue;
+            }
+
+            if (!is_numeric($data->homeTeam) || !is_numeric($data->awayTeam) || !is_numeric($data->match) || !is_numeric($data->competition)) {
+                continue;
+            }
+
+            $match = $roundMatchRepository->findOneBy(
+                [
+                    'matchId' => $data->match,
+                ]
+            );
+
+            $competition = $competitionRepository->findOneBy(
+                [
+                    'competition' => $data->competition,
+                ]
+            );
+
+            if (!$match || !$competition) {
+                continue;
+            }
+
+            $previousPrediction = $predictionRepository->findPrediction($user, $match);
+
+            if (!$previousPrediction) {
+                $prediction = new Prediction();
+                $prediction
+                    ->setUser($user)
+                    ->setMatch($match)
+                    ->setCompetition($competition)
+                    ->setMatchStartTime($matchStartTime)
+                    ->setHomeTeamPrediction($data->homeTeam)
+                    ->setAwayTeamPrediction($data->awayTeam);
+                $entityManager->persist($prediction);
+            } else {
+                $previousPrediction->setHomeTeamPrediction($data->homeTeam);
+                $previousPrediction->setAwayTeamPrediction($data->awayTeam);
+                $entityManager->persist($previousPrediction);
+            }
+
+            ++$validPredictions;
+        }
+        $entityManager->flush();
+
+        if ($predictionsEntered > $validPredictions) {
+            return $this->json(
+                sprintf(
+                    '%s of %s predictions saved successfully. Predictions can be entered before the start of the match, only numbers allowed as score prediction.',
+                    $validPredictions,
+                    $predictionsEntered
+                ), 200
+            );
+        }
+
+        return $this->json('Predictions saved successfully.', 200);
     }
 }

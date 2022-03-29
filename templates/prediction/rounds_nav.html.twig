@@ -1,0 +1,14 @@
+<ul class="dropdown-menu" aria-labelledby="multilevelDropdownMenu1">
+    {% for round in rounds %}
+        <li>
+            <a class="dropdown-item" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round.name}) }}">
+                <div class="circle circle-{{ round.status|lower }}"><div class="status-{{ round.status|lower }}"></div></div>
+                {% if round.name matches '/^\\d+$/' %}
+                    {{ 'Round #' ~ round.name}}
+                {% else %}
+                    {{ round.name|replace({'_': " "})|lower|capitalize }}
+                {% endif %}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

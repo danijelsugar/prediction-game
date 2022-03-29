@@ -1,4 +1,5 @@
 parameters:
+    checkGenericClassInNonGenericObjectType: false
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
     doctrine:

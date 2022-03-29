@@ -7,7 +7,200 @@
 {% endblock %}
 
 {% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ competitionName }}</h3>
+            <p class="card-text">Round {{ round|replace({'_': " "})|lower }}</p>
+        </div>
+        <div class="card-body">
+            {% if rounds.prev %}
+                <a class="btn btn-secondary" href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.prev}) }}">
+                    {% if rounds.prev matches '/^\\d+$/' %}
+                        Round #{{ rounds.prev }}
+                    {% else %}
+                        {{ rounds.prev|replace({'_': " "})|lower|capitalize }}
+                    {% endif %}
+                </a> 
+            {% endif %}
+            {% if rounds.next %}
+                <a class="btn btn-secondary float-end" href="{{ path('app_prediction_round', {'id': competitionId, 'round': rounds.next}) }}">
+                    {% if rounds.next matches '/^\\d+$/' %}
+                        Round #{{ rounds.next }}
+                    {% else %}
+                        {{ rounds.next|replace({'_': " "})|lower|capitalize }}
+                    {% endif %}
+                </a>
+            {% endif %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Start</th>
+                        <th>Home team</th>
+                        <th>Away team</th>
+                        <th>Result</th>
+                        <th>Predictions</th>
+                        <th>Points</th>
+                        <th>Statistics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if matches is not empty %}
+                        {% for match in matches %}
+                            <tr class="match">
+                                <td class="startTime">{{ match.date | date('d.m.Y H:i') }} </td>
+                                <td>{{ match.homeTeamName }}</td>
+                                <td>{{ match.awayTeamName }}</td>
+                                <td>
+                                    {% if match.winner is not same as null %}
+                                        {{ match.fullTimeHomeTeamScore }}:{{ match.fullTimeAwayTeamScore }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if match.finished is not same as true and is_granted('ROLE_USER') %}
+                                        <div class="input-group">
+                                            <input 
+                                                type="text" 
+                                                class="form-control me-1 prediction-input homeTeamScore" 
+                                                value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
+                                            <input 
+                                                type="text" 
+                                                class="form-control prediction-input awayTeamScore"
+                                                value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
+                                            <input type="hidden" class="matchId" value="{{ match.id }}">
+                                            <input type="hidden" class="competitionId" value="{{ competitionId }}">
+                                        </div>
+                                    {% else %}
+                                        {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
+                                        {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
+                                    {% endif %}   
+                                </td>
+                                <td>
+                                    {% if match.userPrediction %}
+                                        {% if match.userPrediction.points is same as 6 %}
+                                            <p class="alert alert-danger py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 4 %}
+                                            <p class="alert alert-warning  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 3 %}
+                                            <p class="alert alert-success  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 1 %}
+                                            <p class="alert alert-secondary  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                        {% elseif match.userPrediction.points is same as 0 %}
+                                            <p class="alert alert-dark  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                        {% else %}
 
-    {{ render_esi(controller('App\\Controller\\PredictionController::predictionsRoundCache', {'id': competitionId, 'round': round})) }}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td><a href="{{ match.id }}" title="Statistics"><i class="fas fa-search"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">No results</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-center" colspan="4">
+                            <span class="btn btn-danger">6 Points</span>
+                            <span class="btn btn-warning">4 Points</span>
+                            <span class="btn btn-success">3 Points</span>
+                            <span class="btn btn-secondary">1 Point</span>
+                            <span class="btn btn-dark">0 Points</span>
+                        </td>
+                        {% if is_granted('ROLE_USER') %}
+                            <td><button id="savePrediction">Save</button></td>
+                        {% endif %}
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="prediction-notification">
+        <div class="alert alert-success mb-0 alert-dismissible fade show visuallyhidden" role="alert">
+            <button type="button" class="btn-close close-notification"></button>
+            <i class="fas fa-check-circle"></i>
+            <span class="prediction-notification-message"></span>
+        </div>
+        <div class="alert alert-danger mb-0 alert-dismissible fade show visuallyhidden" role="alert">
+            <button type="button" class="btn-close close-notification"></button>
+            <i class="fas fa-times-circle"></i>
+            <span class="prediction-notification-message"></span>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('#savePrediction').on('click', function (e) {
+                let data = [];
+                let match = $('.matchId');
+                match.each(function() {
+                    
+                    let homeTeamScore = $(this).closest('tr.match').find('.homeTeamScore').val();
+                    let awayTeamScore = $(this).closest('tr.match').find('.awayTeamScore').val();
+                    let startTime = $(this).closest('tr.match').find('td.startTime').text();
+                    let competition = $(this).closest('tr.match').find('.competitionId').val();
+                    let matchId = $(this).val();
+
+                    if ('' === homeTeamScore || '' === awayTeamScore) {
+                        return true;
+                    }
+
+                    if (!$.isNumeric(homeTeamScore) || !$.isNumeric(awayTeamScore) || !$.isNumeric(competition) || !$.isNumeric(matchId)) {
+                        return true;
+                    }
+                    
+                    data.push({'match': matchId, 'competition': competition, 'startTime': startTime, 'homeTeam': homeTeamScore, 'awayTeam': awayTeamScore});
+                    
+                })
+
+                $.ajax({
+                    url:'https://prediction-game.local.com/predictions/save',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {data: JSON.stringify(data)},
+                    async: true,
+                    success: function (response) {
+                        $('.prediction-notification div.alert-success .prediction-notification-message').text('')
+                        $('.prediction-notification div.alert-success .prediction-notification-message').append(document.createTextNode(response));
+
+                        if ($('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
+                            $('.prediction-notification div.alert-success').removeClass('visuallyhidden');
+                        }
+
+                        setTimeout(function () {
+                            if (!$('.prediction-notification div.alert-success').hasClass('visuallyhidden')) {
+                                $('.prediction-notification div.alert-success').addClass('visuallyhidden');
+                            }
+                        }, 5000)
+                    },
+                    error: function (xhr, status, error) {
+                        $('.prediction-notification div.alert-danger .prediction-notification-message').text('');
+                        $('.prediction-notification div.alert-danger .prediction-notification-message').append(document.createTextNode(xhr.responseJSON));
+
+                        if ($('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
+                            $('.prediction-notification div.alert-danger').removeClass('visuallyhidden');
+                        }
+
+                        setTimeout(function () {
+                            if (!$('.prediction-notification div.alert-danger').hasClass('visuallyhidden')) {
+                                $('.prediction-notification div.alert-danger').addClass('visuallyhidden');
+                            }
+                        }, 5000)
+                    }
+                });
+            });
+
+            $('.close-notification').on('click', function () {
+                const alert = this.closest('.alert');
+                if (!$(alert).hasClass('visuallyhidden')) {
+                    $(this.closest('.alert')).addClass('visuallyhidden')
+                }
+            })
+        })
+    </script>
     
 {% endblock %}

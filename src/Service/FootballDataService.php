@@ -18,11 +18,11 @@ class FootballDataService implements FootballDataInterface
         $this->footballApiToken = $footballApiToken;
     }
 
-    public function fetchData(string $uri, array $filters = []): object
+    public function fetchData(string $uri, array $filters = [])
     {
         $response = $this->client->request(
             'GET',
-            self::URL.$uri.'?'.http_build_query($filters), [
+            rtrim(self::URL.$uri.'?'.http_build_query($filters), '?'), [
                 'headers' => [
                     'X-Auth-Token' => $this->footballApiToken,
                 ],
@@ -37,7 +37,7 @@ class FootballDataService implements FootballDataInterface
     }
 
     /**
-     * Gets only needed data from api response
+     * Gets only needed data from api response.
      */
     public function getPredictionRoundsInfo(array $matches): array
     {
@@ -55,8 +55,8 @@ class FootballDataService implements FootballDataInterface
         return $matchdayInfo;
     }
 
-    /** 
-     * Gets dates of matchdays sorted by matchday
+    /**
+     * Gets dates of matchdays sorted by matchday.
      */
     public function getMatchdayDates(array $data): array
     {
@@ -71,12 +71,16 @@ class FootballDataService implements FootballDataInterface
             }
         }
 
+        if (!array_filter(array_keys($dates), 'is_string')) {
+            ksort($dates);
+        }
+
         return $dates;
     }
 
-    /** 
-     * Gets date of first and last match for each matchday
-    */
+    /**
+     * Gets date of first and last match for each matchday.
+     */
     public function getFirstAndLastMatchdayDate(array $data): array
     {
         $firstAndLastMatchdayDate = [];
@@ -84,19 +88,19 @@ class FootballDataService implements FootballDataInterface
             $firstTimestamp = min(array_map('strtotime', $value));
             $firstDate = new \DateTime();
             $firstDate->setTimestamp($firstTimestamp);
-            $firstAndLastMatchdayDate[$matchday] = $firstDate->format('d.m.y');
+            //$firstAndLastMatchdayDate[$matchday] = ['dateFrom' => $firstDate->format('d.m.Y')];
 
             $lastTimestamp = max(array_map('strtotime', $value));
             $lastDate = new \DateTime();
             $lastDate->setTimestamp($lastTimestamp);
-            $firstAndLastMatchdayDate[$matchday] .= ' - '.$lastDate->format('d.m.Y');
+            $firstAndLastMatchdayDate[$matchday] = ['dateFrom' => $firstDate, 'dateTo' => $lastDate];
         }
 
         return $firstAndLastMatchdayDate;
     }
 
-    /** 
-     * Gets status of each matchday (if all matches are finished, scheduled or half finished)
+    /**
+     * Gets status of each matchday (if all matches are finished, scheduled or half finished).
      */
     public function getRoundStatus(array $data): array
     {
