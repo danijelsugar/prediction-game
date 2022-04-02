@@ -10,7 +10,7 @@
 {% block body %}
     <div class="content-center cl-white">
         <div class="row justify-content-center">
-            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div class="col-xl-6 col-lg-4 col-md-6 col-sm-12">
                 <div class="account-form">
                     <div class="title">
                         <h3>Create your account</h3>
@@ -18,15 +18,21 @@
                     <div class="login-via">
                         <a class="facebook-bg" href="#">
                             <i class="fa fa-facebook"></i> 
-                            Login with Facebook
+                            Signup with Facebook
                         </a>
                         <a class="google-bg" href="#">
                             <i class="fa fa-google"></i> 
-                            Login with Google
+                            Signup with Google
                         </a>
                     </div>
                     {{ form_start(registrationForm) }}
                         <div class="row">
+                            <div class="col-xl-6">
+                                {{ form_row(registrationForm.firstName) }}
+                            </div>
+                            <div class="col-xl-6">
+                                {{ form_row(registrationForm.lastName) }}
+                            </div>
                             <div class="col-xl-12">
                                 {{ form_row(registrationForm.username) }}
                             </div>
@@ -34,15 +40,13 @@
                                 {{ form_row(registrationForm.email) }}
                             </div>
                             <div class="col-xl-12">
-                                {{ form_row(registrationForm.plainPassword, {
-                                    label: 'Password'
-                                }) }}
+                                {{ form_row(registrationForm.plainPassword)}}
                             </div>
                             <div class="col-xl-12">
                                 {{ form_row(registrationForm.agreeTerms) }}
                             </div>
                             <div class="col-xl-12">
-                                <p>By signing up to betsb you confirm that you agree with the <a href="">member terms and conditions</a></p>
+                                <p>By signing up to prediction game you confirm that you agree with the <a href="">member terms and conditions</a></p>
                             </div>
                             <div class="col-xl-12">
                                 <button type="submit" class="btn btn-fill w-100">Create my account</button>
