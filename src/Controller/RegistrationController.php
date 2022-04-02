@@ -44,7 +44,6 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 'app_verify_email',
                 (string) $user->getId(),

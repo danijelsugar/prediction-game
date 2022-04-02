@@ -44,7 +44,10 @@
                         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                 <li class="nav-item">
-                                    <a class="nav-link btn btn-fill" href="{{ path('app_logout') }}"><i class="fa fa-lock"></i>Logout</a>
+                                    <a class="nav-link btn btn-fill" href="{{ path('app_settings') }}"><i class="fas fa-cog"></i>Settings</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-fill ms-2" href="{{ path('app_logout') }}"><i class="fa fa-lock"></i>Logout</a>
                                 </li>
                             {% else %}
                                 <li class="nav-item">

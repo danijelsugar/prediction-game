@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="content-center cl-white">
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-4 col-md-6 col-sm-12">
+                <div class="account-form">
+                    <div class="title">
+                        <h3>Settings</h3>
+                    </div>
+                    {{ form_start(form) }}
+                        <div class="col-xl-12">
+                            {{ form_row(form.firstName) }}
+                        </div>
+                        <div class="col-xl-12">
+                            {{ form_row(form.lastName) }}
+                        </div>
+                        <div class="col-xl-12">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div class="col-xl-12">
+                            <button type="submit" class="btn btn-fill w-100">Save</button>
+                        </div>
+                    <div class="title">
+                        <h5>Change password</h5>
+                    </div>
+                    {{ form_end(form) }}{{ form_start(changePasswordForm) }}
+                        <div class="col-xl-12">
+                            {{ form_row(changePasswordForm.currentPassword) }}
+                        </div>
+                        <div class="col-xl-12">
+                            {{ form_row(changePasswordForm.newPassword) }}
+                        </div>
+                        <div class="col-xl-12">
+                            <button type="submit" class="btn btn-fill w-100">Save</button>
+                        </div>
+                    {{ form_end(changePasswordForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
