@@ -238,6 +238,12 @@ a {
     right: 24px;
 }
 
+.prediction-input {
+    width: 35px;
+    border-radius: 6px;
+    text-align: center;
+}
+
 .card-header button {
     height: 0;
 }
