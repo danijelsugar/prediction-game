@@ -38,6 +38,21 @@ class RoundMatchRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return RoundMatch[] Returns an array of RoundMatch objects
+     */
+    public function findMatchesForInterval(\DateTimeInterface $dateTo)
+    {
+        return $this->createQueryBuilder('rm')
+            ->where('rm.date >= :dateFrom')
+            ->andWhere('rm.date <= :dateTo')
+            ->setParameter('dateFrom', new \DateTime())
+            ->setParameter('dateTo', $dateTo)
+            ->orderBy('rm.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return RoundMatch[] Returns an array of RoundMatch objects
     //  */
