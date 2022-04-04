@@ -75,6 +75,7 @@ class CompetitionCommand extends Command
                 $competition
                     ->setCompetition($apiCompetition->id)
                     ->setName($apiCompetition->name)
+                    ->setCode($apiCompetition->code)
                     ->setArea($apiCompetition->area->name)
                     ->setLastUpdated($apiCompetition->lastUpdated);
                 if (null !== $apiCompetition->emblemUrl) {
@@ -88,6 +89,7 @@ class CompetitionCommand extends Command
                 if ($apiCompetition->lastUpdated !== $competition->getLastUpdated()) {
                     $competition
                         ->setName($apiCompetition->name)
+                        ->setCode($apiCompetition->code)
                         ->setArea($apiCompetition->area->name)
                         ->setLastUpdated($apiCompetition->lastUpdated);
                     if (null !== $apiCompetition->emblemUrl) {
