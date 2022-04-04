@@ -5,71 +5,74 @@
 {% block body %}
     <div class="card">
         <div class="card-body">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <p class="text-center mb-0">{{ match.match.utcDate|date('d.m.Y H:i:s') }}</p>
-                    <p class="text-center mb-0">{{ match.match.homeTeam.name }} - {{ match.match.awayTeam.name }}</p> 
-                    <p class="text-center mb-0">
-                        {{ match.match.score.fullTime.homeTeam ?? '-'}}:{{ match.match.score.fullTime.awayTeam ?? '-'}}
-                    </p>
+            {% if match is same as null %}
+                <p class="text-center mb-0">Match statistics currently unavailable.</p>
+            {% else %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="text-center mb-0">{{ match.match.utcDate|date('d.m.Y H:i:s') }}</p>
+                        <p class="text-center mb-0">{{ match.match.homeTeam.name }} - {{ match.match.awayTeam.name }}</p> 
+                        <p class="text-center mb-0">
+                            {{ match.match.score.fullTime.homeTeam ?? '-'}}:{{ match.match.score.fullTime.awayTeam ?? '-'}}
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="text-center" colspan="2">Head2Head Statistics</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total matches:</td>
-                                <td>{{ match.head2head.numberOfMatches }}</td>
-                            </tr>
-                            <tr>
-                                <td>Total goals:</td>
-                                <td>{{ match.head2head.totalGoals }}</td>
-                            </tr>
-                            <tr>
-                                <td>Avg goals / match:</td>
-                                <td>{{ match.head2head.totalGoals / match.head2head.numberOfMatches }}</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">{{ match.match.homeTeam.name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Wins:</td>
-                                <td>{{ match.head2head.homeTeam.wins }}({{ match.head2head.homeTeam.wins / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                            <tr>
-                                <td>Draws:</td>
-                                <td>{{ match.head2head.homeTeam.draws }}({{ match.head2head.homeTeam.draws / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                            <tr>
-                                <td>Losses:</td>
-                                <td>{{ match.head2head.homeTeam.losses }}({{ match.head2head.homeTeam.losses / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                            <tr>
-                                <td class="fw-bold">{{ match.match.awayTeam.name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Wins:</td>
-                                <td>{{ match.head2head.awayTeam.wins }}({{ match.head2head.awayTeam.wins / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                            <tr>
-                                <td>Draws:</td>
-                                <td>{{ match.head2head.awayTeam.draws }}({{ match.head2head.awayTeam.draws / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                            <tr>
-                                <td>Losses:</td>
-                                <td>{{ match.head2head.awayTeam.losses }}({{ match.head2head.awayTeam.losses / match.head2head.numberOfMatches * 100 }}%)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" colspan="2">Head2Head Statistics</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total matches:</td>
+                                    <td>{{ match.head2head.numberOfMatches }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total goals:</td>
+                                    <td>{{ match.head2head.totalGoals }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Avg goals / match:</td>
+                                    <td>{{ match.head2head.totalGoals / match.head2head.numberOfMatches }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">{{ match.match.homeTeam.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Wins:</td>
+                                    <td>{{ match.head2head.homeTeam.wins }}({{ match.head2head.homeTeam.wins / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                                <tr>
+                                    <td>Draws:</td>
+                                    <td>{{ match.head2head.homeTeam.draws }}({{ match.head2head.homeTeam.draws / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                                <tr>
+                                    <td>Losses:</td>
+                                    <td>{{ match.head2head.homeTeam.losses }}({{ match.head2head.homeTeam.losses / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">{{ match.match.awayTeam.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Wins:</td>
+                                    <td>{{ match.head2head.awayTeam.wins }}({{ match.head2head.awayTeam.wins / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                                <tr>
+                                    <td>Draws:</td>
+                                    <td>{{ match.head2head.awayTeam.draws }}({{ match.head2head.awayTeam.draws / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                                <tr>
+                                    <td>Losses:</td>
+                                    <td>{{ match.head2head.awayTeam.losses }}({{ match.head2head.awayTeam.losses / match.head2head.numberOfMatches * 100 }}%)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            
+            {% endif %}
         </div>
     </div>
 {% endblock %}
