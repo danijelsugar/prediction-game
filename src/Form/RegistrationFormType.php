@@ -45,8 +45,8 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Please enter an email',
                     ]),
                     new Email([
-                        'message' => 'The email {{ value }} is not a valid email.'
-                    ])
+                        'message' => 'The email {{ value }} is not a valid email.',
+                    ]),
                 ],
                 'required' => false,
             ]);
