@@ -8,12 +8,63 @@
 {% endblock %}
 
 {% block body %}
-    <div class="content-center cl-white">
-        <div class="row justify-content-center">
-            <div class="col-xl-8 col-lg-4 col-md-6 col-sm-12">
-                Tbd
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">All predictions for the next 7 days</h3>
+        </div>
+        <div class="card-body">
+            <table class="table" data-url="{{ path('app_predictions_save') }}">
+                <tbody>
+                    {% for date, matches in sortedMatches %}
+                        <tr>
+                            <td class="text-center bg-secondary" colspan="7">{{ date|date('D') }} - {{ date|date('M d') }}</td>
+                        </tr>
+                        {% for match in matches %}
+                            <tr class="match">
+                                <td>
+                                    <img width="25px" src="{{ match.competitionEmblem }}" alt="{{ match.competitionName }}">
+                                </td>
+                                <td>{{ match.competitionCode }}</td>
+                                <td><span class="visuallyhidden startTime">{{ match.date|date('d.m.Y H:i') }}</span>{{ match.date|date('H:s') }}</td>
+                                <td>{{ match.homeTeamName }}</td>
+                                <td>
+                                    {% if match.finished is not same as true and is_granted('ROLE_USER') %}
+                                        <div>
+                                            <input
+                                                type="text" 
+                                                class="me-1 prediction-input homeTeamScore" 
+                                                value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
+                                            <input 
+                                                type="text" 
+                                                class="prediction-input awayTeamScore"
+                                                value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
+                                            <input type="hidden" class="matchId" value="{{ match.id }}">
+                                            <input type="hidden" class="competitionId" value="{{ match.competition }}">
+                                        </div>
+                                    {% else %}
+                                        {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
+                                        {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ match.awayTeamName }}</td>
+                                <td><a href="{{ path('app_match_statistics', {'id': match.id}) }}" title="Statistics"><i class="fas fa-search"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        {% if is_granted('ROLE_USER') %}
+                            <td><button id="savePrediction">Save</button></td>
+                        {% endif %}
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
-    
+    {{ include('_prediction_notification.html.twig') }}
+{% endblock %}
+{% block script %}
+    {{ parent() }}
+    <script src="{{ asset('assets/js/prediction.js') }}"></script>
 {% endblock %}
