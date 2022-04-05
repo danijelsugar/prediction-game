@@ -18,7 +18,7 @@ class HomeController extends AbstractController
         RoundMatchRepository $roundMatchRepository,
         PredictionRepository $predictionRepository
     ): Response {
-        $dateTo = (new \DateTime())->modify('+7 day');
+        $dateTo = (new \DateTime())->modify('+5 day');
         $matches = $roundMatchRepository->findMatchesForInterval($dateTo);
 
         /** @var User|null */
