@@ -149,7 +149,7 @@ class CompetitionRoundMatchCommand extends Command
 
             $offset += 6;
 
-            sleep(60);
+            sleep(57);
         }
 
         $io->success('Finished inserting rounds matches.');
