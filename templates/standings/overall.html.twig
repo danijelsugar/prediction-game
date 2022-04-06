@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello StandingsController!{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Standings</h3>
+        </div>
+        <div class="card-body">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Overall standings</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            {% set pos = 1 %}
+                            {% for user in users %}
+                                <tr>
+                                    <td>{{ pos }}.</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.points }}</td>
+                                </tr>
+                            {% set pos = pos + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
