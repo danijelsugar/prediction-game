@@ -39,7 +39,7 @@ class FootballDataService implements FootballDataInterface
     /**
      * Gets only needed data from api response.
      */
-    public function getPredictionRoundsInfo(array $matches): array
+    public function getMatchesInfo(array $matches): array
     {
         $matchdayInfo = [];
         foreach ($matches as $match) {
@@ -58,16 +58,31 @@ class FootballDataService implements FootballDataInterface
     /**
      * Gets dates of matchdays sorted by matchday.
      */
-    public function getMatchdayDates(array $data): array
+    public function getRoundInfo(array $data): array
     {
         $dates = [];
         foreach ($data as $info) {
             if (!is_null($info['matchday']) && is_null($info['group']) && 'REGULAR_SEASON' !== $info['stage']) {
-                $dates[$info['stage']][] = $info['date'];
+                $dates[$info['stage']][] = [
+                    'matchday' => $info['matchday'],
+                    'stage' => $info['stage'],
+                    'date' => $info['date'],
+                    'status' => $info['status'],
+                ];
             } elseif (!is_null($info['matchday'])) {
-                $dates[$info['matchday']][] = $info['date'];
+                $dates[$info['matchday']][] = [
+                    'matchday' => $info['matchday'],
+                    'stage' => $info['stage'],
+                    'date' => $info['date'],
+                    'status' => $info['status'],
+                ];
             } else {
-                $dates[$info['stage']][] = $info['date'];
+                $dates[$info['stage']][] = [
+                    'matchday' => $info['matchday'],
+                    'stage' => $info['stage'],
+                    'date' => $info['date'],
+                    'status' => $info['status'],
+                ];
             }
         }
 
@@ -79,53 +94,55 @@ class FootballDataService implements FootballDataInterface
     }
 
     /**
-     * Gets date of first and last match for each matchday.
+     * Gets date of first and last match for each round.
      */
     public function getFirstAndLastMatchdayDate(array $data): array
     {
-        $firstAndLastMatchdayDate = [];
-        foreach ($data as $matchday => $value) {
-            $firstTimestamp = min(array_map('strtotime', $value));
-            $firstDate = new \DateTime();
-            $firstDate->setTimestamp($firstTimestamp);
-            //$firstAndLastMatchdayDate[$matchday] = ['dateFrom' => $firstDate->format('d.m.Y')];
-
-            $lastTimestamp = max(array_map('strtotime', $value));
-            $lastDate = new \DateTime();
-            $lastDate->setTimestamp($lastTimestamp);
-            $firstAndLastMatchdayDate[$matchday] = ['dateFrom' => $firstDate, 'dateTo' => $lastDate];
+        $dates = [];
+        foreach ($data as $match) {
+            $dates[] = $match['date'];
         }
+        $firstTimestamp = min(array_map('strtotime', $dates));
+        $firstDate = (new \DateTime())->setTimestamp($firstTimestamp);
 
-        return $firstAndLastMatchdayDate;
+        $lastTimestamp = max(array_map('strtotime', $dates));
+        $lastDate = (new \DateTime())->setTimestamp($lastTimestamp);
+
+        return ['dateFrom' => $firstDate, 'dateTo' => $lastDate];
     }
 
     /**
-     * Gets status of each matchday (if all matches are finished, scheduled or half finished).
+     * Gets status of each round (if all matches are finished, scheduled or half finished).
      */
-    public function getRoundStatus(array $data): array
+    public function getRoundStatus(array $data): string
     {
         $roundStatus = [];
-        foreach ($data as $info) {
-            if (!is_null($info['matchday']) && is_null($info['group']) && 'REGULAR_SEASON' !== $info['stage']) {
-                $roundStatus[$info['stage']][] = $info['status'];
-            } elseif (!is_null($info['matchday'])) {
-                $roundStatus[$info['matchday']][] = $info['status'];
-            } else {
-                $roundStatus[$info['stage']][] = $info['status'];
-            }
+        foreach ($data as $match) {
+            $roundStatus[] = $match['status'];
         }
 
-        foreach ($roundStatus as $key => $value) {
-            if (1 === count(array_unique($value)) && 'FINISHED' === end($value)) {
-                $roundStatus[$key] = 'FINISHED';
-            } elseif (1 === count(array_unique($value)) && 'SCHEDULED' === end($value)) {
-                $roundStatus[$key] = 'SCHEDULED';
-            } else {
-                $roundStatus[$key] = 'HALF';
-            }
+        if (1 === count(array_unique($roundStatus)) && 'FINISHED' === end($roundStatus)) {
+            $status = 'FINISHED';
+        } elseif (1 === count(array_unique($roundStatus)) && 'SCHEDULED' === end($roundStatus)) {
+            $status = 'SCHEDULED';
+        } else {
+            $status = 'HALF';
         }
 
-        return $roundStatus;
+        return $status;
+    }
+
+    /**
+     * Gets stage of round.
+     */
+    public function getRoundStage(array $data): string
+    {
+        $roundStage = [];
+        foreach ($data as $match) {
+            $roundStage[] = $match['stage'];
+        }
+
+        return end($roundStage);
     }
 
     /** Get competition season(2020/2021) or year(2018) */
