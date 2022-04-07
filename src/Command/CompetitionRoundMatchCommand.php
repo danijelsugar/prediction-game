@@ -80,6 +80,7 @@ class CompetitionRoundMatchCommand extends Command
                             'competitions/'.$round->getCompetition()->getCompetition().'/matches',
                             [
                                 'matchday' => $round->getName(),
+                                'stage' => $round->getStage(),
                             ]
                         );
                     } catch (ClientException $e) {
