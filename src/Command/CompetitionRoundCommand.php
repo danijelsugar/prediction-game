@@ -74,7 +74,7 @@ class CompetitionRoundCommand extends Command
 
             foreach ($competitions as $competition) {
                 try {
-                    $roundsMatches = $this->footballData->fetchData(
+                    $competitionMatches = $this->footballData->fetchData(
                         'competitions/'.$competition->getCompetition().'/matches'
                     );
                 } catch (ClientException $e) {
@@ -82,15 +82,11 @@ class CompetitionRoundCommand extends Command
                     continue;
                 }
 
-                $rounds = $this->footballData->getPredictionRoundsInfo($roundsMatches->matches);
+                $matches = $this->footballData->getMatchesInfo($competitionMatches->matches);
 
-                $dates = $this->footballData->getMatchdayDates($rounds);
+                $rounds = $this->footballData->getRoundInfo($matches);
 
-                $firstAndLastDate = $this->footballData->getFirstAndLastMatchdayDate($dates);
-
-                $roundStatus = $this->footballData->getRoundStatus($rounds);
-
-                foreach ($firstAndLastDate as $key => $value) {
+                foreach ($rounds as $key => $value) {
                     $round = $this->roundRepository->findOneBy(
                         [
                             'competition' => $competition,
@@ -98,21 +94,26 @@ class CompetitionRoundCommand extends Command
                         ]
                     );
 
+                    $firstAndLastDate = $this->footballData->getFirstAndLastMatchdayDate($value);
+                    $status = $this->footballData->getRoundStatus($value);
+                    $stage = $this->footballData->getRoundStage($value);
+
                     if (!$round) {
                         $round = new Round();
                         $round
                             ->setCompetition($competition)
                             ->setName($key)
-                            ->setDateFrom($value['dateFrom'])
-                            ->setDateTo($value['dateTo'])
-                            ->setStatus($roundStatus[$key]);
+                            ->setStage($stage)
+                            ->setDateFrom($firstAndLastDate['dateFrom'])
+                            ->setDateTo($firstAndLastDate['dateTo'])
+                            ->setStatus($status);
                         $this->entityManager->persist($round);
                     } else {
-                        if ($value['dateFrom']->format('Y-m-d H:i:s') !== $round->getDateFrom()->format('Y-m-d H:i:s') || $value['dateTo']->format('Y-m-d H:i:s') !== $round->getDateTo()->format('Y-m-d H:i:s') || $roundStatus[$key] !== $round->getStatus()) {
-                            $round->setDateFrom($value['dateFrom'])
-                                ->setDateTo($value['dateTo'])
-                                ->setStatus($roundStatus[$key]);
-                        }
+                        $round
+                            ->setStage($stage)
+                            ->setDateFrom($firstAndLastDate['dateFrom'])
+                            ->setDateTo($firstAndLastDate['dateTo'])
+                            ->setStatus($status);
                     }
                 }
 
