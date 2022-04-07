@@ -31,6 +31,11 @@ class Round
     private string $name;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $stage;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $dateFrom;
@@ -41,7 +46,7 @@ class Round
     private \DateTimeInterface $dateTo;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=50)
      */
     private string $status;
 
@@ -80,6 +85,18 @@ class Round
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getStage(): ?string
+    {
+        return $this->stage;
+    }
+
+    public function setStage(?string $stage): self
+    {
+        $this->stage = $stage;
 
         return $this;
     }
