@@ -69,12 +69,12 @@ class PredictionController extends AbstractController
             $userPrediction = null;
 
             if ($user) {
-                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch);
+                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch['matchId']);
             }
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($roundMatch->getDate()->format('Y-m-d H:i'));
+            $matchDateTime = new \DateTime($roundMatch['date']->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
@@ -82,17 +82,16 @@ class PredictionController extends AbstractController
             }
 
             $matches[] = [
-                'id' => $roundMatch->getMatchId(),
-                'round' => $roundMatch->getRound(),
-                'date' => $roundMatch->getDate(),
-                'homeTeamName' => $roundMatch->getHomeTeamName(),
-                'awayTeamName' => $roundMatch->getAwayTeamName(),
-                'fullTimeHomeTeamScore' => $roundMatch->getFullTimeHomeTeamScore(),
-                'fullTimeAwayTeamScore' => $roundMatch->getFullTimeAwayTeamScore(),
-                'extraTimeHomeTeamScore' => $roundMatch->getExtraTimeHomeTeamScore(),
-                'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
+                'id' => $roundMatch['matchId'],
+                'date' => $roundMatch['date'],
+                'homeTeamName' => $roundMatch['homeTeamName'],
+                'awayTeamName' => $roundMatch['awayTeamName'],
+                'fullTimeHomeTeamScore' => $roundMatch['fullTimeHomeTeamScore'],
+                'fullTimeAwayTeamScore' => $roundMatch['fullTimeAwayTeamScore'],
+                'extraTimeHomeTeamScore' => $roundMatch['extraTimeHomeTeamScore'],
+                'extraTimeAwayTeamScore' => $roundMatch['extraTimeAwayTeamScore'],
                 'finished' => $finished,
-                'winner' => $roundMatch->getWinner(),
+                'winner' => $roundMatch['winner'],
                 'userPrediction' => $userPrediction,
             ];
         }
@@ -184,7 +183,7 @@ class PredictionController extends AbstractController
 
             $match = $roundMatchRepository->findOneBy(
                 [
-                    'matchId' => $data->match,
+                    'id' => $data->match,
                 ]
             );
 
@@ -198,7 +197,7 @@ class PredictionController extends AbstractController
                 continue;
             }
 
-            $previousPrediction = $predictionRepository->findPrediction($user, $match);
+            $previousPrediction = $predictionRepository->findPrediction($user, $match->getMatchId());
 
             if (!$previousPrediction) {
                 $prediction = new Prediction();
