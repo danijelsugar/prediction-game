@@ -22,14 +22,14 @@ class PredictionRepository extends ServiceEntityRepository
         parent::__construct($registry, Prediction::class);
     }
 
-    public function findPrediction(User $user, RoundMatch $match): ?Prediction
+    public function findPrediction(User $user, int $matchId): ?Prediction
     {
         return $this->createQueryBuilder('p')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
             ->where('p.user = :user')
             ->andWhere('rm.matchId = :matchId')
             ->setParameter('user', $user->getId())
-            ->setParameter('matchId', $match->getMatchId())
+            ->setParameter('matchId', $matchId)
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -37,7 +37,7 @@ class PredictionRepository extends ServiceEntityRepository
     /**
      * @return Prediction[] Returns an array of Prediction objects
      */
-    public function findPredictions(RoundMatch $match, int $competition, bool $finished = false)
+    public function findPredictions(RoundMatch $match, Competition $competition, bool $finished = false)
     {
         return $this->createQueryBuilder('p')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
@@ -47,7 +47,7 @@ class PredictionRepository extends ServiceEntityRepository
             ->andWhere('p.finished = :finished')
             ->andWhere('p.points IS NULL')
             ->setParameter('matchId', $match->getMatchId())
-            ->setParameter('competition', $competition)
+            ->setParameter('competition', $competition->getId())
             ->setParameter('finished', $finished)
             ->getQuery()
             ->getResult();
