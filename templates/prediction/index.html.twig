@@ -18,7 +18,7 @@
                     <li class="list-group-item">
                         <a class="card-link row" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round.name}) }}">
                             <span class="col-4 text-start">
-                                <span class="circle circle-{{ round.status|lower }}"><span class="status-{{ round.status|lower }}"></span></span>
+                                <div class="circle circle-{{ round.status|lower }}"><div class="status-{{ round.status|lower }}"></div></div>
                                 {% if round.name matches '/^\\d+$/' %}
                                     {{ 'Round #' ~ round.name}}
                                 {% else %}
