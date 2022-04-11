@@ -29,33 +29,33 @@ class HomeController extends AbstractController
             $userPrediction = null;
 
             if ($user) {
-                $userPrediction = $predictionRepository->findPrediction($user, $match);
+                $userPrediction = $predictionRepository->findPrediction($user, $match['matchId']);
             }
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($match->getDate()->format('Y-m-d H:i'));
+            $matchDateTime = new \DateTime($match['date']->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
                 $finished = true;
             }
 
-            $sortedMatches[$match->getDate()->format('Y-m-d')][] = [
-                'id' => $match->getMatchId(),
-                'date' => $match->getDate(),
-                'homeTeamName' => $match->getHomeTeamName(),
-                'awayTeamName' => $match->getAwayTeamName(),
-                'fullTimeHomeTeamScore' => $match->getFullTimeHomeTeamScore(),
-                'fullTimeAwayTeamScore' => $match->getFullTimeAwayTeamScore(),
-                'extraTimeHomeTeamScore' => $match->getExtraTimeHomeTeamScore(),
-                'extraTimeAwayTeamScore' => $match->getExtraTimeAwayTeamScore(),
+            $sortedMatches[$match['date']->format('Y-m-d')][] = [
+                'id' => $match['id'],
+                'date' => $match['date'],
+                'homeTeamName' => $match['homeTeamName'],
+                'awayTeamName' => $match['awayTeamName'],
+                'fullTimeHomeTeamScore' => $match['fullTimeHomeTeamScore'],
+                'fullTimeAwayTeamScore' => $match['fullTimeAwayTeamScore'],
+                'extraTimeHomeTeamScore' => $match['extraTimeHomeTeamScore'],
+                'extraTimeAwayTeamScore' => $match['extraTimeAwayTeamScore'],
                 'finished' => $finished,
-                'winner' => $match->getWinner(),
-                'competition' => $match->getRound()->getCompetition()->getCompetition(),
-                'competitionName' => $match->getRound()->getCompetition()->getName(),
-                'competitionCode' => $match->getRound()->getCompetition()->getCode(),
-                'competitionEmblem' => $match->getRound()->getCompetition()->getEmblemUrl(),
+                'winner' => $match['winner'],
+                'competition' => $match['competition'],
+                'competitionName' => $match['competitionName'],
+                'competitionCode' => $match['competitionCode'],
+                'competitionEmblem' => $match['competitionEmblem'],
                 'userPrediction' => $userPrediction,
             ];
         }
