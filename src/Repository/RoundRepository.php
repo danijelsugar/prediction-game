@@ -21,7 +21,7 @@ class RoundRepository extends ServiceEntityRepository
         parent::__construct($registry, Round::class);
     }
 
-    public function findCompetitionRounds($competition)
+    public function findCompetitionRounds($competition): array
     {
         return $this->createQueryBuilder('r')
             ->select('r.id, c.competition, r.name, r.dateFrom, r.dateTo, r.status, count(rm.id) AS matches')
@@ -35,7 +35,7 @@ class RoundRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function roundCount()
+    public function roundCount(): int
     {
         return $this->createQueryBuilder('r')
             ->select('count(r.id)')
