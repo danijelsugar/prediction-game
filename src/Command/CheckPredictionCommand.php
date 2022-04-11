@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Repository\CompetitionRepository;
 use App\Repository\PredictionRepository;
 use App\Repository\RoundMatchRepository;
 use App\Service\FootballDataService;
@@ -28,6 +29,8 @@ class CheckPredictionCommand extends Command
 
     private RoundMatchRepository $roundMatchRepository;
 
+    private CompetitionRepository $competitionRepository;
+
     protected static $defaultName = 'app:check:prediction';
 
     public function __construct(
@@ -36,7 +39,8 @@ class CheckPredictionCommand extends Command
         EntityManagerInterface $entityManager,
         PointService $pointService,
         LoggerInterface $logger,
-        RoundMatchRepository $roundMatchRepository
+        RoundMatchRepository $roundMatchRepository,
+        CompetitionRepository $competitionRepository
     ) {
         $this->predictionRepository = $predictionRepository;
         $this->footballData = $footballData;
@@ -44,6 +48,7 @@ class CheckPredictionCommand extends Command
         $this->pointService = $pointService;
         $this->logger = $logger;
         $this->roundMatchRepository = $roundMatchRepository;
+        $this->competitionRepository = $competitionRepository;
 
         parent::__construct();
     }
@@ -101,6 +106,12 @@ class CheckPredictionCommand extends Command
                 ]
             );
 
+            $competition = $this->competitionRepository->findOneBy(
+                [
+                    'competition' => $match->competition->id,
+                ]
+            );
+
             if ($predictionMatch) {
                 $predictionMatch
                     ->setStage($match->stage)
@@ -116,7 +127,7 @@ class CheckPredictionCommand extends Command
                     ->setLastUpdated($match->lastUpdated);
             }
 
-            $predictions = $this->predictionRepository->findPredictions($predictionMatch, $match->competition->id);
+            $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
 
             if ($predictions) {
                 foreach ($predictions as $prediction) {
