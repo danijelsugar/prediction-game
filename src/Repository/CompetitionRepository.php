@@ -19,7 +19,7 @@ class CompetitionRepository extends ServiceEntityRepository
         parent::__construct($registry, Competition::class);
     }
 
-    public function competitionsCount()
+    public function competitionsCount(): int
     {
         return $this->createQueryBuilder('c')
             ->select('count(c.id)')
