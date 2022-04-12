@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Entity\RoundMatch;
 use App\Repository\RoundMatchRepository;
 use App\Repository\RoundRepository;
-use App\Service\FootballDataService;
+use App\Service\FootballDataInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +19,7 @@ class CompetitionRoundMatchCommand extends Command
 {
     private RoundRepository $roundRepository;
 
-    private FootballDataService $footballData;
+    private FootballDataInterface $footballData;
 
     private EntityManagerInterface $entityManager;
 
@@ -31,7 +31,7 @@ class CompetitionRoundMatchCommand extends Command
 
     public function __construct(
         RoundRepository $roundRepository,
-        FootballDataService $footballData,
+        FootballDataInterface $footballData,
         EntityManagerInterface $entityManager,
         RoundMatchRepository $roundMatchRepository,
         LoggerInterface $logger

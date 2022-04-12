@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Entity\Competition;
 use App\Repository\CompetitionRepository;
-use App\Service\FootballDataService;
+use App\Service\FootballDataInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ class CompetitionCommand extends Command
 {
     private EntityManagerInterface $entityManager;
 
-    private FootballDataService $footballData;
+    private FootballDataInterface $footballData;
 
     private CompetitionRepository $competitionRepository;
 
@@ -27,7 +27,7 @@ class CompetitionCommand extends Command
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        FootballDataService $footballData,
+        FootballDataInterface $footballData,
         CompetitionRepository $competitionRepository,
         LoggerInterface $logger
     ) {

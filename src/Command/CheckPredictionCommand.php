@@ -5,7 +5,7 @@ namespace App\Command;
 use App\Repository\CompetitionRepository;
 use App\Repository\PredictionRepository;
 use App\Repository\RoundMatchRepository;
-use App\Service\FootballDataService;
+use App\Service\FootballDataInterface;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,7 +19,7 @@ class CheckPredictionCommand extends Command
 {
     private PredictionRepository $predictionRepository;
 
-    private FootballDataService $footballData;
+    private FootballDataInterface $footballData;
 
     private EntityManagerInterface $entityManager;
 
@@ -35,7 +35,7 @@ class CheckPredictionCommand extends Command
 
     public function __construct(
         PredictionRepository $predictionRepository,
-        FootballDataService $footballData,
+        FootballDataInterface $footballData,
         EntityManagerInterface $entityManager,
         PointService $pointService,
         LoggerInterface $logger,
