@@ -10,8 +10,10 @@
 .vscode
 
 ###> friendsofphp/php-cs-fixer ###
+/tools/php-cs-fixer/vendor/
 /.php-cs-fixer.php
 /.php_cs.cache
+/.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
 /logs/
