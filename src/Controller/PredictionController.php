@@ -69,12 +69,12 @@ class PredictionController extends AbstractController
             $userPrediction = null;
 
             if ($user) {
-                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch['matchId']);
+                $userPrediction = $predictionRepository->findPrediction($user, $roundMatch->getMatchId());
             }
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($roundMatch['date']->format('Y-m-d H:i'));
+            $matchDateTime = new \DateTime($roundMatch->getDate()->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
@@ -82,16 +82,16 @@ class PredictionController extends AbstractController
             }
 
             $matches[] = [
-                'id' => $roundMatch['matchId'],
-                'date' => $roundMatch['date'],
-                'homeTeamName' => $roundMatch['homeTeamName'],
-                'awayTeamName' => $roundMatch['awayTeamName'],
-                'fullTimeHomeTeamScore' => $roundMatch['fullTimeHomeTeamScore'],
-                'fullTimeAwayTeamScore' => $roundMatch['fullTimeAwayTeamScore'],
-                'extraTimeHomeTeamScore' => $roundMatch['extraTimeHomeTeamScore'],
-                'extraTimeAwayTeamScore' => $roundMatch['extraTimeAwayTeamScore'],
+                'id' => $roundMatch->getMatchId(),
+                'date' => $roundMatch->getDate(),
+                'homeTeamName' => $roundMatch->getHomeTeamName(),
+                'awayTeamName' => $roundMatch->getAwayTeamName(),
+                'fullTimeHomeTeamScore' => $roundMatch->getFullTimeHomeTeamScore(),
+                'fullTimeAwayTeamScore' => $roundMatch->getFullTimeAwayTeamScore(),
+                'extraTimeHomeTeamScore' => $roundMatch->getExtraTimeHomeTeamScore(),
+                'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
                 'finished' => $finished,
-                'winner' => $roundMatch['winner'],
+                'winner' => $roundMatch->getWinner(),
                 'userPrediction' => $userPrediction,
             ];
         }
@@ -169,6 +169,7 @@ class PredictionController extends AbstractController
         $predictionsEntered = count($predictionData);
 
         $validPredictions = 0;
+
         foreach ($predictionData as $data) {
             $matchStartTime = new \DateTime($data->startTime);
             $currentDateTime = new \DateTime();
@@ -189,7 +190,7 @@ class PredictionController extends AbstractController
 
             $competition = $competitionRepository->findOneBy(
                 [
-                    'competition' => $data->competition,
+                    'id' => $data->competition,
                 ]
             );
 
@@ -214,7 +215,6 @@ class PredictionController extends AbstractController
                 $previousPrediction->setAwayTeamPrediction($data->awayTeam);
                 $entityManager->persist($previousPrediction);
             }
-
             ++$validPredictions;
         }
         $entityManager->flush();

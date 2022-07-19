@@ -20,6 +20,7 @@ class HomeController extends AbstractController
     ): Response {
         $dateTo = (new \DateTime())->modify('+5 day');
         $matches = $roundMatchRepository->findMatchesForInterval($dateTo);
+        // dd($matches);
 
         /** @var User|null */
         $user = $this->getUser();
@@ -29,33 +30,33 @@ class HomeController extends AbstractController
             $userPrediction = null;
 
             if ($user) {
-                $userPrediction = $predictionRepository->findPrediction($user, $match['matchId']);
+                $userPrediction = $predictionRepository->findPrediction($user, $match->getMatchId());
             }
 
             $finished = false;
 
-            $matchDateTime = new \DateTime($match['date']->format('Y-m-d H:i'));
+            $matchDateTime = new \DateTime($match->getDate()->format('Y-m-d H:i'));
             $currentDateTime = new \DateTime();
 
             if ($currentDateTime > $matchDateTime) {
                 $finished = true;
             }
 
-            $sortedMatches[$match['date']->format('Y-m-d')][] = [
-                'id' => $match['id'],
-                'date' => $match['date'],
-                'homeTeamName' => $match['homeTeamName'],
-                'awayTeamName' => $match['awayTeamName'],
-                'fullTimeHomeTeamScore' => $match['fullTimeHomeTeamScore'],
-                'fullTimeAwayTeamScore' => $match['fullTimeAwayTeamScore'],
-                'extraTimeHomeTeamScore' => $match['extraTimeHomeTeamScore'],
-                'extraTimeAwayTeamScore' => $match['extraTimeAwayTeamScore'],
+            $sortedMatches[$match->getDate()->format('Y-m-d')][] = [
+                'id' => $match->getId(),
+                'date' => $match->getDate(),
+                'homeTeamName' => $match->getHomeTeamName(),
+                'awayTeamName' => $match->getAwayTeamName(),
+                'fullTimeHomeTeamScore' => $match->getFullTimeHomeTeamScore(),
+                'fullTimeAwayTeamScore' => $match->getFullTimeAwayTeamScore(),
+                'extraTimeHomeTeamScore' => $match->getExtraTimeHomeTeamScore(),
+                'extraTimeAwayTeamScore' => $match->getExtraTimeAwayTeamScore(),
                 'finished' => $finished,
-                'winner' => $match['winner'],
-                'competition' => $match['competition'],
-                'competitionName' => $match['competitionName'],
-                'competitionCode' => $match['competitionCode'],
-                'competitionEmblem' => $match['competitionEmblem'],
+                'winner' => $match->getWinner(),
+                'competition' => $match->getRound()->getCompetition()->getId(),
+                'competitionName' => $match->getRound()->getCompetition()->getName(),
+                'competitionCode' => $match->getRound()->getCompetition()->getCode(),
+                'competitionEmblem' => $match->getRound()->getCompetition()->getEmblemUrl(),
                 'userPrediction' => $userPrediction,
             ];
         }

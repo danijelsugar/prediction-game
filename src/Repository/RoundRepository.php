@@ -27,7 +27,7 @@ class RoundRepository extends ServiceEntityRepository
             ->select('r.id, c.competition, r.name, r.dateFrom, r.dateTo, r.status, count(rm.id) AS matches')
             ->innerJoin(Competition::class, 'c', 'WITH', 'r.competition=c.id')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'r.id=rm.round')
-            ->where('c.competition = :competition')
+            ->andWhere('c.competition = :competition')
             ->groupBy('r.name')
             ->orderBy('r.id', 'ASC')
             ->setParameter('competition', $competition)

@@ -21,13 +21,17 @@ class RoundMatchRepository extends ServiceEntityRepository
         parent::__construct($registry, RoundMatch::class);
     }
 
+    /**
+     * @param int|string $round
+     *
+     * @return RoundMatch[]
+     */
     public function findRoundMatches(int $competition, $round): array
     {
         return $this->createQueryBuilder('rm')
-            ->select('rm.id, rm.matchId, rm.date, rm.homeTeamName, rm.awayTeamName, rm.fullTimeHomeTeamScore, rm.fullTimeAwayTeamScore, rm.extraTimeHomeTeamScore, rm.extraTimeAwayTeamScore, rm.winner')
             ->innerJoin(Round::class, 'r', 'WITH', 'rm.round=r.id')
             ->innerJoin(Competition::class, 'c', 'WITH', 'r.competition=c.id')
-            ->where('c.competition = :competition')
+            ->andWhere('c.competition = :competition')
             ->andWhere('r.name = :round')
             ->setParameter('competition', $competition)
             ->setParameter('round', $round)
@@ -36,13 +40,15 @@ class RoundMatchRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return RoundMatch[]
+     */
     public function findMatchesForInterval(\DateTimeInterface $dateTo): array
     {
         return $this->createQueryBuilder('rm')
-            ->select('rm.id, rm.matchId, rm.date, rm.homeTeamName, rm.awayTeamName, rm.fullTimeHomeTeamScore, rm.fullTimeAwayTeamScore, rm.extraTimeHomeTeamScore, rm.extraTimeAwayTeamScore, rm.winner, c.competition, c.name as competitionName, c.code as competitionCode, c.emblemUrl as competitionEmblem')
             ->innerJoin(Round::class, 'r', 'WITH', 'rm.round=r.id')
             ->innerJoin(Competition::class, 'c', 'WITH', 'r.competition=c.id')
-            ->where('rm.date >= :dateFrom')
+            ->andWhere('rm.date >= :dateFrom')
             ->andWhere('rm.date <= :dateTo')
             ->setParameter('dateFrom', new \DateTime())
             ->setParameter('dateTo', $dateTo)

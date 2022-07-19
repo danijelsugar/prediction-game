@@ -26,7 +26,7 @@ class PredictionRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
-            ->where('p.user = :user')
+            ->andWhere('p.user = :user')
             ->andWhere('rm.matchId = :matchId')
             ->setParameter('user', $user->getId())
             ->setParameter('matchId', $matchId)
@@ -42,7 +42,7 @@ class PredictionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'p.match=rm.id')
             ->innerJoin(Competition::class, 'c', 'WITH', 'p.competition=c.id')
-            ->where('rm.matchId = :matchId')
+            ->andWhere('rm.matchId = :matchId')
             ->andWhere('c.competition = :competition')
             ->andWhere('p.finished = :finished')
             ->andWhere('p.points IS NULL')
