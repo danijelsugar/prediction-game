@@ -10,6 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Prediction
 {
+    public const SPOT_ON = 6;
+    public const CORRECT_OUTCOME_SCORE_OR_DIFF = 4;
+    public const CORRECT_OUTCOME = 3;
+    public const ONE_TEAM_SCORE = 1;
+    public const NONE = 0;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -67,7 +73,7 @@ class Prediction
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $points;
+    private int $points = self::NONE;
 
     public function getId(): ?int
     {
@@ -177,7 +183,9 @@ class Prediction
 
     public function setPoints(?int $points): self
     {
-        $this->points = $points;
+        if (!in_array($points, [self::SPOT_ON, self::CORRECT_OUTCOME_SCORE_OR_DIFF, self::CORRECT_OUTCOME, self::ONE_TEAM_SCORE, self::NONE])) {
+            $this->points = $points;
+        }
 
         return $this;
     }

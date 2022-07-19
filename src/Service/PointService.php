@@ -6,24 +6,18 @@ use App\Entity\Prediction;
 
 class PointService
 {
-    private const SPOT_ON = 6;
-    private const CORRECT_OUTCOME_SCORE_OR_DIFF = 4;
-    private const CORRECT_OUTCOME = 3;
-    private const ONE_TEAM_SCORE = 1;
-    private const NONE = 0;
-
     public function calculatePoints($match, Prediction $prediction): int
     {
         if ($this->correctScore($match, $prediction)) {
-            return self::SPOT_ON;
+            return Prediction::SPOT_ON;
         } elseif ($this->correctOutcome($match, $prediction) && ($this->oneTeamScore($match, $prediction) || $this->checkGoalDiff($match, $prediction))) {
-            return self::CORRECT_OUTCOME_SCORE_OR_DIFF;
+            return Prediction::CORRECT_OUTCOME_SCORE_OR_DIFF;
         } elseif ($this->correctOutcome($match, $prediction) && !$this->oneTeamScore($match, $prediction)) {
-            return self::CORRECT_OUTCOME;
+            return Prediction::CORRECT_OUTCOME;
         } elseif (!$this->correctOutcome($match, $prediction) && $this->oneTeamScore($match, $prediction)) {
-            return self::ONE_TEAM_SCORE;
+            return Prediction::ONE_TEAM_SCORE;
         } else {
-            return self::NONE;
+            return Prediction::NONE;
         }
     }
 
