@@ -2,10 +2,10 @@
 
 namespace App\Command;
 
+use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
 use App\Repository\PredictionRepository;
 use App\Repository\RoundMatchRepository;
-use App\Service\FootballDataInterface;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,7 +19,7 @@ class CheckPredictionCommand extends Command
 {
     private PredictionRepository $predictionRepository;
 
-    private FootballDataInterface $footballData;
+    private FootballInterface $footballData;
 
     private EntityManagerInterface $entityManager;
 
@@ -35,7 +35,7 @@ class CheckPredictionCommand extends Command
 
     public function __construct(
         PredictionRepository $predictionRepository,
-        FootballDataInterface $footballData,
+        FootballInterface $footballData,
         EntityManagerInterface $entityManager,
         PointService $pointService,
         LoggerInterface $logger,
@@ -79,6 +79,7 @@ class CheckPredictionCommand extends Command
 
         $dateFrom = !empty($startDates) ? min($startDates) : new \DateTime();
 
+        /** @var \DateTime */
         $dateTo = clone $dateFrom;
         $dateTo->modify('+10 days');
 
@@ -124,7 +125,7 @@ class CheckPredictionCommand extends Command
                     ->setExtraTimeHomeTeamScore($match->score->extraTime->homeTeam)
                     ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
                     ->setWinner($match->score->winner)
-                    ->setLastUpdated($match->lastUpdated);
+                    ->setLastUpdated(new \DateTime($match->lastUpdated));
             }
 
             $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
