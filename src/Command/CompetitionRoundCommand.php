@@ -3,16 +3,15 @@
 namespace App\Command;
 
 use App\Entity\Round;
+use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
 use App\Repository\RoundRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionRoundCommand extends Command
 {
@@ -20,26 +19,26 @@ class CompetitionRoundCommand extends Command
 
     private CompetitionRepository $competitionRepository;
 
-    private FootballDataService $footballData;
+    private FootballInterface $footballData;
+
+    private FootballDataService $footballDataService;
 
     private RoundRepository $roundRepository;
-
-    private LoggerInterface $logger;
 
     protected static $defaultName = 'app:get:competition:round';
 
     public function __construct(
         EntityManagerInterface $entityManager,
         CompetitionRepository $competitionRepository,
-        FootballDataService $footballData,
-        RoundRepository $roundRepository,
-        LoggerInterface $logger
+        FootballInterface $footballDataNew,
+        FootballDataService $footballDataService,
+        RoundRepository $roundRepository
     ) {
         $this->entityManager = $entityManager;
         $this->competitionRepository = $competitionRepository;
-        $this->footballData = $footballData;
+        $this->footballData = $footballDataNew;
+        $this->footballDataService = $footballDataService;
         $this->roundRepository = $roundRepository;
-        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -73,18 +72,11 @@ class CompetitionRoundCommand extends Command
             );
 
             foreach ($competitions as $competition) {
-                try {
-                    $competitionMatches = $this->footballData->fetchData(
-                        'competitions/'.$competition->getCompetition().'/matches'
-                    );
-                } catch (ClientException $e) {
-                    $this->logger->info(sprintf('Cannot get rounds for competition: %s', $competition->getName()));
-                    continue;
-                }
+                $competitionMatches = $this->footballData->getCompetitionMatches($competition->getCompetition());
 
-                $matches = $this->footballData->getMatchesInfo($competitionMatches->matches);
+                $matches = $this->footballDataService->getMatchesInfo($competitionMatches);
 
-                $rounds = $this->footballData->getRoundInfo($matches);
+                $rounds = $this->footballDataService->getRoundInfo($matches);
 
                 foreach ($rounds as $key => $value) {
                     $round = $this->roundRepository->findOneBy(
@@ -94,9 +86,9 @@ class CompetitionRoundCommand extends Command
                         ]
                     );
 
-                    $firstAndLastDate = $this->footballData->getFirstAndLastMatchdayDate($value);
-                    $status = $this->footballData->getRoundStatus($value);
-                    $stage = $this->footballData->getRoundStage($value);
+                    $firstAndLastDate = $this->footballDataService->getFirstAndLastMatchdayDate($value);
+                    $status = $this->footballDataService->getRoundStatus($value);
+                    $stage = $this->footballDataService->getRoundStage($value);
 
                     if (!$round) {
                         $round = new Round();
