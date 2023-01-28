@@ -7,7 +7,8 @@ parameters:
     app.email.from: '%env(EMAIL_FROM)%'
 
 services:
-    App\Service\FootballDataInterface: '@App\Service\FootballDataService'
+    App\Helper\FootballInterface $footballDataNew: '@App\Helper\FootballDataNew'
+    App\Helper\FootballInterface $footballData: '@App\Helper\FootballData'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
