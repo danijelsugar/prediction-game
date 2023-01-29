@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\FootballDataInterface;
+use App\Helper\FootballInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +15,7 @@ class StatisticsController extends AbstractController
      */
     public function match(
         int $id,
-        FootballDataInterface $footballData
+        FootballInterface $footballData
     ): Response {
         try {
             $match = $footballData->fetchData(

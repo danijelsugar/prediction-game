@@ -2,45 +2,40 @@
 
 namespace App\Command;
 
+use App\Dto\MatchDto;
 use App\Entity\RoundMatch;
 use App\Repository\RoundMatchRepository;
 use App\Repository\RoundRepository;
-use App\Service\FootballDataInterface;
+use App\Helper\FootballInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionRoundMatchCommand extends Command
 {
     private RoundRepository $roundRepository;
 
-    private FootballDataInterface $footballData;
+    private FootballInterface $footballData;
 
     private EntityManagerInterface $entityManager;
 
     private RoundMatchRepository $roundMatchRepository;
 
-    private LoggerInterface $logger;
-
     protected static $defaultName = 'app:get:competition:round:match';
 
     public function __construct(
         RoundRepository $roundRepository,
-        FootballDataInterface $footballData,
+        FootballInterface $footballData,
         EntityManagerInterface $entityManager,
-        RoundMatchRepository $roundMatchRepository,
-        LoggerInterface $logger
+        RoundMatchRepository $roundMatchRepository
     ) {
         $this->roundRepository = $roundRepository;
         $this->footballData = $footballData;
         $this->entityManager = $entityManager;
         $this->roundMatchRepository = $roundMatchRepository;
-        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -75,39 +70,24 @@ class CompetitionRoundMatchCommand extends Command
 
             foreach ($rounds as $round) {
                 if (is_numeric($round->getName())) {
-                    try {
-                        $roundMatches = $this->footballData->fetchData(
-                            'competitions/'.$round->getCompetition()->getCompetition().'/matches',
-                            [
-                                'matchday' => $round->getName(),
-                                'stage' => $round->getStage(),
-                            ]
-                        );
-                    } catch (ClientException $e) {
-                        $this->logger->info(sprintf('Cannot get matches for round %s of %s', $round->getName(), $round->getCompetition()->getName()));
-                        continue;
-                    }
+                    $roundMatches = $this->footballData->getCompetitionMatches($round->getCompetition()->getCompetition(), [
+                        'matchday' => $round->getName(),
+                        'stage' => $round->getStage(),
+                    ]);
                 } elseif (is_string($round->getName())) {
-                    try {
-                        $roundMatches = $this->footballData->fetchData(
-                            'competitions/'.$round->getCompetition()->getCompetition().'/matches',
-                            [
-                                'stage' => $round->getName(),
-                            ]
-                        );
-                    } catch (ClientException $e) {
-                        $this->logger->info(sprintf('Cannot get matches for round %s of %s', $round->getName(), $round->getCompetition()->getName()));
-                        continue;
-                    }
+                    $roundMatches = $this->footballData->getCompetitionMatches($round->getCompetition()->getCompetition(), [
+                        'stage' => $round->getStage(),
+                    ]);
                 } else {
                     throw new LogicException();
                 }
 
-                foreach ($roundMatches->matches as $match) {
+                /** @var MatchDto[] $roundMatches */
+                foreach ($roundMatches as $match) {
                     $roundMatch = $this->roundMatchRepository->findOneBy(
                         [
                             'round' => $round,
-                            'matchId' => $match->id,
+                            'matchId' => $match->getMatchId(),
                         ]
                     );
 
@@ -115,32 +95,33 @@ class CompetitionRoundMatchCommand extends Command
                         $roundMatch = new RoundMatch();
                         $roundMatch
                             ->setRound($round)
-                            ->setMatchId($match->id)
-                            ->setDate(new \DateTime($match->utcDate))
-                            ->setHomeTeamName($match->homeTeam->name)
-                            ->setAwayTeamName($match->awayTeam->name)
-                            ->setFullTimeHomeTeamScore($match->score->fullTime->homeTeam)
-                            ->setFullTimeAwayTeamScore($match->score->fullTime->awayTeam)
-                            ->setExtraTimeHomeTeamScore($match->score->extraTime->homeTeam)
-                            ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
-                            ->setWinner($match->score->winner)
-                            ->setStage($match->stage)
-                            ->setGroupName($match->group)
-                            ->setLastUpdated($match->lastUpdated);
+                            ->setMatchId($match->getMatchId())
+                            ->setDate($match->getDate())
+                            ->setHomeTeamName($match->getHomeTeamName())
+                            ->setAwayTeamName($match->getAwayTeamName())
+                            ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
+                            ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
+                            ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
+                            ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
+                            ->setWinner($match->getWinner())
+                            ->setStage($match->getStage())
+                            ->setGroupName($match->getGroupName())
+                            ->setLastUpdated($match->getLastUpdated());
                         $this->entityManager->persist($roundMatch);
                     } else {
-                        if ($match->lastUpdated !== $roundMatch->getLastUpdated()) {
-                            $roundMatch->setDate(new \DateTime($match->utcDate))
-                            ->setHomeTeamName($match->homeTeam->name)
-                            ->setAwayTeamName($match->awayTeam->name)
-                            ->setFullTimeHomeTeamScore($match->score->fullTime->homeTeam)
-                            ->setFullTimeAwayTeamScore($match->score->fullTime->awayTeam)
-                            ->setExtraTimeHomeTeamScore($match->score->extraTime->homeTeam)
-                            ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
-                            ->setWinner($match->score->winner)
-                            ->setStage($match->stage)
-                            ->setGroupName($match->group)
-                            ->setLastUpdated($match->lastUpdated);
+                        if ($match->getLastUpdated()->format('Y-m-d H:i:s') !== $roundMatch->getLastUpdated()->format('Y-m-d H:i:s')) {
+                            $roundMatch
+                                ->setDate($match->getDate())
+                                ->setHomeTeamName($match->getHomeTeamName())
+                                ->setAwayTeamName($match->getAwayTeamName())
+                                ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
+                                ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
+                                ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
+                                ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
+                                ->setWinner($match->getWinner())
+                                ->setStage($match->getStage())
+                                ->setGroupName($match->getGroupName())
+                                ->setLastUpdated($match->getLastUpdated());
                         }
                     }
                 }
@@ -150,7 +131,7 @@ class CompetitionRoundMatchCommand extends Command
 
             $offset += 6;
 
-            sleep(57);
+            sleep(60);
         }
 
         $io->success('Finished inserting rounds matches.');

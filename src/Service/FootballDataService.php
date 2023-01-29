@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
-class FootballDataService extends FootballData
+use App\Dto\MatchDto;
+
+class FootballDataService
 {
     /**
      * Gets only needed data from api response.
@@ -10,13 +12,15 @@ class FootballDataService extends FootballData
     public function getMatchesInfo(array $matches): array
     {
         $matchdayInfo = [];
+
+        /** @var MatchDto[] $matches */
         foreach ($matches as $match) {
             $matchdayInfo[] = [
-                'matchday' => $match->matchday,
-                'stage' => $match->stage,
-                'group' => $match->group,
-                'date' => $match->utcDate,
-                'status' => $match->status,
+                'matchday' => $match->getMatchday(),
+                'stage' => $match->getStage(),
+                'group' => $match->getGroupName(),
+                'date' => $match->getDate(),
+                'status' => $match->getStatus(),
             ];
         }
 
@@ -68,8 +72,9 @@ class FootballDataService extends FootballData
     {
         $dates = [];
         foreach ($data as $match) {
-            $dates[] = $match['date'];
+            $dates[] = $match['date']->format('Y-m-d H:i:s');
         }
+
         $firstTimestamp = min(array_map('strtotime', $dates));
         $firstDate = (new \DateTime())->setTimestamp($firstTimestamp);
 

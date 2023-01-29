@@ -2,39 +2,34 @@
 
 namespace App\Command;
 
+use App\Dto\CompetitionDto;
 use App\Entity\Competition;
+use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
-use App\Service\FootballDataInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CompetitionCommand extends Command
 {
     private EntityManagerInterface $entityManager;
 
-    private FootballDataInterface $footballData;
+    private FootballInterface $footballData;
 
     private CompetitionRepository $competitionRepository;
-
-    private LoggerInterface $logger;
 
     protected static $defaultName = 'app:get:competition';
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        FootballDataInterface $footballData,
-        CompetitionRepository $competitionRepository,
-        LoggerInterface $logger
+        FootballInterface $footballDataNew,
+        CompetitionRepository $competitionRepository
     ) {
         $this->entityManager = $entityManager;
-        $this->footballData = $footballData;
+        $this->footballData = $footballDataNew;
         $this->competitionRepository = $competitionRepository;
-        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -48,63 +43,47 @@ class CompetitionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $apiCompetitions = $this->footballData->fetchData(
-                'competitions',
-                [
-                    'plan' => 'TIER_ONE',
-                ]
-            );
-        } catch (ClientException $e) {
-            $io->info($e->getMessage());
-            $this->logger->info($this->getDefaultName().': '.$e->getMessage());
-
-            return Command::FAILURE;
-        }
+        /** @var CompetitionDto[] $competitionDtos */
+        $competitionDtos = $this->footballData->getCompetitions([
+            'plan' => 'TIER_ONE',
+        ]);
 
         $inserted = 0;
-        foreach ($apiCompetitions->competitions as $apiCompetition) {
+        $updated = 0;
+
+        foreach ($competitionDtos as $competitionDto) {
             $competition = $this->competitionRepository->findOneBy(
                 [
-                    'competition' => $apiCompetition->id,
+                    'competition' => $competitionDto->getCompetition(),
                 ]
             );
-
             if (!$competition) {
                 $competition = new Competition();
                 $competition
-                    ->setCompetition($apiCompetition->id)
-                    ->setName($apiCompetition->name)
-                    ->setCode($apiCompetition->code)
-                    ->setArea($apiCompetition->area->name)
-                    ->setLastUpdated($apiCompetition->lastUpdated);
-                if (null !== $apiCompetition->emblemUrl) {
-                    $competition->setEmblemUrl($apiCompetition->emblemUrl);
-                } else {
-                    $competition->setEmblemUrl($apiCompetition->area->ensignUrl);
-                }
+                    ->setCompetition($competitionDto->getCompetition())
+                    ->setName($competitionDto->getName())
+                    ->setCode($competitionDto->getCode())
+                    ->setArea($competitionDto->getArea())
+                    ->setLastUpdated($competitionDto->getLastUpdated())
+                    ->setEmblemUrl($competitionDto->getEmblemUrl());
                 ++$inserted;
                 $this->entityManager->persist($competition);
             } else {
-                if ($apiCompetition->lastUpdated !== $competition->getLastUpdated()) {
+                if ($competitionDto->getLastUpdated()->format('Y-m-d H:i:s') !== $competition->getLastUpdated()->format('Y-m-d H:i:s')) {
                     $competition
-                        ->setName($apiCompetition->name)
-                        ->setCode($apiCompetition->code)
-                        ->setArea($apiCompetition->area->name)
-                        ->setLastUpdated($apiCompetition->lastUpdated);
-                    if (null !== $apiCompetition->emblemUrl) {
-                        $competition->setEmblemUrl($apiCompetition->emblemUrl);
-                    } else {
-                        $competition->setEmblemUrl($apiCompetition->area->ensignUrl);
-                    }
-                    ++$inserted;
+                        ->setName($competitionDto->getName())
+                        ->setCode($competitionDto->getCode())
+                        ->setArea($competitionDto->getArea())
+                        ->setLastUpdated($competitionDto->getLastUpdated())
+                        ->setEmblemUrl($competitionDto->getEmblemUrl());
+                    ++$updated;
                 }
             }
         }
 
         $this->entityManager->flush();
 
-        $io->success(sprintf('Finished inserting/updateing %s competitions.', $inserted));
+        $io->success(sprintf('Inserted %s, updated %s', $inserted, $updated));
 
         return Command::SUCCESS;
     }
