@@ -79,9 +79,9 @@ class RoundMatch
     private ?string $winner;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="datetime")
      */
-    private string $lastUpdated;
+    private \DateTimeInterface $lastUpdated;
 
     public function getId(): ?int
     {
@@ -232,12 +232,12 @@ class RoundMatch
         return $this;
     }
 
-    public function getLastUpdated(): ?string
+    public function getLastUpdated(): ?\DateTimeInterface
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(string $lastUpdated): self
+    public function setLastUpdated(\DateTimeInterface $lastUpdated): self
     {
         $this->lastUpdated = $lastUpdated;
 
