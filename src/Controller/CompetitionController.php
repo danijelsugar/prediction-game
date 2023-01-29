@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
 use App\Service\FootballDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,6 +14,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CompetitionController extends AbstractController
 {
+    private FootballInterface $footballData;
+
+    private FootballDataService $footballDataService;
+
+    public function __construct(
+        FootballInterface $footballData,
+        FootballDataService $footballDataService
+    ) {
+        $this->footballData = $footballData;
+        $this->footballDataService = $footballDataService;
+    }
+
     /**
      * @Route("competitions/{id}/teams", name="app_competition_teams", requirements={"id"="\d{4}"})
      */
@@ -62,15 +75,13 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    public function competitionTeamsCache(
-        int $id,
-        FootballDataService $footballData
-    ): Response {
-        $competitionTeams = $footballData->fetchData(
+    public function competitionTeamsCache(int $id): Response
+    {
+        $competitionTeams = $this->footballData->fetchData(
             'competitions/'.$id.'/teams',
         );
 
-        $season = $footballData->getSeason($competitionTeams->season);
+        $season = $this->footballDataService->getSeason($competitionTeams->season);
 
         $response = $this->render('competition/teams_cache.html.twig', [
             'competitionTeams' => $competitionTeams,
@@ -89,13 +100,12 @@ class CompetitionController extends AbstractController
 
     public function standingsCache(
         int $id,
-        Request $request,
-        FootballDataService $footballData
+        Request $request
     ): Response {
         $standingType = $request->query->get('standingType');
         if ($standingType) {
             try {
-                $competitionStandings = $footballData->fetchData(
+                $competitionStandings = $this->footballData->fetchData(
                     'competitions/'.$id.'/standings',
                     [
                         'standingType' => $standingType,
@@ -105,7 +115,7 @@ class CompetitionController extends AbstractController
             }
         } else {
             try {
-                $competitionStandings = $footballData->fetchData(
+                $competitionStandings = $this->footballData->fetchData(
                     'competitions/'.$id.'/standings'
                 );
             } catch (ClientException $e) {
@@ -113,7 +123,7 @@ class CompetitionController extends AbstractController
         }
 
         if (isset($competitionStandings)) {
-            $season = $footballData->getSeason($competitionStandings->season);
+            $season = $this->footballDataService->getSeason($competitionStandings->season);
             $competitionName = $competitionStandings->competition->area->name.' - '.$competitionStandings->competition->name;
         }
 
@@ -133,12 +143,10 @@ class CompetitionController extends AbstractController
         return $response;
     }
 
-    public function resultsCache(
-        int $id,
-        FootballDataService $footballData
-    ): Response {
+    public function resultsCache(int $id): Response
+    {
         try {
-            $competitionResults = $footballData->fetchData(
+            $competitionResults = $this->footballData->fetchData(
                 'competitions/'.$id.'/matches',
                 [
                     'status' => 'FINISHED',
@@ -182,7 +190,7 @@ class CompetitionController extends AbstractController
             $competitionName = $competitionResults->competition->area->name.' - '.$competitionResults->competition->name;
 
             if (!empty($competitionResults->matches)) {
-                $season = $footballData->getSeason($competitionResults->matches[0]->season);
+                $season = $this->footballDataService->getSeason($competitionResults->matches[0]->season);
             }
         }
 
@@ -201,12 +209,10 @@ class CompetitionController extends AbstractController
         return $response;
     }
 
-    public function scheduleCache(
-        int $id,
-        FootballDataService $footballData
-    ): Response {
+    public function scheduleCache(int $id): Response
+    {
         try {
-            $competitionSchedule = $footballData->fetchData(
+            $competitionSchedule = $this->footballData->fetchData(
                 'competitions/'.$id.'/matches',
                 [
                     'status' => 'SCHEDULED',
@@ -250,7 +256,7 @@ class CompetitionController extends AbstractController
             $competitionName = $competitionSchedule->competition->area->name.' - '.$competitionSchedule->competition->name;
 
             if (!empty($competitionSchedule->matches)) {
-                $season = $footballData->getSeason($competitionSchedule->matches[0]->season);
+                $season = $this->footballDataService->getSeason($competitionSchedule->matches[0]->season);
             }
         }
 
