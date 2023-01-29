@@ -20,7 +20,6 @@ class HomeController extends AbstractController
     ): Response {
         $dateTo = (new \DateTime())->modify('+5 day');
         $matches = $roundMatchRepository->findMatchesForInterval($dateTo);
-        // dd($matches);
 
         /** @var User|null */
         $user = $this->getUser();
