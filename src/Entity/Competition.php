@@ -45,9 +45,9 @@ class Competition
     private ?string $emblemUrl;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="datetime")
      */
-    private string $lastUpdated;
+    private \DateTimeInterface $lastUpdated;
 
     /**
      * @ORM\OneToMany(targetEntity=Round::class, mappedBy="competition")
@@ -124,12 +124,12 @@ class Competition
         return $this;
     }
 
-    public function getLastUpdated(): ?string
+    public function getLastUpdated(): ?\DateTimeInterface
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(string $lastUpdated): self
+    public function setLastUpdated(\DateTimeInterface $lastUpdated): self
     {
         $this->lastUpdated = $lastUpdated;
 
