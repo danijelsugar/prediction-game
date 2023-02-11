@@ -17,11 +17,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for team in competitionTeams.teams %}
+                {% for team in competitionTeams %}
                     <tr>
                         <td>
-                            {% if team.crestUrl is not same as null and team.crestUrl is not empty %}
-                                <img src="{{ team.crestUrl }}" alt="{{ team.name }} logo" style="width: 25px">
+                            {% if team.crest is not same as null and team.crest is not empty %}
+                                <img src="{{ team.crest }}" alt="{{ team.name }} logo" style="width: 25px">
                             {% endif %}
                         </td>
                         <td>{{ team.name }}</td>
@@ -30,6 +30,10 @@
                         <td>{{ team.founded }}</td>
                         <td>{{ team.clubColors }}</td>
                         <td>{{ team.venue }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7">Teams info is currently not available.</td>
                     </tr>
                 {% endfor %}
             </tbody>
