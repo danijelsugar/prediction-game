@@ -17,7 +17,7 @@ class Competition
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="integer", unique=true)
@@ -32,7 +32,7 @@ class Competition
     /**
      * @ORM\Column(type="string", length=10, nullable=true)
      */
-    private $code;
+    private string $code;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -52,7 +52,7 @@ class Competition
     /**
      * @ORM\OneToMany(targetEntity=Round::class, mappedBy="competition")
      */
-    private $rounds;
+    private Collection $rounds;
 
     public function __construct()
     {
