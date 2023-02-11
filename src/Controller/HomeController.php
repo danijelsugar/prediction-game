@@ -43,6 +43,7 @@ class HomeController extends AbstractController
 
             $sortedMatches[$match->getDate()->format('Y-m-d')][] = [
                 'id' => $match->getId(),
+                'matchId' => $match->getMatchId(),
                 'date' => $match->getDate(),
                 'homeTeamName' => $match->getHomeTeamName(),
                 'awayTeamName' => $match->getAwayTeamName(),
