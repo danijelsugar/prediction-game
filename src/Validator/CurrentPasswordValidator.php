@@ -22,7 +22,7 @@ class CurrentPasswordValidator extends ConstraintValidator
         $this->hasher = $hasher;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof CurrentPassword) {
             throw new UnexpectedTypeException($constraint, CurrentPassword::class);
