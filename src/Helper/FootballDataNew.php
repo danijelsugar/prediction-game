@@ -127,7 +127,7 @@ class FootballDataNew implements FootballInterface
 
     /**
      * List previous encounters for the teams of a match.
-     * 
+     *
      * @param array<string, string> $filters
      */
     public function getHead2Head(int $match, array $filters = []): Head2HeadDto
