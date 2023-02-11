@@ -2,11 +2,12 @@
 
 namespace App\Service;
 
+use App\Dto\MatchDto;
 use App\Entity\Prediction;
 
 class PointService
 {
-    public function calculatePoints($match, Prediction $prediction): int
+    public function calculatePoints(MatchDto $match, Prediction $prediction): int
     {
         if ($this->correctScore($match, $prediction)) {
             return Prediction::SPOT_ON;
@@ -21,11 +22,11 @@ class PointService
         }
     }
 
-    private function correctScore($match, Prediction $prediction)
+    private function correctScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->score->fullTime->homeTeam === $prediction->getHomeTeamPrediction() &&
-            $match->score->fullTime->awayTeam === $prediction->getAwayTeamPrediction()
+            $match->getFullTimeHomeTeamScore() === $prediction->getHomeTeamPrediction() &&
+            $match->getFullTimeAwayTeamScore() === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -33,14 +34,14 @@ class PointService
         return false;
     }
 
-    private function correctOutcome($match, Prediction $prediction)
+    private function correctOutcome(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->score->fullTime->homeTeam > $match->score->fullTime->awayTeam &&
+            $match->getFullTimeHomeTeamScore() > $match->getFullTimeAwayTeamScore() &&
             $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction() ||
-            $match->score->fullTime->homeTeam < $match->score->fullTime->awayTeam &&
+            $match->getFullTimeHomeTeamScore() < $match->getFullTimeAwayTeamScore() &&
             $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction() ||
-            $match->score->fullTime->homeTeam === $match->score->fullTime->awayTeam &&
+            $match->getFullTimeHomeTeamScore() === $match->getFullTimeAwayTeamScore() &&
             $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()
         ) {
             return true;
@@ -49,11 +50,11 @@ class PointService
         return false;
     }
 
-    private function oneTeamScore($match, Prediction $prediction)
+    private function oneTeamScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->score->fullTime->homeTeam === $prediction->getHomeTeamPrediction() ||
-            $match->score->fullTime->awayTeam === $prediction->getAwayTeamPrediction()
+            $match->getFullTimeHomeTeamScore() === $prediction->getHomeTeamPrediction() ||
+            $match->getFullTimeAwayTeamScore() === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -61,9 +62,9 @@ class PointService
         return false;
     }
 
-    private function checkGoalDiff($match, Prediction $prediction)
+    private function checkGoalDiff(MatchDto $match, Prediction $prediction): bool
     {
-        $matchDiff = $match->score->fullTime->homeTeam - $match->score->fullTime->awayTeam;
+        $matchDiff = $match->getFullTimeHomeTeamScore() - $match->getFullTimeAwayTeamScore();
         $predictionDiff = $prediction->getHomeTeamPrediction() - $prediction->getAwayTeamPrediction();
         if ($matchDiff === $predictionDiff) {
             return true;
