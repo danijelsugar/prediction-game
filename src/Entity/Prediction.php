@@ -73,7 +73,7 @@ class Prediction
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private int $points = self::NONE;
+    private ?int $points = null;
 
     public function getId(): ?int
     {
@@ -183,7 +183,7 @@ class Prediction
 
     public function setPoints(?int $points): self
     {
-        if (!in_array($points, [self::SPOT_ON, self::CORRECT_OUTCOME_SCORE_OR_DIFF, self::CORRECT_OUTCOME, self::ONE_TEAM_SCORE, self::NONE])) {
+        if (in_array($points, [self::SPOT_ON, self::CORRECT_OUTCOME_SCORE_OR_DIFF, self::CORRECT_OUTCOME, self::ONE_TEAM_SCORE, self::NONE])) {
             $this->points = $points;
         }
 
