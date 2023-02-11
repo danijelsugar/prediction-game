@@ -24,10 +24,6 @@
                                 {% endif %}
                                 <td>{{ match.utcDate|date('d.m.Y H:i:s') }}</td>
                                 <td>{{ match.homeTeamName ~ ' - ' ~ match.awayTeamName }}</td>
-                                <td>
-                                    {{ match.homeTeamFullTimeScore ~ ':' ~ match.awayTeamFullTimeScore }}
-                                    ({{ match.homeTeamHalfTimeScore ~ ':' ~ match.awayTeamFullTimeScore }})
-                                </td>
                             </tr>
                         {% endfor %}
                     {% endfor %}
