@@ -44,6 +44,8 @@ class PredictionController extends AbstractController
      * "competitions/{id}/predictions/round/{round}",
      * name="app_prediction_round",
      * requirements={"id"="\d{4}"})
+     *
+     * @param int|string $round
      */
     public function predictionsRound(
         int $id,
@@ -100,7 +102,7 @@ class PredictionController extends AbstractController
 
         $rounds = [];
         foreach ($competitionRounds as $competitionRound) {
-            $rounds[] = $competitionRound['name'];
+            $rounds[] = $competitionRound->getName();
         }
 
         $currentRoundKey = array_search($round, $rounds);
