@@ -35,7 +35,7 @@ class CheckPredictionCommand extends Command
 
     public function __construct(
         PredictionRepository $predictionRepository,
-        FootballInterface $footballData,
+        FootballInterface $footballDataNew,
         EntityManagerInterface $entityManager,
         PointService $pointService,
         LoggerInterface $logger,
@@ -43,7 +43,7 @@ class CheckPredictionCommand extends Command
         CompetitionRepository $competitionRepository
     ) {
         $this->predictionRepository = $predictionRepository;
-        $this->footballData = $footballData;
+        $this->footballData = $footballDataNew;
         $this->entityManager = $entityManager;
         $this->pointService = $pointService;
         $this->logger = $logger;
@@ -84,15 +84,12 @@ class CheckPredictionCommand extends Command
         $dateTo->modify('+10 days');
 
         try {
-            $competitionsMatches = $this->footballData->fetchData(
-                'matches',
-                [
-                    'competitions' => implode(',', $competitions),
-                    'dateFrom' => $dateFrom->format('Y-m-d'),
-                    'dateTo' => $dateTo->format('Y-m-d'),
-                    'status' => 'FINISHED',
-                ]
-            );
+            $matches = $this->footballData->getMatches([
+                'competitions' => implode(',', $competitions),
+                'dateFrom' => $dateFrom->format('Y-m-d'),
+                'dateTo' => $dateTo->format('Y-m-d'),
+                'status' => 'FINISHED',
+            ]);
         } catch (ClientException $e) {
             $io->info($e->getResponse()->getContent(false));
             $this->logger->info($this->getDefaultName().': '.$e->getResponse()->getContent(false));
@@ -100,35 +97,35 @@ class CheckPredictionCommand extends Command
             return Command::FAILURE;
         }
 
-        foreach ($competitionsMatches->matches as $match) {
+        foreach ($matches as $match) {
             $predictionMatch = $this->roundMatchRepository->findOneBy(
                 [
-                    'matchId' => $match->id,
+                    'matchId' => $match->getMatchId(),
                 ]
             );
 
             $competition = $this->competitionRepository->findOneBy(
                 [
-                    'competition' => $match->competition->id,
+                    'competition' => $match->getCompetitionId(),
                 ]
             );
 
             if ($predictionMatch) {
                 $predictionMatch
-                    ->setStage($match->stage)
-                    ->setGroupName($match->group)
-                    ->setDate(new \DateTime($match->utcDate))
-                    ->setHomeTeamName($match->homeTeam->name)
-                    ->setAwayTeamName($match->awayTeam->name)
-                    ->setFullTimeHomeTeamScore($match->score->fullTime->homeTeam)
-                    ->setFullTimeAwayTeamScore($match->score->fullTime->awayTeam)
-                    ->setExtraTimeHomeTeamScore($match->score->extraTime->homeTeam)
-                    ->setExtraTimeAwayTeamScore($match->score->extraTime->awayTeam)
-                    ->setWinner($match->score->winner)
-                    ->setLastUpdated(new \DateTime($match->lastUpdated));
-            }
+                    ->setStage($match->getStage())
+                    ->setGroupName($match->getGroupName())
+                    ->setDate($match->getDate())
+                    ->setHomeTeamName($match->getHomeTeamName())
+                    ->setAwayTeamName($match->getAwayTeamName())
+                    ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
+                    ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
+                    ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
+                    ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
+                    ->setWinner($match->getWinner())
+                    ->setLastUpdated($match->getLastUpdated());
 
-            $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
+                $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
+            }
 
             if ($predictions) {
                 foreach ($predictions as $prediction) {
@@ -138,8 +135,8 @@ class CheckPredictionCommand extends Command
                     $prediction->getUser()->setPoints($userPoints);
 
                     $prediction
-                        ->setHomeTeamScore($match->score->fullTime->homeTeam)
-                        ->setAwayTeamScore($match->score->fullTime->awayTeam)
+                        ->setHomeTeamScore($match->getFullTimeHomeTeamScore())
+                        ->setAwayTeamScore($match->getFullTimeAwayTeamScore())
                         ->setFinished(true)
                         ->setPoints($points);
                 }
