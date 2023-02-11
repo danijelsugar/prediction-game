@@ -4,9 +4,9 @@ namespace App\Command;
 
 use App\Dto\MatchDto;
 use App\Entity\RoundMatch;
+use App\Helper\FootballInterface;
 use App\Repository\RoundMatchRepository;
 use App\Repository\RoundRepository;
-use App\Helper\FootballInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
@@ -28,12 +28,12 @@ class CompetitionRoundMatchCommand extends Command
 
     public function __construct(
         RoundRepository $roundRepository,
-        FootballInterface $footballData,
+        FootballInterface $footballDataNew,
         EntityManagerInterface $entityManager,
         RoundMatchRepository $roundMatchRepository
     ) {
         $this->roundRepository = $roundRepository;
-        $this->footballData = $footballData;
+        $this->footballData = $footballDataNew;
         $this->entityManager = $entityManager;
         $this->roundMatchRepository = $roundMatchRepository;
 
