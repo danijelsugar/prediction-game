@@ -20,56 +20,61 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column()
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=true)
+     * @ORM\Column(length=100, nullable=true)
      */
-    private $firstName;
+    private ?string $firstName = null;
 
     /**
-     * @ORM\Column(type="string", length=100, nullable=true)
+     * @ORM\Column(length=100, nullable=true)
      */
-    private $lastName;
+    private ?string $lastName = null;
 
     /**
-     * @ORM\Column(type="string", length=100, unique=true)
+     * @ORM\Column(length=100, unique=true)
      */
-    private $username;
+    private ?string $username = null;
 
     /**
-     * @ORM\Column(type="string", length=100, unique=true)
+     * @ORM\Column(length=100, unique=true)
      */
-    private $email;
+    private ?string $email = null;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(length=100)
      */
-    private $password;
+    private ?string $password = null;
 
-    private $plainPassword;
+    /**
+     * Non-mapped field.
+     */
+    private ?string $plainPassword = null;
 
     /**
      * @ORM\Column(type="json")
+     *
+     * @var string[]
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column()
      */
-    private $isVerified = false;
+    private bool $isVerified = false;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column()
      */
-    private $points = 0;
+    private int $points = 0;
 
     /**
      * @ORM\OneToMany(targetEntity=Prediction::class, mappedBy="user")
      */
-    private $predictions;
+    private Collection $predictions;
 
     public function __construct()
     {
@@ -171,6 +176,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param string[] $roles
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -225,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         $this->plainPassword = null;
