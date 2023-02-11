@@ -47,7 +47,7 @@ class PredictionRepository extends ServiceEntityRepository
             ->andWhere('p.finished = :finished')
             ->andWhere('p.points IS NULL')
             ->setParameter('matchId', $match->getMatchId())
-            ->setParameter('competition', $competition->getId())
+            ->setParameter('competition', $competition->getCompetition())
             ->setParameter('finished', $finished)
             ->getQuery()
             ->getResult();
