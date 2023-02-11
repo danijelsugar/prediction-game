@@ -7,53 +7,36 @@ use App\Dto\MatchDto;
 class FootballDataService
 {
     /**
-     * Gets only needed data from api response.
-     */
-    public function getMatchesInfo(array $matches): array
-    {
-        $matchdayInfo = [];
-
-        /** @var MatchDto[] $matches */
-        foreach ($matches as $match) {
-            $matchdayInfo[] = [
-                'matchday' => $match->getMatchday(),
-                'stage' => $match->getStage(),
-                'group' => $match->getGroupName(),
-                'date' => $match->getDate(),
-                'status' => $match->getStatus(),
-            ];
-        }
-
-        return $matchdayInfo;
-    }
-
-    /**
      * Gets dates of matchdays sorted by matchday.
+     *
+     * @param MatchDto[] $matches
+     *
+     * @return array<int|string, array<int, array<string, \DateTimeInterface|int|string|null>>> $dates
      */
-    public function getRoundInfo(array $data): array
+    public function getRoundInfo(array $matches): array
     {
         $dates = [];
-        foreach ($data as $info) {
-            if (!is_null($info['matchday']) && is_null($info['group']) && 'REGULAR_SEASON' !== $info['stage']) {
-                $dates[$info['stage']][] = [
-                    'matchday' => $info['matchday'],
-                    'stage' => $info['stage'],
-                    'date' => $info['date'],
-                    'status' => $info['status'],
+        foreach ($matches as $match) {
+            if (!is_null($match->getMatchday()) && is_null($match->getGroupName()) && 'REGULAR_SEASON' !== $match->getStage()) {
+                $dates[$match->getStage()][] = [
+                    'matchday' => $match->getMatchday(),
+                    'stage' => $match->getStage(),
+                    'date' => $match->getDate(),
+                    'status' => $match->getStatus(),
                 ];
-            } elseif (!is_null($info['matchday'])) {
-                $dates[$info['matchday']][] = [
-                    'matchday' => $info['matchday'],
-                    'stage' => $info['stage'],
-                    'date' => $info['date'],
-                    'status' => $info['status'],
+            } elseif (!is_null($match->getMatchday())) {
+                $dates[$match->getMatchday()][] = [
+                    'matchday' => $match->getMatchday(),
+                    'stage' => $match->getStage(),
+                    'date' => $match->getDate(),
+                    'status' => $match->getStatus(),
                 ];
             } else {
-                $dates[$info['stage']][] = [
-                    'matchday' => $info['matchday'],
-                    'stage' => $info['stage'],
-                    'date' => $info['date'],
-                    'status' => $info['status'],
+                $dates[$match->getStage()][] = [
+                    'matchday' => $match->getMatchday(),
+                    'stage' => $match->getStage(),
+                    'date' => $match->getDate(),
+                    'status' => $match->getStatus(),
                 ];
             }
         }
@@ -67,6 +50,10 @@ class FootballDataService
 
     /**
      * Gets date of first and last match for each round.
+     *
+     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
+     *
+     * @return array<string, \DatetimeInterface>
      */
     public function getFirstAndLastMatchdayDate(array $data): array
     {
@@ -86,6 +73,8 @@ class FootballDataService
 
     /**
      * Gets status of each round (if all matches are finished, scheduled or half finished).
+     *
+     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
      */
     public function getRoundStatus(array $data): string
     {
@@ -107,6 +96,8 @@ class FootballDataService
 
     /**
      * Gets stage of round.
+     *
+     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
      */
     public function getRoundStage(array $data): string
     {
@@ -119,12 +110,10 @@ class FootballDataService
     }
 
     /** Get competition season(2020/2021) or year(2018) */
-    public function getSeason($season): string
+    public function getSeason(string $seasonStartDate, string $seasonEndDate): string
     {
-        $seasonStartDate = $season->startDate;
         $startDate = (new \DateTime($seasonStartDate))->format('Y');
 
-        $seasonEndDate = $season->endDate;
         $endDate = (new \DateTime($seasonEndDate))->format('Y');
 
         if ($startDate !== $endDate) {
