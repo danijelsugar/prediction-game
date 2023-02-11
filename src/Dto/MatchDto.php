@@ -32,6 +32,10 @@ class MatchDto
 
     private string $status;
 
+    private int $competitionId;
+
+    private ?Head2HeadDto $head2Head;
+
     public function __construct(
         int $matchId,
         string $stage,
@@ -46,7 +50,9 @@ class MatchDto
         ?string $winner,
         \DateTimeInterface $lastUpdated,
         ?int $matchday,
-        string $status
+        string $status,
+        int $competitionId,
+        ?Head2HeadDto $head2Head
     ) {
         $this->matchId = $matchId;
         $this->stage = $stage;
@@ -62,6 +68,8 @@ class MatchDto
         $this->lastUpdated = $lastUpdated;
         $this->matchday = $matchday;
         $this->status = $status;
+        $this->competitionId = $competitionId;
+        $this->head2Head = $head2Head;
     }
 
     public function getMatchId(): int
@@ -132,5 +140,15 @@ class MatchDto
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    public function getCompetitionId(): int
+    {
+        return $this->competitionId;
+    }
+
+    public function getHead2Head(): ?Head2HeadDto
+    {
+        return $this->head2Head;
     }
 }
