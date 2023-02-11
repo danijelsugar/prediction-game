@@ -74,9 +74,7 @@ class CompetitionRoundCommand extends Command
             foreach ($competitions as $competition) {
                 $competitionMatches = $this->footballData->getCompetitionMatches($competition->getCompetition());
 
-                $matches = $this->footballDataService->getMatchesInfo($competitionMatches);
-
-                $rounds = $this->footballDataService->getRoundInfo($matches);
+                $rounds = $this->footballDataService->getRoundInfo($competitionMatches);
 
                 foreach ($rounds as $key => $value) {
                     $round = $this->roundRepository->findOneBy(
