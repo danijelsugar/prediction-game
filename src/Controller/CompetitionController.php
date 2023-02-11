@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
-use App\Service\FootballDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,14 +15,14 @@ class CompetitionController extends AbstractController
 {
     private FootballInterface $footballData;
 
-    private FootballDataService $footballDataService;
+    private CompetitionRepository $competitionRepository;
 
     public function __construct(
-        FootballInterface $footballData,
-        FootballDataService $footballDataService
+        FootballInterface $footballDataNew,
+        CompetitionRepository $competitionRepository
     ) {
-        $this->footballData = $footballData;
-        $this->footballDataService = $footballDataService;
+        $this->footballData = $footballDataNew;
+        $this->competitionRepository = $competitionRepository;
     }
 
     /**
@@ -66,9 +65,9 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    public function competitions(CompetitionRepository $competitionRepository): Response
+    public function competitions(): Response
     {
-        $competitions = $competitionRepository->findBy([], ['name' => 'ASC']);
+        $competitions = $this->competitionRepository->findBy([], ['name' => 'ASC']);
 
         return $this->render('competition/competitions.html.twig', [
             'competitions' => $competitions,
@@ -77,15 +76,19 @@ class CompetitionController extends AbstractController
 
     public function competitionTeamsCache(int $id): Response
     {
-        $competitionTeams = $this->footballData->fetchData(
-            'competitions/'.$id.'/teams',
-        );
+        try {
+            $competitionTeams = $this->footballData->getCompetitionTeams($id);
+        } catch (ClientException $e) {
+        }
 
-        $season = $this->footballDataService->getSeason($competitionTeams->season);
+        $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
+
+        // $season = $this->footballDataService->getSeason($competitionTeams->season->startDate, $competitionTeams->season->endDate);
+        $season = '';
 
         $response = $this->render('competition/teams_cache.html.twig', [
-            'competitionTeams' => $competitionTeams,
-            'competitionName' => $competitionTeams->competition->area->name.' - '.$competitionTeams->competition->name,
+            'competitionTeams' => $competitionTeams ?? null,
+            'competitionName' => $competition->getArea().' - '.$competition->getName(),
             'season' => $season,
         ]);
 
@@ -105,26 +108,24 @@ class CompetitionController extends AbstractController
         $standingType = $request->query->get('standingType');
         if ($standingType) {
             try {
-                $competitionStandings = $this->footballData->fetchData(
-                    'competitions/'.$id.'/standings',
-                    [
-                        'standingType' => $standingType,
-                    ]
-                );
+                $competitionStandings = $this->footballData->getCompetitionStandings($id, [
+                    'standingType' => $standingType,
+                ]);
             } catch (ClientException $e) {
             }
         } else {
             try {
-                $competitionStandings = $this->footballData->fetchData(
-                    'competitions/'.$id.'/standings'
-                );
+                $competitionStandings = $this->footballData->getCompetitionStandings($id);
             } catch (ClientException $e) {
             }
         }
-
         if (isset($competitionStandings)) {
-            $season = $this->footballDataService->getSeason($competitionStandings->season);
-            $competitionName = $competitionStandings->competition->area->name.' - '.$competitionStandings->competition->name;
+            // $season = $this->footballDataService->getSeason($competitionStandings->season->startDate, $competitionStandings->season->endDate);
+            $season = '';
+
+            $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
+
+            $competitionName = $competition->getArea().' - '.$competition->getName();
         }
 
         $response = $this->render('competition/table_cache.html.twig', [
@@ -146,51 +147,51 @@ class CompetitionController extends AbstractController
     public function resultsCache(int $id): Response
     {
         try {
-            $competitionResults = $this->footballData->fetchData(
-                'competitions/'.$id.'/matches',
-                [
-                    'status' => 'FINISHED',
-                ]
-            );
+            $competitionResults = $this->footballData->getCompetitionMatches($id, [
+                'status' => 'FINISHED',
+            ]);
         } catch (ClientException $e) {
         }
 
         $roundMatches = [];
         if (isset($competitionResults)) {
-            foreach ($competitionResults->matches as $match) {
-                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
-                    $roundMatches[$match->stage][] = [
-                        'utcDate' => $match->utcDate,
-                        'matchday' => $match->matchday,
-                        'stage' => $match->stage,
-                        'group' => $match->group,
-                        'homeTeamName' => $match->homeTeam->name,
-                        'awayTeamName' => $match->awayTeam->name,
-                        'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
-                        'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
-                        'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
-                        'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+            foreach ($competitionResults as $match) {
+                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
+                    $roundMatches[$match->getStage()][] = [
+                        'utcDate' => $match->getDate(),
+                        'matchday' => $match->getMatchday(),
+                        'stage' => $match->getStage(),
+                        'group' => $match->getGroupName(),
+                        'homeTeamName' => $match->getHomeTeamName(),
+                        'awayTeamName' => $match->getAwayTeamName(),
+                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
+                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
+                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
+                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
                     ];
                 } else {
-                    $roundMatches['Round '.$match->matchday][] = [
-                        'utcDate' => $match->utcDate,
-                        'matchday' => $match->matchday,
-                        'stage' => $match->stage,
-                        'group' => $match->group,
-                        'homeTeamName' => $match->homeTeam->name,
-                        'awayTeamName' => $match->awayTeam->name,
-                        'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
-                        'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
-                        'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
-                        'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                    $roundMatches['Round '.$match->getMatchday()][] = [
+                        'utcDate' => $match->getDate(),
+                        'matchday' => $match->getMatchday(),
+                        'stage' => $match->getStage(),
+                        'group' => $match->getGroupName(),
+                        'homeTeamName' => $match->getHomeTeamName(),
+                        'awayTeamName' => $match->getAwayTeamName(),
+                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
+                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
+                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
+                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
                     ];
                 }
             }
 
-            $competitionName = $competitionResults->competition->area->name.' - '.$competitionResults->competition->name;
+            $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
 
-            if (!empty($competitionResults->matches)) {
-                $season = $this->footballDataService->getSeason($competitionResults->matches[0]->season);
+            $competitionName = $competition->getArea().' - '.$competition->getName();
+
+            if (!empty($competitionResults)) {
+                // $season = $this->footballDataService->getSeason($competitionResults->matches[0]->season->startDate, $competitionResults->matches[0]->season->endDate);
+                $season = '';
             }
         }
 
@@ -212,51 +213,51 @@ class CompetitionController extends AbstractController
     public function scheduleCache(int $id): Response
     {
         try {
-            $competitionSchedule = $this->footballData->fetchData(
-                'competitions/'.$id.'/matches',
-                [
-                    'status' => 'SCHEDULED',
-                ]
-            );
+            $competitionSchedule = $this->footballData->getCompetitionMatches($id, [
+                'status' => 'SCHEDULED',
+            ]);
         } catch (ClientException $e) {
         }
 
         $roundMatches = [];
         if (isset($competitionSchedule)) {
-            foreach ($competitionSchedule->matches as $match) {
-                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
-                    $roundMatches[$match->stage][] = [
-                        'utcDate' => $match->utcDate,
-                        'matchday' => $match->matchday,
-                        'stage' => $match->stage,
-                        'group' => $match->group,
-                        'homeTeamName' => $match->homeTeam->name,
-                        'awayTeamName' => $match->awayTeam->name,
-                        'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
-                        'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
-                        'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
-                        'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+            foreach ($competitionSchedule as $match) {
+                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
+                    $roundMatches[$match->getStage()][] = [
+                        'utcDate' => $match->getDate(),
+                        'matchday' => $match->getMatchday(),
+                        'stage' => $match->getStage(),
+                        'group' => $match->getGroupName(),
+                        'homeTeamName' => $match->getHomeTeamName(),
+                        'awayTeamName' => $match->getAwayTeamName(),
+                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
+                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
+                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
+                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
                     ];
                 } else {
-                    $roundMatches['Round '.$match->matchday][] = [
-                        'utcDate' => $match->utcDate,
-                        'matchday' => $match->matchday,
-                        'stage' => $match->stage,
-                        'group' => $match->group,
-                        'homeTeamName' => $match->homeTeam->name,
-                        'awayTeamName' => $match->awayTeam->name,
-                        'homeTeamFullTimeScore' => $match->score->fullTime->homeTeam,
-                        'awayTeamFullTimeScore' => $match->score->fullTime->awayTeam,
-                        'homeTeamHalfTimeScore' => $match->score->halfTime->homeTeam,
-                        'awayTeamHalfTimeScore' => $match->score->halfTime->awayTeam,
+                    $roundMatches['Round '.$match->getMatchday()][] = [
+                        'utcDate' => $match->getDate(),
+                        'matchday' => $match->getMatchday(),
+                        'stage' => $match->getStage(),
+                        'group' => $match->getGroupName(),
+                        'homeTeamName' => $match->getHomeTeamName(),
+                        'awayTeamName' => $match->getAwayTeamName(),
+                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
+                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
+                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
+                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
                     ];
                 }
             }
 
-            $competitionName = $competitionSchedule->competition->area->name.' - '.$competitionSchedule->competition->name;
+            $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
 
-            if (!empty($competitionSchedule->matches)) {
-                $season = $this->footballDataService->getSeason($competitionSchedule->matches[0]->season);
+            $competitionName = $competition->getArea().' - '.$competition->getName();
+
+            if (!empty($competitionSchedule)) {
+                // $season = $this->footballDataService->getSeason($competitionSchedule->matches[0]->season->startDate, $competitionSchedule->matches[0]->season->endDate);
+                $season = '';
             }
         }
 
