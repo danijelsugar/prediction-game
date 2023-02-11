@@ -21,10 +21,12 @@ class RoundRepository extends ServiceEntityRepository
         parent::__construct($registry, Round::class);
     }
 
-    public function findCompetitionRounds($competition): array
+    /**
+     * @return Round[]
+     */
+    public function findCompetitionRounds(int $competition): array
     {
         return $this->createQueryBuilder('r')
-            ->select('r.id, c.competition, r.name, r.dateFrom, r.dateTo, r.status, count(rm.id) AS matches')
             ->innerJoin(Competition::class, 'c', 'WITH', 'r.competition=c.id')
             ->innerJoin(RoundMatch::class, 'rm', 'WITH', 'r.id=rm.round')
             ->andWhere('c.competition = :competition')
