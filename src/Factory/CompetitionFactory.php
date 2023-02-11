@@ -7,12 +7,14 @@ use App\Dto\CompetitionDto;
 class CompetitionFactory
 {
     /**
+     * @param object[] $competitions
+     *
      * @return CompetitionDto[]
      */
-    public static function fromFootballData(array $data): array
+    public static function fromFootballData(array $competitions): array
     {
         $dtos = [];
-        foreach ($data as $competition) {
+        foreach ($competitions as $competition) {
             $dtos[] = new CompetitionDto(
                 $competition->id,
                 $competition->name,
@@ -27,12 +29,14 @@ class CompetitionFactory
     }
 
     /**
+     * @param object[] $competitions
+     *
      * @return CompetitionDto[]
      */
-    public static function fromFootballDataNew(array $data): array
+    public static function fromFootballDataNew(array $competitions): array
     {
         $dtos = [];
-        foreach ($data as $competition) {
+        foreach ($competitions as $competition) {
             $dtos[] = new CompetitionDto(
                 $competition->id,
                 $competition->name,
