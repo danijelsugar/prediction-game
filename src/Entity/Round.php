@@ -17,7 +17,7 @@ class Round
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="rounds")
@@ -33,12 +33,12 @@ class Round
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $stage;
+    private string $stage;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $dateFrom;
+    private \DateTimeInterface $dateFrom;
 
     /**
      * @ORM\Column(type="datetime")
@@ -53,7 +53,7 @@ class Round
     /**
      * @ORM\OneToMany(targetEntity=RoundMatch::class, mappedBy="round")
      */
-    private $roundMatches;
+    private Collection $roundMatches;
 
     public function __construct()
     {
