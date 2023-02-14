@@ -25,6 +25,7 @@ class CompetitionRoundMatchCommand extends Command
     private RoundMatchRepository $roundMatchRepository;
 
     protected static $defaultName = 'app:get:competition:round:match';
+    protected static $defaultDescription = 'Get all matches for each round of each competition';
 
     public function __construct(
         RoundRepository $roundRepository,
@@ -42,7 +43,6 @@ class CompetitionRoundMatchCommand extends Command
 
     public function configure(): void
     {
-        $this->setDescription('Get all matches for each round of each competition');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

@@ -26,6 +26,7 @@ class CompetitionRoundCommand extends Command
     private RoundRepository $roundRepository;
 
     protected static $defaultName = 'app:get:competition:round';
+    protected static $defaultDescription = 'Get all rounds for each competition';
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -45,7 +46,6 @@ class CompetitionRoundCommand extends Command
 
     public function configure(): void
     {
-        $this->setDescription('Get all rounds for each competition');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

@@ -21,6 +21,7 @@ class CompetitionCommand extends Command
     private CompetitionRepository $competitionRepository;
 
     protected static $defaultName = 'app:get:competition';
+    protected static $defaultDescription = 'Get all competitions and inserts them if they dont exist';
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -36,7 +37,6 @@ class CompetitionCommand extends Command
 
     public function configure(): void
     {
-        $this->setDescription('Get all competitions and inserts them if they dont exist');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int

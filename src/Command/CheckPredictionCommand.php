@@ -32,6 +32,7 @@ class CheckPredictionCommand extends Command
     private CompetitionRepository $competitionRepository;
 
     protected static $defaultName = 'app:check:prediction';
+    protected static $defaultDescription = 'Checks the outcome of predictions and calculates the points earned.';
 
     public function __construct(
         PredictionRepository $predictionRepository,
@@ -55,7 +56,6 @@ class CheckPredictionCommand extends Command
 
     public function configure(): void
     {
-        $this->setDescription('Checks the outcome of predictions and calculates the points earned.');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
