@@ -1,0 +1,6 @@
+grumphp:
+    tasks: 
+        phpstan:
+            ignore_patterns: ['/^(?!src)/']
+            memory_limit: "-1"
+           

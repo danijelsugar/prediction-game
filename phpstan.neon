@@ -1,4 +1,7 @@
 parameters:
+    level: 6
+    paths:
+        - src
     checkGenericClassInNonGenericObjectType: false
     symfony:
         container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
