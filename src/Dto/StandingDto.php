@@ -5,18 +5,18 @@ namespace App\Dto;
 class StandingDto
 {
     public function __construct(
-        private ?string $group, 
-        private int $position, 
-        private ?string $teamCrest, 
-        private ?string $teamName, 
-        private int $points, 
-        private int $playedGames, 
-        private ?string $form, 
-        private int $won, 
-        private int $draw, 
-        private int $lost, 
-        private int $goalsFor, 
-        private int $goalsAgainst, 
+        private ?string $group,
+        private int $position,
+        private ?string $teamCrest,
+        private ?string $teamName,
+        private int $points,
+        private int $playedGames,
+        private ?string $form,
+        private int $won,
+        private int $draw,
+        private int $lost,
+        private int $goalsFor,
+        private int $goalsAgainst,
         private int $goalDifference
     ) {
     }

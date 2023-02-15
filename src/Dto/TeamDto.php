@@ -5,12 +5,12 @@ namespace App\Dto;
 class TeamDto
 {
     public function __construct(
-        private ?string $crest, 
-        private string $name, 
-        private ?string $shortName, 
-        private ?string $tla, 
-        private ?string $founded, 
-        private ?string $clubColors, 
+        private ?string $crest,
+        private string $name,
+        private ?string $shortName,
+        private ?string $tla,
+        private ?string $founded,
+        private ?string $clubColors,
         private ?string $venue
     ) {
     }

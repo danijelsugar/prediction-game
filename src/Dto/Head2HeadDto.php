@@ -5,13 +5,13 @@ namespace App\Dto;
 class Head2HeadDto
 {
     public function __construct(
-        private int $numberOfMatches, 
-        private int $totalGoals, 
-        private int $homeTeamWins, 
-        private int $homeTeamDraws, 
-        private int $homeTeamLosses, 
-        private int $awayTeamWins, 
-        private int $awayTeamDraws, 
+        private int $numberOfMatches,
+        private int $totalGoals,
+        private int $homeTeamWins,
+        private int $homeTeamDraws,
+        private int $homeTeamLosses,
+        private int $awayTeamWins,
+        private int $awayTeamDraws,
         private int $awayTeamLosses
     ) {
     }

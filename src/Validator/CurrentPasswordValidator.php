@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class CurrentPasswordValidator extends ConstraintValidator
 {
     public function __construct(
-        private TokenStorageInterface $tokenStorage, 
+        private TokenStorageInterface $tokenStorage,
         private UserPasswordHasherInterface $hasher
     ) {
     }

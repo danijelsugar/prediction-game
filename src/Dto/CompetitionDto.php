@@ -5,11 +5,11 @@ namespace App\Dto;
 class CompetitionDto
 {
     public function __construct(
-        private int $competition, 
-        private string $name, 
-        private string $code, 
-        private string $area, 
-        private string $emblemUrl, 
+        private int $competition,
+        private string $name,
+        private string $code,
+        private string $area,
+        private string $emblemUrl,
         private ?\DateTimeInterface $lastUpdated
     ) {
     }

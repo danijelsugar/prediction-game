@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CompetitionController extends AbstractController
 {
     public function __construct(
-        private FootballInterface $footballData, 
+        private FootballInterface $footballData,
         private CompetitionRepository $competitionRepository
     ) {
     }

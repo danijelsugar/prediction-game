@@ -5,21 +5,21 @@ namespace App\Dto;
 class MatchDto
 {
     public function __construct(
-        private int $matchId, 
-        private string $stage, 
-        private ?string $groupName, 
-        private \DateTimeInterface $date, 
-        private ?string $homeTeamName, 
-        private ?string $awayTeamName, 
-        private ?int $fullTimeHomeTeamScore, 
-        private ?int $fullTimeAwayTeamScore, 
-        private ?int $extraTimeHomeTeamScore, 
-        private ?int $extraTimeAwayTeamScore, 
-        private ?string $winner, 
-        private \DateTimeInterface $lastUpdated, 
-        private ?int $matchday, 
-        private string $status, 
-        private int $competitionId, 
+        private int $matchId,
+        private string $stage,
+        private ?string $groupName,
+        private \DateTimeInterface $date,
+        private ?string $homeTeamName,
+        private ?string $awayTeamName,
+        private ?int $fullTimeHomeTeamScore,
+        private ?int $fullTimeAwayTeamScore,
+        private ?int $extraTimeHomeTeamScore,
+        private ?int $extraTimeAwayTeamScore,
+        private ?string $winner,
+        private \DateTimeInterface $lastUpdated,
+        private ?int $matchday,
+        private string $status,
+        private int $competitionId,
         private ?Head2HeadDto $head2Head
     ) {
     }

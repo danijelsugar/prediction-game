@@ -16,7 +16,7 @@ class FootballData implements FootballInterface
     private HttpClientInterface $client;
 
     public function __construct(
-        private string $footballApiToken, 
+        private string $footballApiToken,
         HttpClientInterface $client
     ) {
         $this->client = $client->withOptions([
