@@ -17,40 +17,18 @@ use Symfony\Component\HttpClient\Exception\ClientException;
 
 class CheckPredictionCommand extends Command
 {
-    private PredictionRepository $predictionRepository;
-
-    private FootballInterface $footballData;
-
-    private EntityManagerInterface $entityManager;
-
-    private PointService $pointService;
-
-    private LoggerInterface $logger;
-
-    private RoundMatchRepository $roundMatchRepository;
-
-    private CompetitionRepository $competitionRepository;
-
     protected static $defaultName = 'app:check:prediction';
     protected static $defaultDescription = 'Checks the outcome of predictions and calculates the points earned.';
 
     public function __construct(
-        PredictionRepository $predictionRepository,
-        FootballInterface $footballDataNew,
-        EntityManagerInterface $entityManager,
-        PointService $pointService,
-        LoggerInterface $logger,
-        RoundMatchRepository $roundMatchRepository,
-        CompetitionRepository $competitionRepository
+        private PredictionRepository $predictionRepository,
+        private FootballInterface $footballData,
+        private EntityManagerInterface $entityManager,
+        private PointService $pointService,
+        private LoggerInterface $logger,
+        private RoundMatchRepository $roundMatchRepository,
+        private CompetitionRepository $competitionRepository
     ) {
-        $this->predictionRepository = $predictionRepository;
-        $this->footballData = $footballDataNew;
-        $this->entityManager = $entityManager;
-        $this->pointService = $pointService;
-        $this->logger = $logger;
-        $this->roundMatchRepository = $roundMatchRepository;
-        $this->competitionRepository = $competitionRepository;
-
         parent::__construct();
     }
 
@@ -92,7 +70,7 @@ class CheckPredictionCommand extends Command
             ]);
         } catch (ClientException $e) {
             $io->info($e->getResponse()->getContent(false));
-            $this->logger->info($this->getDefaultName().': '.$e->getResponse()->getContent(false));
+            $this->logger->info(static::getDefaultName().': '.$e->getResponse()->getContent(false));
 
             return Command::FAILURE;
         }

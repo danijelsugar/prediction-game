@@ -13,16 +13,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CompetitionController extends AbstractController
 {
-    private FootballInterface $footballData;
-
-    private CompetitionRepository $competitionRepository;
-
     public function __construct(
-        FootballInterface $footballDataNew,
-        CompetitionRepository $competitionRepository
+        private FootballInterface $footballData, 
+        private CompetitionRepository $competitionRepository
     ) {
-        $this->footballData = $footballDataNew;
-        $this->competitionRepository = $competitionRepository;
     }
 
     /**
@@ -78,7 +72,7 @@ class CompetitionController extends AbstractController
     {
         try {
             $competitionTeams = $this->footballData->getCompetitionTeams($id);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
@@ -111,12 +105,12 @@ class CompetitionController extends AbstractController
                 $competitionStandings = $this->footballData->getCompetitionStandings($id, [
                     'standingType' => $standingType,
                 ]);
-            } catch (ClientException $e) {
+            } catch (ClientException) {
             }
         } else {
             try {
                 $competitionStandings = $this->footballData->getCompetitionStandings($id);
-            } catch (ClientException $e) {
+            } catch (ClientException) {
             }
         }
         if (isset($competitionStandings)) {
@@ -130,9 +124,9 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/table_cache.html.twig', [
             'competitionId' => $id,
-            'competitionStandings' => isset($competitionStandings) ? $competitionStandings : '',
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionStandings' => $competitionStandings ?? '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();
@@ -150,7 +144,7 @@ class CompetitionController extends AbstractController
             $competitionResults = $this->footballData->getCompetitionMatches($id, [
                 'status' => 'FINISHED',
             ]);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $roundMatches = [];
@@ -197,8 +191,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/result_cache.html.twig', [
             'roundMatches' => $roundMatches,
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();
@@ -216,7 +210,7 @@ class CompetitionController extends AbstractController
             $competitionSchedule = $this->footballData->getCompetitionMatches($id, [
                 'status' => 'SCHEDULED',
             ]);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $roundMatches = [];
@@ -263,8 +257,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/schedule_cache.html.twig', [
             'roundMatches' => $roundMatches,
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();

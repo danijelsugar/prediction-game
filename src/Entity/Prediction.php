@@ -27,13 +27,13 @@ class Prediction
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="predictions")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?User $user;
+    private ?User $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=RoundMatch::class)
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?RoundMatch $match;
+    private ?RoundMatch $match = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competition::class)
@@ -43,17 +43,17 @@ class Prediction
     /**
      * @ORM\Column(type="datetime", nullable="true")
      */
-    private ?\DateTimeInterface $matchStartTime;
+    private ?\DateTimeInterface $matchStartTime = null;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private ?int $homeTeamScore;
+    private ?int $homeTeamScore = null;
 
     /**
      * @ORM\Column(type="integer", nullable="true")
      */
-    private ?int $awayTeamScore;
+    private ?int $awayTeamScore = null;
 
     /**
      * @ORM\Column(type="integer")

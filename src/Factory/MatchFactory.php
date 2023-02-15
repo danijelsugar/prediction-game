@@ -71,7 +71,7 @@ class MatchFactory
      *
      * @return MatchDto[]|MatchDto
      */
-    public static function fromFootballDataNew($matches)
+    public static function fromFootballDataNew($matches): array|MatchDto
     {
         if (!is_array($matches)) {
             return new MatchDto(

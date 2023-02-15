@@ -17,7 +17,7 @@ class Competition
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="integer", unique=true)
@@ -42,7 +42,7 @@ class Competition
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $emblemUrl;
+    private ?string $emblemUrl = null;
 
     /**
      * @ORM\Column(type="datetime")

@@ -16,28 +16,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CompetitionRoundMatchCommand extends Command
 {
-    private RoundRepository $roundRepository;
-
-    private FootballInterface $footballData;
-
-    private EntityManagerInterface $entityManager;
-
-    private RoundMatchRepository $roundMatchRepository;
-
     protected static $defaultName = 'app:get:competition:round:match';
     protected static $defaultDescription = 'Get all matches for each round of each competition';
 
     public function __construct(
-        RoundRepository $roundRepository,
-        FootballInterface $footballDataNew,
-        EntityManagerInterface $entityManager,
-        RoundMatchRepository $roundMatchRepository
+        private RoundRepository $roundRepository,
+        private FootballInterface $footballData,
+        private EntityManagerInterface $entityManager,
+        private RoundMatchRepository $roundMatchRepository
     ) {
-        $this->roundRepository = $roundRepository;
-        $this->footballData = $footballDataNew;
-        $this->entityManager = $entityManager;
-        $this->roundMatchRepository = $roundMatchRepository;
-
         parent::__construct();
     }
 

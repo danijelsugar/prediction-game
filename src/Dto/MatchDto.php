@@ -4,72 +4,24 @@ namespace App\Dto;
 
 class MatchDto
 {
-    private int $matchId;
-
-    private string $stage;
-
-    private ?string $groupName;
-
-    private \DateTimeInterface $date;
-
-    private ?string $homeTeamName;
-
-    private ?string $awayTeamName;
-
-    private ?int $fullTimeHomeTeamScore;
-
-    private ?int $fullTimeAwayTeamScore;
-
-    private ?int $extraTimeHomeTeamScore;
-
-    private ?int $extraTimeAwayTeamScore;
-
-    private ?string $winner;
-
-    private \DateTimeInterface $lastUpdated;
-
-    private ?int $matchday;
-
-    private string $status;
-
-    private int $competitionId;
-
-    private ?Head2HeadDto $head2Head;
-
     public function __construct(
-        int $matchId,
-        string $stage,
-        ?string $groupName,
-        \DateTimeInterface $date,
-        ?string $homeTeamName,
-        ?string $awayTeamName,
-        ?int $fullTimeHomeTeamScore,
-        ?int $fullTimeAwayTeamScore,
-        ?int $extraTimeHomeTeamScore,
-        ?int $extraTimeAwayTeamScore,
-        ?string $winner,
-        \DateTimeInterface $lastUpdated,
-        ?int $matchday,
-        string $status,
-        int $competitionId,
-        ?Head2HeadDto $head2Head
+        private int $matchId, 
+        private string $stage, 
+        private ?string $groupName, 
+        private \DateTimeInterface $date, 
+        private ?string $homeTeamName, 
+        private ?string $awayTeamName, 
+        private ?int $fullTimeHomeTeamScore, 
+        private ?int $fullTimeAwayTeamScore, 
+        private ?int $extraTimeHomeTeamScore, 
+        private ?int $extraTimeAwayTeamScore, 
+        private ?string $winner, 
+        private \DateTimeInterface $lastUpdated, 
+        private ?int $matchday, 
+        private string $status, 
+        private int $competitionId, 
+        private ?Head2HeadDto $head2Head
     ) {
-        $this->matchId = $matchId;
-        $this->stage = $stage;
-        $this->groupName = $groupName;
-        $this->date = $date;
-        $this->homeTeamName = $homeTeamName;
-        $this->awayTeamName = $awayTeamName;
-        $this->fullTimeHomeTeamScore = $fullTimeHomeTeamScore;
-        $this->fullTimeAwayTeamScore = $fullTimeAwayTeamScore;
-        $this->extraTimeHomeTeamScore = $extraTimeHomeTeamScore;
-        $this->extraTimeAwayTeamScore = $extraTimeAwayTeamScore;
-        $this->winner = $winner;
-        $this->lastUpdated = $lastUpdated;
-        $this->matchday = $matchday;
-        $this->status = $status;
-        $this->competitionId = $competitionId;
-        $this->head2Head = $head2Head;
     }
 
     public function getMatchId(): int

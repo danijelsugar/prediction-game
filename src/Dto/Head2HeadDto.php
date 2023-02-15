@@ -4,40 +4,16 @@ namespace App\Dto;
 
 class Head2HeadDto
 {
-    private int $numberOfMatches;
-
-    private int $totalGoals;
-
-    private int $homeTeamWins;
-
-    private int $homeTeamDraws;
-
-    private int $homeTeamLosses;
-
-    private int $awayTeamWins;
-
-    private int $awayTeamDraws;
-
-    private int $awayTeamLosses;
-
     public function __construct(
-        int $numberOfMatches,
-        int $totalGoals,
-        int $homeTeamWins,
-        int $homeTeamDraws,
-        int $homeTeamLosses,
-        int $awayTeamWins,
-        int $awayTeamDraws,
-        int $awayTeamLosses
+        private int $numberOfMatches, 
+        private int $totalGoals, 
+        private int $homeTeamWins, 
+        private int $homeTeamDraws, 
+        private int $homeTeamLosses, 
+        private int $awayTeamWins, 
+        private int $awayTeamDraws, 
+        private int $awayTeamLosses
     ) {
-        $this->numberOfMatches = $numberOfMatches;
-        $this->totalGoals = $totalGoals;
-        $this->homeTeamWins = $homeTeamWins;
-        $this->homeTeamDraws = $homeTeamDraws;
-        $this->homeTeamLosses = $homeTeamLosses;
-        $this->awayTeamWins = $awayTeamWins;
-        $this->awayTeamDraws = $awayTeamDraws;
-        $this->awayTeamLosses = $awayTeamLosses;
     }
 
     public function getNumberOfMatches(): int

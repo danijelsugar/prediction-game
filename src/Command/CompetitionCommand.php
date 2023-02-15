@@ -14,24 +14,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CompetitionCommand extends Command
 {
-    private EntityManagerInterface $entityManager;
-
-    private FootballInterface $footballData;
-
-    private CompetitionRepository $competitionRepository;
-
     protected static $defaultName = 'app:get:competition';
     protected static $defaultDescription = 'Get all competitions and inserts them if they dont exist';
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        FootballInterface $footballDataNew,
-        CompetitionRepository $competitionRepository
+        private EntityManagerInterface $entityManager,
+        private FootballInterface $footballData,
+        private CompetitionRepository $competitionRepository
     ) {
-        $this->entityManager = $entityManager;
-        $this->footballData = $footballDataNew;
-        $this->competitionRepository = $competitionRepository;
-
         parent::__construct();
     }
 

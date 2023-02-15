@@ -11,11 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StatisticsController extends AbstractController
 {
-    private FootballInterface $footballData;
-
-    public function __construct(FootballInterface $footballDataNew)
+    public function __construct(private FootballInterface $footballData)
     {
-        $this->footballData = $footballDataNew;
     }
 
     /**
@@ -28,7 +25,7 @@ class StatisticsController extends AbstractController
             if ($this->footballData instanceof FootballDataNew) {
                 $head2Head = $this->footballData->getHead2Head($id);
             }
-        } catch (ClientException $e) {
+        } catch (ClientException) {
             $matchDto = null;
         }
 

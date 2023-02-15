@@ -17,13 +17,13 @@ class Round
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="rounds")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Competition $competition;
+    private ?Competition $competition = null;
 
     /**
      * @ORM\Column(type="string", length=255)

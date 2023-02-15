@@ -21,7 +21,7 @@ class RoundMatch
      * @ORM\ManyToOne(targetEntity=Round::class, inversedBy="roundMatches")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Round $round;
+    private ?Round $round = null;
 
     /**
      * @ORM\Column(type="integer")
@@ -36,7 +36,7 @@ class RoundMatch
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $groupName;
+    private ?string $groupName = null;
 
     /**
      * @ORM\Column(type="datetime")
@@ -46,37 +46,37 @@ class RoundMatch
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $homeTeamName;
+    private ?string $homeTeamName = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $awayTeamName;
+    private ?string $awayTeamName = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $fullTimeHomeTeamScore;
+    private ?int $fullTimeHomeTeamScore = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $fullTimeAwayTeamScore;
+    private ?int $fullTimeAwayTeamScore = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $extraTimeHomeTeamScore;
+    private ?int $extraTimeHomeTeamScore = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $extraTimeAwayTeamScore;
+    private ?int $extraTimeAwayTeamScore = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $winner;
+    private ?string $winner = null;
 
     /**
      * @ORM\Column(type="datetime")

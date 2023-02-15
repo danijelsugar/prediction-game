@@ -44,12 +44,10 @@ class PredictionController extends AbstractController
      * "competitions/{id}/predictions/round/{round}",
      * name="app_prediction_round",
      * requirements={"id"="\d{4}"})
-     *
-     * @param int|string $round
      */
     public function predictionsRound(
         int $id,
-        $round,
+        int|string $round,
         PredictionRepository $predictionRepository,
         RoundMatchRepository $roundMatchRepository,
         RoundRepository $roundRepository,
@@ -155,7 +153,7 @@ class PredictionController extends AbstractController
         CompetitionRepository $competitionRepository
     ): Response {
         $predictionData = $request->request->get('data');
-        $predictionData = json_decode($predictionData);
+        $predictionData = json_decode($predictionData, null, 512, JSON_THROW_ON_ERROR);
 
         /** @var User|null */
         $user = $this->getUser();
@@ -168,7 +166,7 @@ class PredictionController extends AbstractController
             return $this->json('No predictions entered!', 400);
         }
 
-        $predictionsEntered = count($predictionData);
+        $predictionsEntered = is_countable($predictionData) ? count($predictionData) : 0;
 
         $validPredictions = 0;
 
