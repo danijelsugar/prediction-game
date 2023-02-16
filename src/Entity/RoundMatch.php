@@ -5,83 +5,53 @@ namespace App\Entity;
 use App\Repository\RoundMatchRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=RoundMatchRepository::class)
- */
+#[ORM\Entity(repositoryClass: RoundMatchRepository::class)]
 class RoundMatch
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private int $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Round::class, inversedBy="roundMatches")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(inversedBy: 'roundMatches')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Round $round = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private int $matchId;
+    #[ORM\Column]
+    private ?int $matchId = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private string $stage;
+    #[ORM\Column(nullable: true)]
+    private ?string $stage = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?string $groupName = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $date;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $date = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?string $homeTeamName = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?string $awayTeamName = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $fullTimeHomeTeamScore = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $fullTimeAwayTeamScore = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $extraTimeHomeTeamScore = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $extraTimeAwayTeamScore = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?string $winner = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $lastUpdated;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $lastUpdated = null;
 
     public function getId(): ?int
     {

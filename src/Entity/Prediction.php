@@ -5,9 +5,7 @@ namespace App\Entity;
 use App\Repository\PredictionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=PredictionRepository::class)
- */
+#[ORM\Entity(repositoryClass: PredictionRepository::class)]
 class Prediction
 {
     public const SPOT_ON = 6;
@@ -16,63 +14,41 @@ class Prediction
     public const ONE_TEAM_SCORE = 1;
     public const NONE = 0;
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private int $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="predictions")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(inversedBy: 'predictions')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=RoundMatch::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne()]
+    #[ORM\JoinColumn(nullable: false)]
     private ?RoundMatch $match = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Competition::class)
-     */
-    private Competition $competition;
+    #[ORM\ManyToOne()]
+    private ?Competition $competition = null;
 
-    /**
-     * @ORM\Column(type="datetime", nullable="true")
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $matchStartTime = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable="true")
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $homeTeamScore = null;
 
-    /**
-     * @ORM\Column(type="integer", nullable="true")
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $awayTeamScore = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private int $homeTeamPrediction;
+    #[ORM\Column]
+    private ?int $homeTeamPrediction = null;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private int $awayTeamPrediction;
+    #[ORM\Column]
+    private ?int $awayTeamPrediction = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column]
     private bool $finished = false;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(nullable: true)]
     private ?int $points = null;
 
     public function getId(): ?int
@@ -97,21 +73,33 @@ class Prediction
         return $this->match;
     }
 
-    public function setMatch(?RoundMatch $match): self
+    public function setMatch(RoundMatch $match): self
     {
         $this->match = $match;
 
         return $this;
     }
 
-    public function getCompetition(): Competition
+    public function getCompetition(): ?Competition
     {
         return $this->competition;
     }
 
-    public function setCompetition(Competition $competition): self
+    public function setCompetition(?Competition $competition): self
     {
         $this->competition = $competition;
+
+        return $this;
+    }
+
+    public function getMatchStartTime(): ?\DateTimeInterface
+    {
+        return $this->matchStartTime;
+    }
+
+    public function setMatchStartTime(?\DateTimeInterface $matchStartTime): self
+    {
+        $this->matchStartTime = $matchStartTime;
 
         return $this;
     }
@@ -121,7 +109,7 @@ class Prediction
         return $this->homeTeamScore;
     }
 
-    public function setHomeTeamScore(int $homeTeamScore): self
+    public function setHomeTeamScore(?int $homeTeamScore): self
     {
         $this->homeTeamScore = $homeTeamScore;
 
@@ -133,21 +121,9 @@ class Prediction
         return $this->awayTeamScore;
     }
 
-    public function setAwayTeamScore(int $awayTeamScore): self
+    public function setAwayTeamScore(?int $awayTeamScore): self
     {
         $this->awayTeamScore = $awayTeamScore;
-
-        return $this;
-    }
-
-    public function getFinished(): ?bool
-    {
-        return $this->finished;
-    }
-
-    public function setFinished(bool $finished): self
-    {
-        $this->finished = $finished;
 
         return $this;
     }
@@ -176,6 +152,18 @@ class Prediction
         return $this;
     }
 
+    public function getFinished(): ?bool
+    {
+        return $this->finished;
+    }
+
+    public function setFinished(bool $finished): self
+    {
+        $this->finished = $finished;
+
+        return $this;
+    }
+
     public function getPoints(): ?int
     {
         return $this->points;
@@ -186,18 +174,6 @@ class Prediction
         if (in_array($points, [self::SPOT_ON, self::CORRECT_OUTCOME_SCORE_OR_DIFF, self::CORRECT_OUTCOME, self::ONE_TEAM_SCORE, self::NONE])) {
             $this->points = $points;
         }
-
-        return $this;
-    }
-
-    public function getMatchStartTime(): ?\DateTimeInterface
-    {
-        return $this->matchStartTime;
-    }
-
-    public function setMatchStartTime(\DateTimeInterface $matchStartTime): self
-    {
-        $this->matchStartTime = $matchStartTime;
 
         return $this;
     }
