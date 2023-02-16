@@ -19,9 +19,7 @@ class CompetitionController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route("competitions/{id}/teams", name="app_competition_teams", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/teams', name: 'app_competition_teams', requirements: ['id' => '\d{4}'])]
     public function competitionTeams(int $id): Response
     {
         return $this->render('competition/teams.html.twig', [
@@ -29,9 +27,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competitions/{id}/table", name="app_table", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/table', name: 'app_table', requirements: ['id' => '\d{4}'])]
     public function standings(int $id): Response
     {
         return $this->render('competition/table.html.twig', [
@@ -39,9 +35,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competition/{id}/results", name="app_results", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competition/{id}/results', name: 'app_results', requirements: ['id' => '\d{4}'])]
     public function results(int $id): Response
     {
         return $this->render('competition/result.html.twig', [
@@ -49,9 +43,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competitions/{id}/schedule", name="app_schedule", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/schedule', name: 'app_schedule', requirements: ['id' => '\d{4}'])]
     public function schedule(int $id): Response
     {
         return $this->render('competition/schedule.html.twig', [

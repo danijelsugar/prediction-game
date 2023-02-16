@@ -15,9 +15,7 @@ class StatisticsController extends AbstractController
     {
     }
 
-    /**
-     * @Route("/match/{id}", name="app_match_statistics")
-     */
+    #[Route(path: '/match/{id}', name: 'app_match_statistics')]
     public function match(int $id): Response
     {
         try {

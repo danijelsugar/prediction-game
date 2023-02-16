@@ -16,9 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PredictionController extends AbstractController
 {
-    /**
-     * @Route("/competitions/{id}/predictions", name="app_prediction", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: '/competitions/{id}/predictions', name: 'app_prediction', requirements: ['id' => '\d{4}'])]
     public function predictions(
         int $id,
         RoundRepository $roundRepository,
@@ -39,12 +37,7 @@ class PredictionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     * "competitions/{id}/predictions/round/{round}",
-     * name="app_prediction_round",
-     * requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/predictions/round/{round}', name: 'app_prediction_round', requirements: ['id' => '\d{4}'])]
     public function predictionsRound(
         int $id,
         int|string $round,
@@ -142,9 +135,7 @@ class PredictionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/predictions/save", name="app_predictions_save", methods={"POST"})
-     */
+    #[Route(path: '/predictions/save', name: 'app_predictions_save', methods: ['POST'])]
     public function savePrediction(
         Request $request,
         EntityManagerInterface $entityManager,

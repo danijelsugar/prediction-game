@@ -14,9 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SettingsController extends AbstractController
 {
-    /**
-     * @Route("/settings", name="app_settings")
-     */
+    #[Route(path: '/settings', name: 'app_settings')]
     public function settings(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,

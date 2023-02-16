@@ -18,9 +18,7 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 class RegistrationController extends AbstractController
 {
-    /**
-     * @Route("/register", name="app_register")
-     */
+    #[Route(path: '/register', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
@@ -72,9 +70,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/verify", name="app_verify_email")
-     */
+    #[Route(path: '/verify', name: 'app_verify_email')]
     public function verifyUserEmail(
         Request $request,
         VerifyEmailHelperInterface $verifyEmailHelper,
@@ -115,9 +111,7 @@ class RegistrationController extends AbstractController
         return $this->redirectToRoute('app_login');
     }
 
-    /**
-     * @Route("verify/resend", name="app_verify_resend_email")
-     */
+    #[Route(path: 'verify/resend', name: 'app_verify_resend_email')]
     public function resendVerifyEmail(
         Request $request,
         VerifyEmailHelperInterface $verifyEmailHelper,
