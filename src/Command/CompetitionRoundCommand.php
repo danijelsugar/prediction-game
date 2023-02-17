@@ -8,16 +8,15 @@ use App\Repository\CompetitionRepository;
 use App\Repository\RoundRepository;
 use App\Service\FootballDataService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand('app:get:competition:round', 'Get all rounds for each competition')]
 class CompetitionRoundCommand extends Command
 {
-    protected static $defaultName = 'app:get:competition:round';
-    protected static $defaultDescription = 'Get all rounds for each competition';
-
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CompetitionRepository $competitionRepository,

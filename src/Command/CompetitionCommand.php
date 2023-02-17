@@ -7,16 +7,15 @@ use App\Entity\Competition;
 use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand('app:get:competition', 'Get all competitions and inserts them if they dont exist')]
 class CompetitionCommand extends Command
 {
-    protected static $defaultName = 'app:get:competition';
-    protected static $defaultDescription = 'Get all competitions and inserts them if they dont exist';
-
     public function __construct(
         private EntityManagerInterface $entityManager,
         private FootballInterface $footballData,

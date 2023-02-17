@@ -8,17 +8,16 @@ use App\Helper\FootballInterface;
 use App\Repository\RoundMatchRepository;
 use App\Repository\RoundRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand('app:get:competition:round:match', 'Get all matches for each round of each competition')]
 class CompetitionRoundMatchCommand extends Command
 {
-    protected static $defaultName = 'app:get:competition:round:match';
-    protected static $defaultDescription = 'Get all matches for each round of each competition';
-
     public function __construct(
         private RoundRepository $roundRepository,
         private FootballInterface $footballData,

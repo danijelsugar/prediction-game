@@ -9,17 +9,16 @@ use App\Repository\RoundMatchRepository;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\Exception\ClientException;
 
+#[AsCommand('app:check:prediction', 'Checks the outcome of predictions and calculates the points earned.')]
 class CheckPredictionCommand extends Command
 {
-    protected static $defaultName = 'app:check:prediction';
-    protected static $defaultDescription = 'Checks the outcome of predictions and calculates the points earned.';
-
     public function __construct(
         private PredictionRepository $predictionRepository,
         private FootballInterface $footballData,
