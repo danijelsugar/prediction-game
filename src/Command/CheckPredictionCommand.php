@@ -9,53 +9,30 @@ use App\Repository\RoundMatchRepository;
 use App\Service\PointService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\Exception\ClientException;
 
+#[AsCommand('app:check:prediction', 'Checks the outcome of predictions and calculates the points earned.')]
 class CheckPredictionCommand extends Command
 {
-    private PredictionRepository $predictionRepository;
-
-    private FootballInterface $footballData;
-
-    private EntityManagerInterface $entityManager;
-
-    private PointService $pointService;
-
-    private LoggerInterface $logger;
-
-    private RoundMatchRepository $roundMatchRepository;
-
-    private CompetitionRepository $competitionRepository;
-
-    protected static $defaultName = 'app:check:prediction';
-
     public function __construct(
-        PredictionRepository $predictionRepository,
-        FootballInterface $footballDataNew,
-        EntityManagerInterface $entityManager,
-        PointService $pointService,
-        LoggerInterface $logger,
-        RoundMatchRepository $roundMatchRepository,
-        CompetitionRepository $competitionRepository
+        private PredictionRepository $predictionRepository,
+        private FootballInterface $footballData,
+        private EntityManagerInterface $entityManager,
+        private PointService $pointService,
+        private LoggerInterface $logger,
+        private RoundMatchRepository $roundMatchRepository,
+        private CompetitionRepository $competitionRepository
     ) {
-        $this->predictionRepository = $predictionRepository;
-        $this->footballData = $footballDataNew;
-        $this->entityManager = $entityManager;
-        $this->pointService = $pointService;
-        $this->logger = $logger;
-        $this->roundMatchRepository = $roundMatchRepository;
-        $this->competitionRepository = $competitionRepository;
-
         parent::__construct();
     }
 
     public function configure(): void
     {
-        $this->setDescription('Checks the outcome of predictions and calculates the points earned.');
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -92,7 +69,7 @@ class CheckPredictionCommand extends Command
             ]);
         } catch (ClientException $e) {
             $io->info($e->getResponse()->getContent(false));
-            $this->logger->info($this->getDefaultName().': '.$e->getResponse()->getContent(false));
+            $this->logger->info(static::getDefaultName().': '.$e->getResponse()->getContent(false));
 
             return Command::FAILURE;
         }
@@ -100,29 +77,29 @@ class CheckPredictionCommand extends Command
         foreach ($matches as $match) {
             $predictionMatch = $this->roundMatchRepository->findOneBy(
                 [
-                    'matchId' => $match->getMatchId(),
+                    'matchId' => $match->matchId,
                 ]
             );
 
             $competition = $this->competitionRepository->findOneBy(
                 [
-                    'competition' => $match->getCompetitionId(),
+                    'competition' => $match->competitionId,
                 ]
             );
 
             if ($predictionMatch) {
                 $predictionMatch
-                    ->setStage($match->getStage())
-                    ->setGroupName($match->getGroupName())
-                    ->setDate($match->getDate())
-                    ->setHomeTeamName($match->getHomeTeamName())
-                    ->setAwayTeamName($match->getAwayTeamName())
-                    ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
-                    ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
-                    ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
-                    ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
-                    ->setWinner($match->getWinner())
-                    ->setLastUpdated($match->getLastUpdated());
+                    ->setStage($match->stage)
+                    ->setGroupName($match->groupName)
+                    ->setDate($match->date)
+                    ->setHomeTeamName($match->homeTeamName)
+                    ->setAwayTeamName($match->awayTeamName)
+                    ->setFullTimeHomeTeamScore($match->fullTimeHomeTeamScore)
+                    ->setFullTimeAwayTeamScore($match->fullTimeAwayTeamScore)
+                    ->setExtraTimeHomeTeamScore($match->extraTimeHomeTeamScore)
+                    ->setExtraTimeAwayTeamScore($match->extraTimeAwayTeamScore)
+                    ->setWinner($match->winner)
+                    ->setLastUpdated($match->lastUpdated);
 
                 $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
             }
@@ -135,8 +112,8 @@ class CheckPredictionCommand extends Command
                     $prediction->getUser()->setPoints($userPoints);
 
                     $prediction
-                        ->setHomeTeamScore($match->getFullTimeHomeTeamScore())
-                        ->setAwayTeamScore($match->getFullTimeAwayTeamScore())
+                        ->setHomeTeamScore($match->fullTimeHomeTeamScore)
+                        ->setAwayTeamScore($match->fullTimeAwayTeamScore)
                         ->setFinished(true)
                         ->setPoints($points);
                 }

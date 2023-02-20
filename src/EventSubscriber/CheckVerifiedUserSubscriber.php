@@ -7,27 +7,18 @@ use App\Security\AccountNotVerifiedAuthenticationException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Http\Authenticator\Passport\UserPassportInterface;
 use Symfony\Component\Security\Http\Event\CheckPassportEvent;
 use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 
 class CheckVerifiedUserSubscriber implements EventSubscriberInterface
 {
-    private RouterInterface $router;
-
-    public function __construct(RouterInterface $router)
+    public function __construct(private RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     public function onCheckPassport(CheckPassportEvent $event): void
     {
         $passport = $event->getPassport();
-
-        if (!$passport instanceof UserPassportInterface) {
-            // TODO: throw exception
-            return;
-        }
 
         $user = $passport->getUser();
 

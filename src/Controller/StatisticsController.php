@@ -11,16 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StatisticsController extends AbstractController
 {
-    private FootballInterface $footballData;
-
-    public function __construct(FootballInterface $footballDataNew)
+    public function __construct(private FootballInterface $footballData)
     {
-        $this->footballData = $footballDataNew;
     }
 
-    /**
-     * @Route("/match/{id}", name="app_match_statistics")
-     */
+    #[Route(path: '/match/{id}', name: 'app_match_statistics')]
     public function match(int $id): Response
     {
         try {
@@ -28,7 +23,7 @@ class StatisticsController extends AbstractController
             if ($this->footballData instanceof FootballDataNew) {
                 $head2Head = $this->footballData->getHead2Head($id);
             }
-        } catch (ClientException $e) {
+        } catch (ClientException) {
             $matchDto = null;
         }
 
@@ -36,17 +31,17 @@ class StatisticsController extends AbstractController
 
         if (!is_null($matchDto)) {
             $match = [
-                'date' => $matchDto->getDate(),
-                'homeTeamName' => $matchDto->getHomeTeamName(),
-                'awayTeamName' => $matchDto->getAwayTeamName(),
-                'fullTimeHomeTeamScore' => $matchDto->getFullTimeHomeTeamScore(),
-                'fullTimeAwayTeamScore' => $matchDto->getFullTimeAwayTeamScore(),
+                'date' => $matchDto->date,
+                'homeTeamName' => $matchDto->homeTeamName,
+                'awayTeamName' => $matchDto->awayTeamName,
+                'fullTimeHomeTeamScore' => $matchDto->fullTimeHomeTeamScore,
+                'fullTimeAwayTeamScore' => $matchDto->fullTimeAwayTeamScore,
             ];
 
             if (isset($head2Head)) {
                 $match['head2head'] = $head2Head;
             } else {
-                $match['head2head'] = $matchDto->getHead2Head();
+                $match['head2head'] = $matchDto->head2Head;
             }
         }
 

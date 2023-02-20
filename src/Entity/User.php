@@ -10,43 +10,29 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column()
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @ORM\Column(length=100, nullable=true)
-     */
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $firstName = null;
 
-    /**
-     * @ORM\Column(length=100, nullable=true)
-     */
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $lastName = null;
 
-    /**
-     * @ORM\Column(length=100, unique=true)
-     */
+    #[ORM\Column(length: 100, unique: true)]
     private ?string $username = null;
 
-    /**
-     * @ORM\Column(length=100, unique=true)
-     */
+    #[ORM\Column(length: 100, unique: true)]
     private ?string $email = null;
 
-    /**
-     * @ORM\Column(length=100)
-     */
+    #[ORM\Column(length: 100)]
     private ?string $password = null;
 
     /**
@@ -55,25 +41,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     /**
-     * @ORM\Column(type="json")
-     *
      * @var string[]
      */
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    /**
-     * @ORM\Column()
-     */
+    #[ORM\Column]
     private bool $isVerified = false;
 
-    /**
-     * @ORM\Column()
-     */
+    #[ORM\Column]
     private int $points = 0;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Prediction::class, mappedBy="user")
-     */
+    #[ORM\OneToMany(targetEntity: Prediction::class, mappedBy: 'user')]
     private Collection $predictions;
 
     public function __construct()
@@ -118,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->username;
     }
 
-    public function setUsername(?string $username): self
+    public function setUsername(string $username): self
     {
         $this->username = $username;
 
@@ -130,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(?string $email): self
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
@@ -218,16 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->username;
-    }
-
-    /**
-     * This method can be removed in Symfony 6.0 - is not needed for apps that do not check user passwords.
-     *
-     * @see UserInterface
-     */
-    public function getSalt(): ?string
-    {
-        return null;
     }
 
     /**

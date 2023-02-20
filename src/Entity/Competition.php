@@ -7,51 +7,33 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=CompetitionRepository::class)
- */
+#[ORM\Entity(repositoryClass: CompetitionRepository::class)]
 class Competition
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="integer", unique=true)
-     */
-    private int $competition;
+    #[ORM\Column(unique: true)]
+    private ?int $competition = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $name;
+    #[ORM\Column]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private string $code;
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $code = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $area;
+    #[ORM\Column]
+    private ?string $area = null;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private ?string $emblemUrl;
+    #[ORM\Column(nullable: true)]
+    private ?string $emblemUrl = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $lastUpdated;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $lastUpdated = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Round::class, mappedBy="competition")
-     */
+    #[ORM\OneToMany(targetEntity: Round::class, mappedBy: 'competition')]
     private Collection $rounds;
 
     public function __construct()

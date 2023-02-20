@@ -16,9 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PredictionController extends AbstractController
 {
-    /**
-     * @Route("/competitions/{id}/predictions", name="app_prediction", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: '/competitions/{id}/predictions', name: 'app_prediction', requirements: ['id' => '\d{4}'])]
     public function predictions(
         int $id,
         RoundRepository $roundRepository,
@@ -39,17 +37,10 @@ class PredictionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     * "competitions/{id}/predictions/round/{round}",
-     * name="app_prediction_round",
-     * requirements={"id"="\d{4}"})
-     *
-     * @param int|string $round
-     */
+    #[Route(path: 'competitions/{id}/predictions/round/{round}', name: 'app_prediction_round', requirements: ['id' => '\d{4}'])]
     public function predictionsRound(
         int $id,
-        $round,
+        int|string $round,
         PredictionRepository $predictionRepository,
         RoundMatchRepository $roundMatchRepository,
         RoundRepository $roundRepository,
@@ -144,9 +135,7 @@ class PredictionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/predictions/save", name="app_predictions_save", methods={"POST"})
-     */
+    #[Route(path: '/predictions/save', name: 'app_predictions_save', methods: ['POST'])]
     public function savePrediction(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -155,7 +144,7 @@ class PredictionController extends AbstractController
         CompetitionRepository $competitionRepository
     ): Response {
         $predictionData = $request->request->get('data');
-        $predictionData = json_decode($predictionData);
+        $predictionData = json_decode($predictionData, null, 512, JSON_THROW_ON_ERROR);
 
         /** @var User|null */
         $user = $this->getUser();
@@ -168,7 +157,7 @@ class PredictionController extends AbstractController
             return $this->json('No predictions entered!', 400);
         }
 
-        $predictionsEntered = count($predictionData);
+        $predictionsEntered = is_countable($predictionData) ? count($predictionData) : 0;
 
         $validPredictions = 0;
 

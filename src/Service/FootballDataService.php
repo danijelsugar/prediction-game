@@ -17,26 +17,26 @@ class FootballDataService
     {
         $dates = [];
         foreach ($matches as $match) {
-            if (!is_null($match->getMatchday()) && is_null($match->getGroupName()) && 'REGULAR_SEASON' !== $match->getStage()) {
-                $dates[$match->getStage()][] = [
-                    'matchday' => $match->getMatchday(),
-                    'stage' => $match->getStage(),
-                    'date' => $match->getDate(),
-                    'status' => $match->getStatus(),
+            if (!is_null($match->matchday) && is_null($match->groupName) && 'REGULAR_SEASON' !== $match->stage) {
+                $dates[$match->stage][] = [
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'date' => $match->date,
+                    'status' => $match->status,
                 ];
-            } elseif (!is_null($match->getMatchday())) {
-                $dates[$match->getMatchday()][] = [
-                    'matchday' => $match->getMatchday(),
-                    'stage' => $match->getStage(),
-                    'date' => $match->getDate(),
-                    'status' => $match->getStatus(),
+            } elseif (!is_null($match->matchday)) {
+                $dates[$match->matchday][] = [
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'date' => $match->date,
+                    'status' => $match->status,
                 ];
             } else {
-                $dates[$match->getStage()][] = [
-                    'matchday' => $match->getMatchday(),
-                    'stage' => $match->getStage(),
-                    'date' => $match->getDate(),
-                    'status' => $match->getStatus(),
+                $dates[$match->stage][] = [
+                    'matchday' => $match->matchday,
+                    'stage' => $match->stage,
+                    'date' => $match->date,
+                    'status' => $match->status,
                 ];
             }
         }

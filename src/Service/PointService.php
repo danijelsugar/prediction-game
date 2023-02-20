@@ -25,8 +25,8 @@ class PointService
     private function correctScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->getFullTimeHomeTeamScore() === $prediction->getHomeTeamPrediction() &&
-            $match->getFullTimeAwayTeamScore() === $prediction->getAwayTeamPrediction()
+            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction() &&
+            $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -37,11 +37,11 @@ class PointService
     private function correctOutcome(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->getFullTimeHomeTeamScore() > $match->getFullTimeAwayTeamScore() &&
+            $match->fullTimeHomeTeamScore > $match->fullTimeAwayTeamScore &&
             $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction() ||
-            $match->getFullTimeHomeTeamScore() < $match->getFullTimeAwayTeamScore() &&
+            $match->fullTimeHomeTeamScore < $match->fullTimeAwayTeamScore &&
             $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction() ||
-            $match->getFullTimeHomeTeamScore() === $match->getFullTimeAwayTeamScore() &&
+            $match->fullTimeHomeTeamScore === $match->fullTimeAwayTeamScore &&
             $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()
         ) {
             return true;
@@ -53,8 +53,8 @@ class PointService
     private function oneTeamScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->getFullTimeHomeTeamScore() === $prediction->getHomeTeamPrediction() ||
-            $match->getFullTimeAwayTeamScore() === $prediction->getAwayTeamPrediction()
+            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction() ||
+            $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -64,7 +64,7 @@ class PointService
 
     private function checkGoalDiff(MatchDto $match, Prediction $prediction): bool
     {
-        $matchDiff = $match->getFullTimeHomeTeamScore() - $match->getFullTimeAwayTeamScore();
+        $matchDiff = $match->fullTimeHomeTeamScore - $match->fullTimeAwayTeamScore;
         $predictionDiff = $prediction->getHomeTeamPrediction() - $prediction->getAwayTeamPrediction();
         if ($matchDiff === $predictionDiff) {
             return true;

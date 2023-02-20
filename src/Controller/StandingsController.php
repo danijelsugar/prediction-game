@@ -9,9 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class StandingsController extends AbstractController
 {
-    /**
-     * @Route("/standings", name="app_standings")
-     */
+    #[Route(path: '/standings', name: 'app_standings')]
     public function index(UserRepository $userRepository): Response
     {
         $users = $userRepository->findBy(

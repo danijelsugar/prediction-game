@@ -7,52 +7,34 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=RoundRepository::class)
- */
+#[ORM\Entity(repositoryClass: RoundRepository::class)]
 class Round
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Competition::class, inversedBy="rounds")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private ?Competition $competition;
+    #[ORM\ManyToOne(inversedBy: 'rounds')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Competition $competition = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $name;
+    #[ORM\Column]
+    private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $stage;
+    #[ORM\Column]
+    private ?string $stage = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $dateFrom;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateFrom = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $dateTo;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $dateTo = null;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
-    private string $status;
+    #[ORM\Column(length: 50)]
+    private ?string $status = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity=RoundMatch::class, mappedBy="round")
-     */
+    #[ORM\OneToMany(targetEntity: RoundMatch::class, mappedBy: 'round')]
     private Collection $roundMatches;
 
     public function __construct()
@@ -94,7 +76,7 @@ class Round
         return $this->stage;
     }
 
-    public function setStage(?string $stage): self
+    public function setStage(string $stage): self
     {
         $this->stage = $stage;
 

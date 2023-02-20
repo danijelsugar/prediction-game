@@ -17,11 +17,10 @@ class FootballDataNew implements FootballInterface
 
     private HttpClientInterface $client;
 
-    private string $footballApiToken;
-
-    public function __construct(string $footballApiToken, HttpClientInterface $client)
-    {
-        $this->footballApiToken = $footballApiToken;
+    public function __construct(
+        private string $footballApiToken,
+        HttpClientInterface $client
+    ) {
         $this->client = $client->withOptions([
             'headers' => [
                 'X-Auth-Token' => $this->footballApiToken,
@@ -40,7 +39,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return CompetitionFactory::fromFootballDataNew($decode->competitions);
     }
@@ -56,7 +55,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return StandingFactory::fromFootballDataNew($decode->standings);
     }
@@ -72,7 +71,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return TeamFactory::fromFootballDataNew($decode->teams);
     }
@@ -88,7 +87,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return MatchFactory::fromFootballDataNew($decode->matches);
     }
@@ -104,7 +103,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return MatchFactory::fromFootballDataNew($decode);
     }
@@ -120,7 +119,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return MatchFactory::fromFootballDataNew($decode->matches);
     }
@@ -141,7 +140,7 @@ class FootballDataNew implements FootballInterface
 
         $data = $response->getContent();
 
-        $decode = json_decode($data);
+        $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
         return Head2HeadFactory::fromFootballDataNew($decode->aggregates);
     }

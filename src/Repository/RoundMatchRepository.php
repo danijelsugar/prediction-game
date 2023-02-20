@@ -22,11 +22,9 @@ class RoundMatchRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int|string $round
-     *
      * @return RoundMatch[]
      */
-    public function findRoundMatches(int $competition, $round): array
+    public function findRoundMatches(int $competition, int|string $round): array
     {
         return $this->createQueryBuilder('rm')
             ->innerJoin(Round::class, 'r', 'WITH', 'rm.round=r.id')

@@ -13,21 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CompetitionController extends AbstractController
 {
-    private FootballInterface $footballData;
-
-    private CompetitionRepository $competitionRepository;
-
     public function __construct(
-        FootballInterface $footballDataNew,
-        CompetitionRepository $competitionRepository
+        private FootballInterface $footballData,
+        private CompetitionRepository $competitionRepository
     ) {
-        $this->footballData = $footballDataNew;
-        $this->competitionRepository = $competitionRepository;
     }
 
-    /**
-     * @Route("competitions/{id}/teams", name="app_competition_teams", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/teams', name: 'app_competition_teams', requirements: ['id' => '\d{4}'])]
     public function competitionTeams(int $id): Response
     {
         return $this->render('competition/teams.html.twig', [
@@ -35,9 +27,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competitions/{id}/table", name="app_table", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/table', name: 'app_table', requirements: ['id' => '\d{4}'])]
     public function standings(int $id): Response
     {
         return $this->render('competition/table.html.twig', [
@@ -45,9 +35,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competition/{id}/results", name="app_results", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competition/{id}/results', name: 'app_results', requirements: ['id' => '\d{4}'])]
     public function results(int $id): Response
     {
         return $this->render('competition/result.html.twig', [
@@ -55,9 +43,7 @@ class CompetitionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("competitions/{id}/schedule", name="app_schedule", requirements={"id"="\d{4}"})
-     */
+    #[Route(path: 'competitions/{id}/schedule', name: 'app_schedule', requirements: ['id' => '\d{4}'])]
     public function schedule(int $id): Response
     {
         return $this->render('competition/schedule.html.twig', [
@@ -78,7 +64,7 @@ class CompetitionController extends AbstractController
     {
         try {
             $competitionTeams = $this->footballData->getCompetitionTeams($id);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $competition = $this->competitionRepository->findOneBy(['competition' => $id]);
@@ -111,12 +97,12 @@ class CompetitionController extends AbstractController
                 $competitionStandings = $this->footballData->getCompetitionStandings($id, [
                     'standingType' => $standingType,
                 ]);
-            } catch (ClientException $e) {
+            } catch (ClientException) {
             }
         } else {
             try {
                 $competitionStandings = $this->footballData->getCompetitionStandings($id);
-            } catch (ClientException $e) {
+            } catch (ClientException) {
             }
         }
         if (isset($competitionStandings)) {
@@ -130,9 +116,9 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/table_cache.html.twig', [
             'competitionId' => $id,
-            'competitionStandings' => isset($competitionStandings) ? $competitionStandings : '',
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionStandings' => $competitionStandings ?? '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();
@@ -150,37 +136,37 @@ class CompetitionController extends AbstractController
             $competitionResults = $this->footballData->getCompetitionMatches($id, [
                 'status' => 'FINISHED',
             ]);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $roundMatches = [];
         if (isset($competitionResults)) {
             foreach ($competitionResults as $match) {
-                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
-                    $roundMatches[$match->getStage()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                    $roundMatches[$match->stage][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 } else {
-                    $roundMatches['Round '.$match->getMatchday()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                    $roundMatches['Round '.$match->matchday][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 }
             }
@@ -197,8 +183,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/result_cache.html.twig', [
             'roundMatches' => $roundMatches,
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();
@@ -216,37 +202,37 @@ class CompetitionController extends AbstractController
             $competitionSchedule = $this->footballData->getCompetitionMatches($id, [
                 'status' => 'SCHEDULED',
             ]);
-        } catch (ClientException $e) {
+        } catch (ClientException) {
         }
 
         $roundMatches = [];
         if (isset($competitionSchedule)) {
             foreach ($competitionSchedule as $match) {
-                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
-                    $roundMatches[$match->getStage()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                    $roundMatches[$match->stage][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 } else {
-                    $roundMatches['Round '.$match->getMatchday()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                    $roundMatches['Round '.$match->matchday][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 }
             }
@@ -263,8 +249,8 @@ class CompetitionController extends AbstractController
 
         $response = $this->render('competition/schedule_cache.html.twig', [
             'roundMatches' => $roundMatches,
-            'competitionName' => isset($competitionName) ? $competitionName : '',
-            'season' => isset($season) ? $season : '',
+            'competitionName' => $competitionName ?? '',
+            'season' => $season ?? '',
         ]);
 
         $response->setPublic();
