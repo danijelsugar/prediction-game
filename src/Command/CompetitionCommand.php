@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Dto\CompetitionDto;
 use App\Entity\Competition;
 use App\Helper\FootballInterface;
 use App\Repository\CompetitionRepository;
@@ -32,7 +31,6 @@ class CompetitionCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        /** @var CompetitionDto[] $competitionDtos */
         $competitionDtos = $this->footballData->getCompetitions([
             'plan' => 'TIER_ONE',
         ]);
@@ -43,28 +41,28 @@ class CompetitionCommand extends Command
         foreach ($competitionDtos as $competitionDto) {
             $competition = $this->competitionRepository->findOneBy(
                 [
-                    'competition' => $competitionDto->getCompetition(),
+                    'competition' => $competitionDto->competition,
                 ]
             );
             if (!$competition) {
                 $competition = new Competition();
                 $competition
-                    ->setCompetition($competitionDto->getCompetition())
-                    ->setName($competitionDto->getName())
-                    ->setCode($competitionDto->getCode())
-                    ->setArea($competitionDto->getArea())
-                    ->setLastUpdated($competitionDto->getLastUpdated())
-                    ->setEmblemUrl($competitionDto->getEmblemUrl());
+                    ->setCompetition($competitionDto->competition)
+                    ->setName($competitionDto->name)
+                    ->setCode($competitionDto->code)
+                    ->setArea($competitionDto->area)
+                    ->setLastUpdated($competitionDto->lastUpdated)
+                    ->setEmblemUrl($competitionDto->emblemUrl);
                 ++$inserted;
                 $this->entityManager->persist($competition);
             } else {
-                if ($competitionDto->getLastUpdated()->format('Y-m-d H:i:s') !== $competition->getLastUpdated()->format('Y-m-d H:i:s')) {
+                if ($competitionDto->lastUpdated->format('Y-m-d H:i:s') !== $competition->getLastUpdated()->format('Y-m-d H:i:s')) {
                     $competition
-                        ->setName($competitionDto->getName())
-                        ->setCode($competitionDto->getCode())
-                        ->setArea($competitionDto->getArea())
-                        ->setLastUpdated($competitionDto->getLastUpdated())
-                        ->setEmblemUrl($competitionDto->getEmblemUrl());
+                        ->setName($competitionDto->name)
+                        ->setCode($competitionDto->code)
+                        ->setArea($competitionDto->area)
+                        ->setLastUpdated($competitionDto->lastUpdated)
+                        ->setEmblemUrl($competitionDto->emblemUrl);
                     ++$updated;
                 }
             }

@@ -142,31 +142,31 @@ class CompetitionController extends AbstractController
         $roundMatches = [];
         if (isset($competitionResults)) {
             foreach ($competitionResults as $match) {
-                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
-                    $roundMatches[$match->getStage()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                    $roundMatches[$match->stage][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 } else {
-                    $roundMatches['Round '.$match->getMatchday()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                    $roundMatches['Round '.$match->matchday][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 }
             }
@@ -208,31 +208,31 @@ class CompetitionController extends AbstractController
         $roundMatches = [];
         if (isset($competitionSchedule)) {
             foreach ($competitionSchedule as $match) {
-                if (null === $match->getMatchday() || ('GROUP_STAGE' !== $match->getStage() && 'REGULAR_SEASON' !== $match->getStage())) {
-                    $roundMatches[$match->getStage()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                if (null === $match->matchday || ('GROUP_STAGE' !== $match->stage && 'REGULAR_SEASON' !== $match->stage)) {
+                    $roundMatches[$match->stage][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 } else {
-                    $roundMatches['Round '.$match->getMatchday()][] = [
-                        'utcDate' => $match->getDate(),
-                        'matchday' => $match->getMatchday(),
-                        'stage' => $match->getStage(),
-                        'group' => $match->getGroupName(),
-                        'homeTeamName' => $match->getHomeTeamName(),
-                        'awayTeamName' => $match->getAwayTeamName(),
-                        'homeTeamFullTimeScore' => $match->getFullTimeHomeTeamScore(),
-                        'awayTeamFullTimeScore' => $match->getFullTimeAwayTeamScore(),
-                        'homeTeamExtraTimeScore' => $match->getExtraTimeHomeTeamScore(),
-                        'awayTeamExtraTimeScore' => $match->getExtraTimeAwayTeamScore(),
+                    $roundMatches['Round '.$match->matchday][] = [
+                        'utcDate' => $match->date,
+                        'matchday' => $match->matchday,
+                        'stage' => $match->stage,
+                        'group' => $match->groupName,
+                        'homeTeamName' => $match->homeTeamName,
+                        'awayTeamName' => $match->awayTeamName,
+                        'homeTeamFullTimeScore' => $match->fullTimeHomeTeamScore,
+                        'awayTeamFullTimeScore' => $match->fullTimeAwayTeamScore,
+                        'homeTeamExtraTimeScore' => $match->extraTimeHomeTeamScore,
+                        'awayTeamExtraTimeScore' => $match->extraTimeAwayTeamScore,
                     ];
                 }
             }

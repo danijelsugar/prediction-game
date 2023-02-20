@@ -31,17 +31,17 @@ class StatisticsController extends AbstractController
 
         if (!is_null($matchDto)) {
             $match = [
-                'date' => $matchDto->getDate(),
-                'homeTeamName' => $matchDto->getHomeTeamName(),
-                'awayTeamName' => $matchDto->getAwayTeamName(),
-                'fullTimeHomeTeamScore' => $matchDto->getFullTimeHomeTeamScore(),
-                'fullTimeAwayTeamScore' => $matchDto->getFullTimeAwayTeamScore(),
+                'date' => $matchDto->date,
+                'homeTeamName' => $matchDto->homeTeamName,
+                'awayTeamName' => $matchDto->awayTeamName,
+                'fullTimeHomeTeamScore' => $matchDto->fullTimeHomeTeamScore,
+                'fullTimeAwayTeamScore' => $matchDto->fullTimeAwayTeamScore,
             ];
 
             if (isset($head2Head)) {
                 $match['head2head'] = $head2Head;
             } else {
-                $match['head2head'] = $matchDto->getHead2Head();
+                $match['head2head'] = $matchDto->head2Head;
             }
         }
 

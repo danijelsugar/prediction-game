@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Dto\MatchDto;
 use App\Entity\RoundMatch;
 use App\Helper\FootballInterface;
 use App\Repository\RoundMatchRepository;
@@ -68,12 +67,11 @@ class CompetitionRoundMatchCommand extends Command
                     throw new LogicException();
                 }
 
-                /** @var MatchDto[] $roundMatches */
                 foreach ($roundMatches as $match) {
                     $roundMatch = $this->roundMatchRepository->findOneBy(
                         [
                             'round' => $round,
-                            'matchId' => $match->getMatchId(),
+                            'matchId' => $match->matchId,
                         ]
                     );
 
@@ -81,33 +79,33 @@ class CompetitionRoundMatchCommand extends Command
                         $roundMatch = new RoundMatch();
                         $roundMatch
                             ->setRound($round)
-                            ->setMatchId($match->getMatchId())
-                            ->setDate($match->getDate())
-                            ->setHomeTeamName($match->getHomeTeamName())
-                            ->setAwayTeamName($match->getAwayTeamName())
-                            ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
-                            ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
-                            ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
-                            ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
-                            ->setWinner($match->getWinner())
-                            ->setStage($match->getStage())
-                            ->setGroupName($match->getGroupName())
-                            ->setLastUpdated($match->getLastUpdated());
+                            ->setMatchId($match->matchId)
+                            ->setDate($match->date)
+                            ->setHomeTeamName($match->homeTeamName)
+                            ->setAwayTeamName($match->awayTeamName)
+                            ->setFullTimeHomeTeamScore(fullTimeHomeTeamScore: $match->fullTimeHomeTeamScore)
+                            ->setFullTimeAwayTeamScore($match->fullTimeAwayTeamScore)
+                            ->setExtraTimeHomeTeamScore($match->extraTimeHomeTeamScore)
+                            ->setExtraTimeAwayTeamScore($match->extraTimeAwayTeamScore)
+                            ->setWinner($match->winner)
+                            ->setStage($match->stage)
+                            ->setGroupName($match->groupName)
+                            ->setLastUpdated($match->lastUpdated);
                         $this->entityManager->persist($roundMatch);
                     } else {
-                        if ($match->getLastUpdated()->format('Y-m-d H:i:s') !== $roundMatch->getLastUpdated()->format('Y-m-d H:i:s')) {
+                        if ($match->lastUpdated->format('Y-m-d H:i:s') !== $roundMatch->getLastUpdated()->format('Y-m-d H:i:s')) {
                             $roundMatch
-                                ->setDate($match->getDate())
-                                ->setHomeTeamName($match->getHomeTeamName())
-                                ->setAwayTeamName($match->getAwayTeamName())
-                                ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
-                                ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
-                                ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
-                                ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
-                                ->setWinner($match->getWinner())
-                                ->setStage($match->getStage())
-                                ->setGroupName($match->getGroupName())
-                                ->setLastUpdated($match->getLastUpdated());
+                                ->setDate($match->date)
+                                ->setHomeTeamName($match->homeTeamName)
+                                ->setAwayTeamName($match->awayTeamName)
+                                ->setFullTimeHomeTeamScore($match->fullTimeHomeTeamScore)
+                                ->setFullTimeAwayTeamScore($match->fullTimeAwayTeamScore)
+                                ->setExtraTimeHomeTeamScore($match->extraTimeHomeTeamScore)
+                                ->setExtraTimeAwayTeamScore($match->extraTimeAwayTeamScore)
+                                ->setWinner($match->winner)
+                                ->setStage($match->stage)
+                                ->setGroupName($match->groupName)
+                                ->setLastUpdated($match->lastUpdated);
                         }
                     }
                 }

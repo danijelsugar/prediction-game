@@ -2,45 +2,15 @@
 
 namespace App\Dto;
 
-class CompetitionDto
+readonly class CompetitionDto
 {
     public function __construct(
-        private int $competition,
-        private string $name,
-        private string $code,
-        private string $area,
-        private string $emblemUrl,
-        private ?\DateTimeInterface $lastUpdated
+        public int $competition,
+        public string $name,
+        public string $code,
+        public string $area,
+        public string $emblemUrl,
+        public ?\DateTimeInterface $lastUpdated
     ) {
-    }
-
-    public function getCompetition(): ?int
-    {
-        return $this->competition;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function getArea(): ?string
-    {
-        return $this->area;
-    }
-
-    public function getEmblemUrl(): ?string
-    {
-        return $this->emblemUrl;
-    }
-
-    public function getLastUpdated(): ?\DateTimeInterface
-    {
-        return $this->lastUpdated;
     }
 }

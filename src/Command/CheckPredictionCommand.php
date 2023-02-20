@@ -77,29 +77,29 @@ class CheckPredictionCommand extends Command
         foreach ($matches as $match) {
             $predictionMatch = $this->roundMatchRepository->findOneBy(
                 [
-                    'matchId' => $match->getMatchId(),
+                    'matchId' => $match->matchId,
                 ]
             );
 
             $competition = $this->competitionRepository->findOneBy(
                 [
-                    'competition' => $match->getCompetitionId(),
+                    'competition' => $match->competitionId,
                 ]
             );
 
             if ($predictionMatch) {
                 $predictionMatch
-                    ->setStage($match->getStage())
-                    ->setGroupName($match->getGroupName())
-                    ->setDate($match->getDate())
-                    ->setHomeTeamName($match->getHomeTeamName())
-                    ->setAwayTeamName($match->getAwayTeamName())
-                    ->setFullTimeHomeTeamScore($match->getFullTimeHomeTeamScore())
-                    ->setFullTimeAwayTeamScore($match->getFullTimeAwayTeamScore())
-                    ->setExtraTimeHomeTeamScore($match->getExtraTimeHomeTeamScore())
-                    ->setExtraTimeAwayTeamScore($match->getExtraTimeAwayTeamScore())
-                    ->setWinner($match->getWinner())
-                    ->setLastUpdated($match->getLastUpdated());
+                    ->setStage($match->stage)
+                    ->setGroupName($match->groupName)
+                    ->setDate($match->date)
+                    ->setHomeTeamName($match->homeTeamName)
+                    ->setAwayTeamName($match->awayTeamName)
+                    ->setFullTimeHomeTeamScore($match->fullTimeHomeTeamScore)
+                    ->setFullTimeAwayTeamScore($match->fullTimeAwayTeamScore)
+                    ->setExtraTimeHomeTeamScore($match->extraTimeHomeTeamScore)
+                    ->setExtraTimeAwayTeamScore($match->extraTimeAwayTeamScore)
+                    ->setWinner($match->winner)
+                    ->setLastUpdated($match->lastUpdated);
 
                 $predictions = $this->predictionRepository->findPredictions($predictionMatch, $competition);
             }
@@ -112,8 +112,8 @@ class CheckPredictionCommand extends Command
                     $prediction->getUser()->setPoints($userPoints);
 
                     $prediction
-                        ->setHomeTeamScore($match->getFullTimeHomeTeamScore())
-                        ->setAwayTeamScore($match->getFullTimeAwayTeamScore())
+                        ->setHomeTeamScore($match->fullTimeHomeTeamScore)
+                        ->setAwayTeamScore($match->fullTimeAwayTeamScore)
                         ->setFinished(true)
                         ->setPoints($points);
                 }

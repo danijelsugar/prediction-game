@@ -2,51 +2,16 @@
 
 namespace App\Dto;
 
-class TeamDto
+readonly class TeamDto
 {
     public function __construct(
-        private ?string $crest,
-        private string $name,
-        private ?string $shortName,
-        private ?string $tla,
-        private ?string $founded,
-        private ?string $clubColors,
-        private ?string $venue
+        public ?string $crest,
+        public string $name,
+        public ?string $shortName,
+        public ?string $tla,
+        public ?string $founded,
+        public ?string $clubColors,
+        public ?string $venue
     ) {
-    }
-
-    public function getCrest(): ?string
-    {
-        return $this->crest;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getShortName(): ?string
-    {
-        return $this->shortName;
-    }
-
-    public function getTla(): ?string
-    {
-        return $this->tla;
-    }
-
-    public function getFounded(): ?string
-    {
-        return $this->founded;
-    }
-
-    public function getClubColors(): ?string
-    {
-        return $this->clubColors;
-    }
-
-    public function getVenue(): ?string
-    {
-        return $this->venue;
     }
 }
