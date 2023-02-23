@@ -75,7 +75,8 @@ class PredictionController extends AbstractController
             }
 
             $matches[] = [
-                'id' => $roundMatch->getMatchId(),
+                'id' => $roundMatch->getId(),
+                'matchId' => $roundMatch->getMatchId(),
                 'date' => $roundMatch->getDate(),
                 'homeTeamName' => $roundMatch->getHomeTeamName(),
                 'awayTeamName' => $roundMatch->getAwayTeamName(),
@@ -85,6 +86,7 @@ class PredictionController extends AbstractController
                 'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
                 'finished' => $finished,
                 'winner' => $roundMatch->getWinner(),
+                'competition' => $roundMatch->getRound()->getCompetition()->getId(),
                 'userPrediction' => $userPrediction,
             ];
         }
