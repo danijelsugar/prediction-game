@@ -67,7 +67,7 @@
                                                 class="prediction-input awayTeamScore"
                                                 value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
                                             <input type="hidden" class="matchId" value="{{ match.id }}">
-                                            <input type="hidden" class="competitionId" value="{{ competitionId }}">
+                                            <input type="hidden" class="competitionId" value="{{ match.competition }}">
                                         </div>
                                     {% else %}
                                         {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
@@ -118,8 +118,4 @@
         </div>
     </div>
     {{ include('_prediction_notification.html.twig') }}
-{% endblock %}
-{% block script %}
-    {{ parent() }}
-    <script src="{{ asset('assets/js/prediction.js') }}"></script>
 {% endblock %}
