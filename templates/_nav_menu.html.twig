@@ -17,13 +17,17 @@
             Predictions
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li class="dropdown dropend">
+            <li 
+                {{ stimulus_controller('dropdown') }}
+                {{ stimulus_action('dropdown', 'show', 'mouseenter')|stimulus_action('dropdown', 'hide', 'mouseleave') }}
+                class="dropdown dropend"
+            >
                 <a 
-                class="dropdown-item dropdown-toggle2" 
-                href="{{ path('app_prediction', {'id': competitionId}) }}"
-                id="multilevelDropdownMenu1"
-                aria-haspopup="true" 
-                aria-expanded="false">
+                    class="dropdown-item" 
+                    href="{{ path('app_prediction', {'id': competitionId}) }}"
+                    id="multilevelDropdownMenu1"
+                    aria-haspopup="true" 
+                    aria-expanded="false">
                     Round predictions
                 </a>
                 {{ render(controller('App\\Controller\\PredictionController::predictionNavCache', {'id': competitionId})) }}
