@@ -75,7 +75,8 @@ class PredictionController extends AbstractController
             }
 
             $matches[] = [
-                'id' => $roundMatch->getMatchId(),
+                'id' => $roundMatch->getId(),
+                'matchId' => $roundMatch->getMatchId(),
                 'date' => $roundMatch->getDate(),
                 'homeTeamName' => $roundMatch->getHomeTeamName(),
                 'awayTeamName' => $roundMatch->getAwayTeamName(),
@@ -85,6 +86,7 @@ class PredictionController extends AbstractController
                 'extraTimeAwayTeamScore' => $roundMatch->getExtraTimeAwayTeamScore(),
                 'finished' => $finished,
                 'winner' => $roundMatch->getWinner(),
+                'competition' => $roundMatch->getRound()->getCompetition()->getId(),
                 'userPrediction' => $userPrediction,
             ];
         }
@@ -150,11 +152,13 @@ class PredictionController extends AbstractController
         $user = $this->getUser();
 
         if (!$user) {
-            return $this->json('Something went wrong, sign up and try again.', 400);
+            $message = 'Something went wrong, sign up and try again.';
+            $success = false;
         }
 
         if (!$predictionData) {
-            return $this->json('No predictions entered!', 400);
+            $message = 'No predictions entered';
+            $success = false;
         }
 
         $predictionsEntered = is_countable($predictionData) ? count($predictionData) : 0;
@@ -169,7 +173,7 @@ class PredictionController extends AbstractController
                 continue;
             }
 
-            if (!is_numeric($data->homeTeam) || !is_numeric($data->awayTeam) || !is_numeric($data->match) || !is_numeric($data->competition)) {
+            if (!is_numeric($data->homeTeamScore) || !is_numeric($data->awayTeamScore) || !is_numeric($data->match) || !is_numeric($data->competition)) {
                 continue;
             }
 
@@ -198,12 +202,12 @@ class PredictionController extends AbstractController
                     ->setMatch($match)
                     ->setCompetition($competition)
                     ->setMatchStartTime($matchStartTime)
-                    ->setHomeTeamPrediction($data->homeTeam)
-                    ->setAwayTeamPrediction($data->awayTeam);
+                    ->setHomeTeamPrediction($data->homeTeamScore)
+                    ->setAwayTeamPrediction($data->awayTeamScore);
                 $entityManager->persist($prediction);
             } else {
-                $previousPrediction->setHomeTeamPrediction($data->homeTeam);
-                $previousPrediction->setAwayTeamPrediction($data->awayTeam);
+                $previousPrediction->setHomeTeamPrediction($data->homeTeamScore);
+                $previousPrediction->setAwayTeamPrediction($data->awayTeamScore);
                 $entityManager->persist($previousPrediction);
             }
             ++$validPredictions;
@@ -211,15 +215,17 @@ class PredictionController extends AbstractController
         $entityManager->flush();
 
         if ($predictionsEntered > $validPredictions) {
-            return $this->json(
-                sprintf(
-                    '%s of %s predictions saved successfully. Predictions can be entered before the start of the match, only numbers allowed as score prediction.',
-                    $validPredictions,
-                    $predictionsEntered
-                ), 200
+            $message = sprintf(
+                '%s of %s predictions saved successfully. Predictions can be entered before the start of the match, only numbers allowed as score prediction.',
+                $validPredictions,
+                $predictionsEntered
             );
+            $success = true;
         }
 
-        return $this->json('Predictions saved successfully.', 200);
+        return $this->render('_prediction_notification.html.twig', [
+            'message' => $message ?? 'Predictions saved successfully.',
+            'success' => $success ?? true,
+        ]);
     }
 }

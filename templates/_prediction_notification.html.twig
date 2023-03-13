@@ -1,12 +1,13 @@
-<div class="prediction-notification">
-    <div class="alert alert-success mb-0 alert-dismissible fade show visuallyhidden" role="alert">
-        <button type="button" class="btn-close close-notification"></button>
-        <i class="fas fa-check-circle"></i>
-        <span class="prediction-notification-message"></span>
-    </div>
-    <div class="alert alert-danger mb-0 alert-dismissible fade show visuallyhidden" role="alert">
-        <button type="button" class="btn-close close-notification"></button>
-        <i class="fas fa-times-circle"></i>
-        <span class="prediction-notification-message"></span>
-    </div>
+<div 
+    {{ stimulus_target('notification', 'notification') }}
+    class="alert alert-{{ success ? "success" : "danger" }} mb-0 alert-dismissible fade show visuallyhidden" 
+    role="alert"
+>
+    <button 
+        {{ stimulus_action('notification', 'closeNotification') }}
+        type="button" 
+        class="btn-close">
+    </button>
+    <i class="fas fa-check-circle"></i>
+    <span class="prediction-notification-message">{{ message }}</span>
 </div>

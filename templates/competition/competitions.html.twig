@@ -3,7 +3,7 @@
         <li class="nav-item">
             <a href="{{ path('app_competition_teams', {'id': competition.getCompetition()}) }}" class="nav-link text-truncate">
                 {% if competition.emblemUrl is not same as null %}
-                    <img src="{{ competition.emblemUrl }}" alt="Emblem" width="25px">
+                    <img src="{{ competition.emblemUrl }}" alt="" width="25px">
                 {% endif %}
                 <span class="d-none d-sm-inline">{{ competition.name }}</span>
             </a>

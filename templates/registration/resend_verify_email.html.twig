@@ -4,7 +4,7 @@
 
 {% block stylesheet %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
+    {{ encore_entry_link_tags('account') }}
 {% endblock %}
 
 {% block body %}

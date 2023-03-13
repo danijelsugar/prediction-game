@@ -1,4 +1,8 @@
-<ul class="dropdown-menu" aria-labelledby="multilevelDropdownMenu1">
+<ul 
+    {{ stimulus_target('dropdown', 'dropdown') }}
+    class="dropdown-menu" 
+    aria-labelledby="multilevelDropdownMenu1"
+>
     {% for round in rounds %}
         <li>
             <a class="dropdown-item" href="{{ path('app_prediction_round', {'id': competitionId, 'round': round.name}) }}">

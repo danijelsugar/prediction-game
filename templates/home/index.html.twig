@@ -2,25 +2,28 @@
 
 {% block title %}Prediction game{% endblock %}
 
-{% block stylesheet %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
-{% endblock %}
-
 {% block body %}
-    <div class="card">
+    <div class="card" {{ stimulus_controller('prediction') }}>
         <div class="card-header">
             <h3 class="card-title">All predictions for the next 5 days</h3>
         </div>
         <div class="card-body">
-            <table class="table" data-url="{{ path('app_predictions_save') }}">
-                <tbody>
+            <table class="table">
+                <tbody
+                    {{ stimulus_controller('prediction', {
+                        url: path('app_predictions_save')
+                    }) }}
+                    data-prediction-notification-outlet=".prediction-notification"
+                >
                     {% for date, matches in sortedMatches %}
                         <tr>
                             <td class="text-center bg-secondary" colspan="7">{{ date|date('D') }} - {{ date|date('M d') }}</td>
                         </tr>
                         {% for match in matches %}
-                            <tr class="match">
+                            <tr 
+                                {{ stimulus_target('prediction', 'prediction') }}
+                                class="match"
+                            >
                                 <td>
                                     <img width="25px" src="{{ match.competitionEmblem }}" alt="{{ match.competitionName }}">
                                 </td>
@@ -51,20 +54,22 @@
                             </tr>
                         {% endfor %}
                     {% endfor %}
+                    {% if is_granted('ROLE_USER') %}
+                        <tr>
+                            <td>
+                                <button {{ stimulus_action('prediction', 'savePrediction') }} >
+                                    Save
+                                </button>
+                            </td>
+                            <td>
+                                <div
+                                    {{ stimulus_controller('notification') }}
+                                    class="prediction-notification"></div>
+                            </td>
+                        </tr>
+                    {% endif %}
                 </tbody>
-                <tfoot>
-                    <tr>
-                        {% if is_granted('ROLE_USER') %}
-                            <td><button id="savePrediction">Save</button></td>
-                        {% endif %}
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>
-    {{ include('_prediction_notification.html.twig') }}
-{% endblock %}
-{% block script %}
-    {{ parent() }}
-    <script src="{{ asset('assets/js/prediction.js') }}"></script>
 {% endblock %}
