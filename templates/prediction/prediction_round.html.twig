@@ -31,7 +31,7 @@
                     {% endif %}
                 </a>
             {% endif %}
-            <table class="table" data-url="{{ path('app_predictions_save') }}">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Start</th>
@@ -43,60 +43,80 @@
                         <th>Statistics</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% if matches is not empty %}
-                        {% for match in matches %}
-                            <tr class="match">
-                                <td class="startTime">{{ match.date | date('d.m.Y H:i') }} </td>
-                                <td>{{ match.homeTeamName }}</td>
-                                <td>{{ match.awayTeamName }}</td>
-                                <td>
-                                    {% if match.winner is not same as null %}
-                                        {{ match.fullTimeHomeTeamScore }}:{{ match.fullTimeAwayTeamScore }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if match.finished is not same as true and is_granted('ROLE_USER') %}
-                                        <div>
-                                            <input 
-                                                type="text" 
-                                                class="me-1 prediction-input homeTeamScore" 
-                                                value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
-                                            <input 
-                                                type="text" 
-                                                class="prediction-input awayTeamScore"
-                                                value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
-                                            <input type="hidden" class="matchId" value="{{ match.id }}">
-                                            <input type="hidden" class="competitionId" value="{{ match.competition }}">
-                                        </div>
+                <tbody
+                    {{ stimulus_controller('prediction', {
+                        url: path('app_predictions_save')
+                    }) }}
+                    data-prediction-notification-outlet=".prediction-notification"
+                >
+                    {% for match in matches %}
+                        <tr 
+                            {{ stimulus_target('prediction', 'prediction') }}
+                            class="match"
+                        >
+                            <td class="startTime">
+                                {{ match.date | date('d.m.Y H:i') }} 
+                            </td>
+                            <td>{{ match.homeTeamName }}</td>
+                            <td>{{ match.awayTeamName }}</td>
+                            <td>
+                                {% if match.winner is not same as null %}
+                                    {{ match.fullTimeHomeTeamScore }}:{{ match.fullTimeAwayTeamScore }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if match.finished is not same as true and is_granted('ROLE_USER') %}
+                                    <div>
+                                        <input 
+                                            type="text" 
+                                            class="me-1 prediction-input homeTeamScore" 
+                                            value="{{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}">
+                                        <input 
+                                            type="text" 
+                                            class="prediction-input awayTeamScore"
+                                            value="{{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}">
+                                        <input type="hidden" class="matchId" value="{{ match.id }}">
+                                        <input type="hidden" class="competitionId" value="{{ match.competition }}">
+                                    </div>
+                                {% else %}
+                                    {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
+                                    {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
+                                {% endif %}   
+                            </td>
+                            <td>
+                                {% if match.userPrediction %}
+                                    {% if match.userPrediction.points is same as 6 %}
+                                        <p class="alert alert-danger py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                    {% elseif match.userPrediction.points is same as 4 %}
+                                        <p class="alert alert-warning  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                    {% elseif match.userPrediction.points is same as 3 %}
+                                        <p class="alert alert-success  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                    {% elseif match.userPrediction.points is same as 1 %}
+                                        <p class="alert alert-secondary  py-1 mb-0">{{ match.userPrediction.points }}</p>
+                                    {% elseif match.userPrediction.points is same as 0 %}
+                                        <p class="alert alert-dark  py-1 mb-0">{{ match.userPrediction.points }}</p>
                                     {% else %}
-                                        {{ match.userPrediction ? match.userPrediction.homeTeamPrediction : '' }}:
-                                        {{ match.userPrediction ? match.userPrediction.awayTeamPrediction : '' }}
-                                    {% endif %}   
-                                </td>
-                                <td>
-                                    {% if match.userPrediction %}
-                                        {% if match.userPrediction.points is same as 6 %}
-                                            <p class="alert alert-danger py-1 mb-0">{{ match.userPrediction.points }}</p>
-                                        {% elseif match.userPrediction.points is same as 4 %}
-                                            <p class="alert alert-warning  py-1 mb-0">{{ match.userPrediction.points }}</p>
-                                        {% elseif match.userPrediction.points is same as 3 %}
-                                            <p class="alert alert-success  py-1 mb-0">{{ match.userPrediction.points }}</p>
-                                        {% elseif match.userPrediction.points is same as 1 %}
-                                            <p class="alert alert-secondary  py-1 mb-0">{{ match.userPrediction.points }}</p>
-                                        {% elseif match.userPrediction.points is same as 0 %}
-                                            <p class="alert alert-dark  py-1 mb-0">{{ match.userPrediction.points }}</p>
-                                        {% else %}
 
-                                        {% endif %}
                                     {% endif %}
-                                </td>
-                                <td><a href="{{ path('app_match_statistics', {'id': match.id}) }}" title="Statistics"><i class="fas fa-search"></i></a></td>
-                            </tr>
-                        {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td><a href="{{ path('app_match_statistics', {'id': match.id}) }}" title="Statistics"><i class="fas fa-search"></i></a></td>
+                        </tr>
                     {% else %}
                         <tr>
                             <td colspan="7">No results</td>
+                        </tr>
+                    {% endfor %}
+                    {% if is_granted('ROLE_USER') %}
+                        <tr>
+                            <td>
+                                <button {{ stimulus_action('prediction', 'savePrediction') }}>Save</button>
+                            </td>
+                            <td>
+                                <div
+                                    {{ stimulus_controller('notification') }}
+                                    class="prediction-notification"></div>
+                            </td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -109,13 +129,11 @@
                             <span class="btn btn-secondary">1 Point</span>
                             <span class="btn btn-dark">0 Points</span>
                         </td>
-                        {% if is_granted('ROLE_USER') %}
-                            <td><button id="savePrediction">Save</button></td>
-                        {% endif %}
+                        
                     </tr>
                 </tfoot>
             </table>
         </div>
     </div>
-    {{ include('_prediction_notification.html.twig') }}
+    
 {% endblock %}
