@@ -8,6 +8,7 @@
 /vendor/
 ###< symfony/framework-bundle ###
 .vscode
+.idea
 
 ###> friendsofphp/php-cs-fixer ###
 /tools/php-cs-fixer/vendor/
