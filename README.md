@@ -1,8 +1,9 @@
 # Prediction game
-> Prediction game is a web application in which users can predict the outcome of a football match and earn points based on how accurate their predictions were.
+> Prediction game is a web application that allows users to predict the outcome of football matches and earn points based on the accuracy of their predictions.
 
 ## Technologies Used
-- PHP >= 8.1
+The following technologies were used to build prediction game:
+- PHP 8.2
 - MySQL 8
 - Symfony 6.2
 - Symfony UX
@@ -10,45 +11,69 @@
 - Bootstrap 5
 
 ## Instalation
-Clone the repository and install the dependencies:
+To install and run prediction game, follow these steps:
+## Step 1: Clone the repository and install dependencies
 ```
-$ git clone https://github.com/danijelsugar/prediction-game
-$ cd prediction-game
-$ composer install
+git clone https://github.com/danijelsugar/prediction-game
+cd prediction-game
+composer install
 ```
-Initialize the database:
- - customize DATABASE_URL inside .env
+## Step 2: Configure the database
+Customize the DATABASE_URL inside the .env file to match your database settings. For example:
 ```
 DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=8"
 ```
- - create database
+## Step 3: Create the database
+Create the database using the following command:
 ```
-$ php bin/console doctrine:database:create
+php bin/console doctrine:database:create
 ```
-  - creating the database tables/schema (migrations)
+## Step 4: Run migrations
+To create the database tables/schema, run the following commands:
 ```
-$ php bin/console make:migration
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
 ```
- - execute migrations
+## Step 5: Build assets
+Build the assets by running the following commands:
 ```
-$ php bin/console doctrine:migrations:migrate
+npm install
+npm run dev
 ```
-Football data API key:
- - on https://www.football-data.org/ create free account to get API key 
- - add API key to .env
+## Step 6: Start the web server
+Finally, start the web server by running the following command:
+```
+symfony serve
+```
+
+## Usage
+
+## Retrieving Football Data
+To retrieve football data, you'll need to create a free account at https://www.football-data.org/ and obtain an API key. After obtaining your API key, enter it under APP_FOOTBALL_API=YOUR_API_KEY in the .env file:
+
 ```
 APP_FOOTBALL_API=YOUR_API_KEY
 ```
-Build the assets:
+You can then use the following commands to retrieve the football data:
+ - to retrieve all competitions
 ```
-$ npm install
-$ npm run dev
+php bin/console app:get:competition
 ```
-Start the web server:
+ - to retrieve rounds info for each competition
 ```
-$ symfony serve
+php bin/console app:get:competition:round
 ```
-
+ - to retrieve matches for each round of each competition
+```
+php bin/console app:get:competition:round:match
+```
+## User Registration and Verification
+In order to successfully register:
+ - configure MAILER_DSN and EMAIL_FROM in the .env file:
+```
+MAILER_DSN=null://null
+EMAIL_FROM=your.email@gmail.com
+```
 
 ## Features
 - Login
