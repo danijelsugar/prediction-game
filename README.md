@@ -10,7 +10,7 @@ The following technologies were used to build prediction game:
 - JavaScript (Ajax)
 - Bootstrap 5
 
-## Instalation
+## Installation
 To install and run prediction game, follow these steps:
 ## Step 1: Clone the repository and install dependencies
 ```
