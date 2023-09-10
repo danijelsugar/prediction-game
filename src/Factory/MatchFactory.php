@@ -44,7 +44,7 @@ class MatchFactory
         return $dtos;
     }
 
-    public static function fromFootballDataSingle(object $head2Head, object $match): MatchDto
+    public static function fromFootballDataSingle(object $headToHead, object $match): MatchDto
     {
         return new MatchDto(
             $match->id,
@@ -62,7 +62,7 @@ class MatchFactory
             $match->matchday,
             $match->status,
             $match->competition->id,
-            Head2HeadFactory::fromFootballData($head2Head)
+            HeadToHeadFactory::fromFootballData($headToHead)
         );
     }
 

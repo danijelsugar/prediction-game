@@ -2,10 +2,10 @@
 
 namespace App\Helper;
 
-use App\Dto\Head2HeadDto;
+use App\Dto\HeadToHeadDto;
 use App\Dto\MatchDto;
 use App\Factory\CompetitionFactory;
-use App\Factory\Head2HeadFactory;
+use App\Factory\HeadToHeadFactory;
 use App\Factory\MatchFactory;
 use App\Factory\StandingFactory;
 use App\Factory\TeamFactory;
@@ -129,7 +129,7 @@ class FootballDataNew implements FootballInterface
      *
      * @param array<string, string> $filters
      */
-    public function getHead2Head(int $match, array $filters = []): Head2HeadDto
+    public function getHeadToHead(int $match, array $filters = []): HeadToHeadDto
     {
         $resource = 'matches/'.$match.'/head2head';
 
@@ -142,6 +142,6 @@ class FootballDataNew implements FootballInterface
 
         $decode = json_decode($data, null, 512, JSON_THROW_ON_ERROR);
 
-        return Head2HeadFactory::fromFootballDataNew($decode->aggregates);
+        return HeadToHeadFactory::fromFootballDataNew($decode->aggregates);
     }
 }

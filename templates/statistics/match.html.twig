@@ -28,45 +28,45 @@
                             <tbody>
                                 <tr>
                                     <td>Total matches:</td>
-                                    <td>{{ match.head2head.numberOfMatches }}</td>
+                                    <td>{{ match.headToHead.numberOfMatches }}</td>
                                 </tr>
                                 <tr>
                                     <td>Total goals:</td>
-                                    <td>{{ match.head2head.totalGoals }}</td>
+                                    <td>{{ match.headToHead.totalGoals }}</td>
                                 </tr>
                                 <tr>
                                     <td>Avg goals / match:</td>
-                                    <td>{{ (match.head2head.totalGoals / match.head2head.numberOfMatches)|round(1) }}</td>
+                                    <td>{{ (match.headToHead.totalGoals / match.headToHead.numberOfMatches)|round(1) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">{{ match.homeTeamName }}</td>
                                 </tr>
                                 <tr>
                                     <td>Wins:</td>
-                                    <td>{{ match.head2head.homeTeamWins }}({{ (match.head2head.homeTeamWins / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.homeTeamWins }}({{ (match.headToHead.homeTeamWins / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                                 <tr>
                                     <td>Draws:</td>
-                                    <td>{{ match.head2head.homeTeamDraws }}({{ (match.head2head.homeTeamDraws / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.homeTeamDraws }}({{ (match.headToHead.homeTeamDraws / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                                 <tr>
                                     <td>Losses:</td>
-                                    <td>{{ match.head2head.homeTeamLosses }}({{ (match.head2head.homeTeamLosses / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.homeTeamLosses }}({{ (match.headToHead.homeTeamLosses / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">{{ match.awayTeamName }}</td>
                                 </tr>
                                 <tr>
                                     <td>Wins:</td>
-                                    <td>{{ match.head2head.awayTeamWins }}({{ (match.head2head.awayTeamWins / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.awayTeamWins }}({{ (match.headToHead.awayTeamWins / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                                 <tr>
                                     <td>Draws:</td>
-                                    <td>{{ match.head2head.awayTeamDraws }}({{ (match.head2head.awayTeamDraws / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.awayTeamDraws }}({{ (match.headToHead.awayTeamDraws / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                                 <tr>
                                     <td>Losses:</td>
-                                    <td>{{ match.head2head.awayTeamLosses }}({{ (match.head2head.awayTeamLosses / match.head2head.numberOfMatches * 100) | round }}%)</td>
+                                    <td>{{ match.headToHead.awayTeamLosses }}({{ (match.headToHead.awayTeamLosses / match.headToHead.numberOfMatches * 100) | round }}%)</td>
                                 </tr>
                             </tbody>
                         </table>

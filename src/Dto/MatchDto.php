@@ -20,7 +20,7 @@ readonly class MatchDto
         public ?int $matchday,
         public string $status,
         public int $competitionId,
-        public ?Head2HeadDto $head2Head
+        public ?HeadToHeadDto $headToHead
     ) {
     }
 }

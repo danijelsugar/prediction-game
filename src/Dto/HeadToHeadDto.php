@@ -2,7 +2,7 @@
 
 namespace App\Dto;
 
-readonly class Head2HeadDto
+readonly class HeadToHeadDto
 {
     public function __construct(
         public int $numberOfMatches,

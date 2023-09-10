@@ -21,7 +21,7 @@ class StatisticsController extends AbstractController
         try {
             $matchDto = $this->footballData->getMatch($id);
             if ($this->footballData instanceof FootballDataNew) {
-                $head2Head = $this->footballData->getHead2Head($id);
+                $headToHead = $this->footballData->getHeadToHead($id);
             }
         } catch (ClientException) {
             $matchDto = null;
@@ -38,10 +38,10 @@ class StatisticsController extends AbstractController
                 'fullTimeAwayTeamScore' => $matchDto->fullTimeAwayTeamScore,
             ];
 
-            if (isset($head2Head)) {
-                $match['head2head'] = $head2Head;
+            if (isset($headToHead)) {
+                $match['headToHead'] = $headToHead;
             } else {
-                $match['head2head'] = $matchDto->head2Head;
+                $match['headToHead'] = $matchDto->headToHead;
             }
         }
 
