@@ -25,8 +25,8 @@ class PointService
     private function correctScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction() &&
-            $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
+            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction()
+            && $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -37,12 +37,12 @@ class PointService
     private function correctOutcome(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->fullTimeHomeTeamScore > $match->fullTimeAwayTeamScore &&
-            $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction() ||
-            $match->fullTimeHomeTeamScore < $match->fullTimeAwayTeamScore &&
-            $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction() ||
-            $match->fullTimeHomeTeamScore === $match->fullTimeAwayTeamScore &&
-            $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()
+            $match->fullTimeHomeTeamScore > $match->fullTimeAwayTeamScore
+            && $prediction->getHomeTeamPrediction() > $prediction->getAwayTeamPrediction()
+            || $match->fullTimeHomeTeamScore < $match->fullTimeAwayTeamScore
+            && $prediction->getHomeTeamPrediction() < $prediction->getAwayTeamPrediction()
+            || $match->fullTimeHomeTeamScore === $match->fullTimeAwayTeamScore
+            && $prediction->getHomeTeamPrediction() === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
@@ -53,8 +53,8 @@ class PointService
     private function oneTeamScore(MatchDto $match, Prediction $prediction): bool
     {
         if (
-            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction() ||
-            $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
+            $match->fullTimeHomeTeamScore === $prediction->getHomeTeamPrediction()
+            || $match->fullTimeAwayTeamScore === $prediction->getAwayTeamPrediction()
         ) {
             return true;
         }
