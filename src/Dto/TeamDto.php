@@ -9,7 +9,7 @@ readonly class TeamDto
         public string $name,
         public ?string $shortName,
         public ?string $tla,
-        public ?string $founded,
+        public ?int $founded,
         public ?string $clubColors,
         public ?string $venue
     ) {
