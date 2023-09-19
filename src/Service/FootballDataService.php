@@ -3,110 +3,137 @@
 namespace App\Service;
 
 use App\Dto\MatchDto;
+use App\Dto\RoundDto;
 
 class FootballDataService
 {
+    public const STATUS_FINISHED = 'FINISHED';
+    public const STATUS_SCHEDULED = 'SCHEDULED';
+    public const STATUS_PARTIALLY_FINISHED = 'PARTIALLY_FINISHED';
+
     /**
      * Gets dates of matchdays sorted by matchday.
      *
      * @param MatchDto[] $matches
      *
-     * @return array<int|string, array<int, array<string, \DateTimeInterface|int|string|null>>> $dates
+     * @return RoundDto[] $rounds
      */
     public function getRoundInfo(array $matches): array
     {
-        $dates = [];
+        $roundMatches = $this->groupMatchesByRounds($matches);
+        $rounds = $this->generateRoundData($roundMatches);
+
+        return $rounds;
+    }
+
+    /**
+     * @param MatchDto[] $matches
+     *
+     * @return array<int|string, MatchDto[]>
+     */
+    private function groupMatchesByRounds(array $matches): array
+    {
+        $roundMatches = [];
+
         foreach ($matches as $match) {
-            if (!is_null($match->matchday) && is_null($match->groupName) && 'REGULAR_SEASON' !== $match->stage) {
-                $dates[$match->stage][] = [
-                    'matchday' => $match->matchday,
-                    'stage' => $match->stage,
-                    'date' => $match->date,
-                    'status' => $match->status,
-                ];
-            } elseif (!is_null($match->matchday)) {
-                $dates[$match->matchday][] = [
-                    'matchday' => $match->matchday,
-                    'stage' => $match->stage,
-                    'date' => $match->date,
-                    'status' => $match->status,
-                ];
-            } else {
-                $dates[$match->stage][] = [
-                    'matchday' => $match->matchday,
-                    'stage' => $match->stage,
-                    'date' => $match->date,
-                    'status' => $match->status,
-                ];
-            }
+            $roundName = $this->getRoundName($match);
+            $roundMatches[$roundName][] = $match;
         }
 
-        if (!array_filter(array_keys($dates), 'is_string')) {
-            ksort($dates);
+        return $roundMatches;
+    }
+
+    private function getRoundName(MatchDto $match): string|int
+    {
+        if (!is_null($match->matchday) && is_null($match->groupName) && 'REGULAR_SEASON' !== $match->stage) {
+            return $match->stage;
         }
 
-        return $dates;
+        if (!is_null($match->matchday)) {
+            return $match->matchday;
+        }
+
+        return $match->stage;
+    }
+
+    /**
+     * @param array<int|string, MatchDto[]> $roundMatches
+     *
+     * @return RoundDto[] $rounds
+     */
+    public function generateRoundData(array $roundMatches): array
+    {
+        $rounds = [];
+
+        foreach ($roundMatches as $round => $matches) {
+            $stage = $this->getRoundStage($matches);
+
+            [$dateFrom, $dateTo] = $this->getFirstAndLastMatchdayDate($matches);
+
+            $status = $this->getRoundStatus($matches);
+
+            $rounds[] = new RoundDto(
+                $round,
+                $stage,
+                $dateFrom,
+                $dateTo,
+                $status
+            );
+        }
+
+        return $rounds;
     }
 
     /**
      * Gets date of first and last match for each round.
      *
-     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
+     * @param MatchDto[] $matches
      *
-     * @return array<string, \DatetimeInterface>
+     * @return array<int, \DatetimeInterface>
      */
-    public function getFirstAndLastMatchdayDate(array $data): array
+    private function getFirstAndLastMatchdayDate(array $matches): array
     {
-        $dates = [];
-        foreach ($data as $match) {
-            $dates[] = $match['date']->format('Y-m-d H:i:s');
-        }
+        $dates = array_column($matches, 'date');
 
-        $firstTimestamp = min(array_map('strtotime', $dates));
-        $firstDate = (new \DateTime())->setTimestamp($firstTimestamp);
+        sort($dates);
 
-        $lastTimestamp = max(array_map('strtotime', $dates));
-        $lastDate = (new \DateTime())->setTimestamp($lastTimestamp);
+        $dateFrom = reset($dates);
+        $dateTo = end($dates);
 
-        return ['dateFrom' => $firstDate, 'dateTo' => $lastDate];
+        return [$dateFrom, $dateTo];
     }
 
     /**
-     * Gets status of each round (if all matches are finished, scheduled or half finished).
+     * Gets status of each round (if all matches are finished, scheduled or partially finished).
      *
-     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
+     * @param MatchDto[] $matches
      */
-    public function getRoundStatus(array $data): string
+    private function getRoundStatus(array $matches): string
     {
-        $roundStatus = [];
-        foreach ($data as $match) {
-            $roundStatus[] = $match['status'];
-        }
+        $roundStatus = array_column($matches, 'status');
 
-        if (1 === count(array_unique($roundStatus)) && 'FINISHED' === end($roundStatus)) {
-            $status = 'FINISHED';
-        } elseif (1 === count(array_unique($roundStatus)) && 'SCHEDULED' === end($roundStatus)) {
-            $status = 'SCHEDULED';
+        $uniqueStatus = array_unique($roundStatus);
+        $statusCount = count($uniqueStatus);
+
+        if (1 === $statusCount && $uniqueStatus === [self::STATUS_FINISHED]) {
+            return self::STATUS_FINISHED;
+        } elseif (1 === $statusCount && $uniqueStatus === [self::STATUS_SCHEDULED]) {
+            return self::STATUS_SCHEDULED;
         } else {
-            $status = 'HALF';
+            return self::STATUS_PARTIALLY_FINISHED;
         }
-
-        return $status;
     }
 
     /**
      * Gets stage of round.
      *
-     * @param array<int, array<string, \DateTimeInterface|int|string|null>> $data
+     * @param MatchDto[] $matches
      */
-    public function getRoundStage(array $data): string
+    private function getRoundStage(array $matches): string
     {
-        $roundStage = [];
-        foreach ($data as $match) {
-            $roundStage[] = $match['stage'];
-        }
+        $stages = array_map(fn ($match) => $match->stage, $matches);
 
-        return end($roundStage);
+        return end($stages);
     }
 
     /** Get competition season(2020/2021) or year(2018) */
