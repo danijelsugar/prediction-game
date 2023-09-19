@@ -59,34 +59,30 @@ class CompetitionRoundCommand extends Command
 
                 $rounds = $this->footballDataService->getRoundInfo($competitionMatches);
 
-                foreach ($rounds as $key => $value) {
+                foreach ($rounds as $roundDto) {
                     $round = $this->roundRepository->findOneBy(
                         [
                             'competition' => $competition,
-                            'name' => $key,
+                            'name' => $roundDto->name,
                         ]
                     );
-
-                    $firstAndLastDate = $this->footballDataService->getFirstAndLastMatchdayDate($value);
-                    $status = $this->footballDataService->getRoundStatus($value);
-                    $stage = $this->footballDataService->getRoundStage($value);
 
                     if (!$round) {
                         $round = new Round();
                         $round
                             ->setCompetition($competition)
-                            ->setName($key)
-                            ->setStage($stage)
-                            ->setDateFrom($firstAndLastDate['dateFrom'])
-                            ->setDateTo($firstAndLastDate['dateTo'])
-                            ->setStatus($status);
+                            ->setName($roundDto->name)
+                            ->setStage($roundDto->stage)
+                            ->setDateFrom($roundDto->dateFrom)
+                            ->setDateTo($roundDto->dateTo)
+                            ->setStatus($roundDto->status);
                         $this->entityManager->persist($round);
                     } else {
                         $round
-                            ->setStage($stage)
-                            ->setDateFrom($firstAndLastDate['dateFrom'])
-                            ->setDateTo($firstAndLastDate['dateTo'])
-                            ->setStatus($status);
+                            ->setStage($roundDto->stage)
+                            ->setDateFrom($roundDto->dateFrom)
+                            ->setDateTo($roundDto->dateTo)
+                            ->setStatus($roundDto->status);
                     }
                 }
 
